@@ -15,6 +15,41 @@ function plural($singular, $count, $plural = 's') {
     return ($count == 1 ? $singular : $plural);
 }
 
+function expand_path($filename) {
+	return dirname(get_script_name()).'/'.$filename;
+}
+
+function get_script_name() {
+	return $_SERVER['SCRIPT_NAME'];
+}
+
+function render($template, $args = array()) {
+	global $twig;
+
+	// Load Twig if necessary
+	if (!isset($twig)) {
+		require_once 'inc/lib/Twig/Autoloader.php';
+		Twig_Autoloader::register();
+
+		$loader = new Twig_Loader_Filesystem('inc/templates/');
+		$twig = new Twig_Environment($loader, array(
+			'cache' => !TINYIB_DEBUG,
+			'debug' => TINYIB_DEBUG,
+		));
+
+		// Load debugging stuff
+		if (TINYIB_DEBUG) {
+			$twig->addExtension(new Twig_Extension_Debug());
+		}
+
+		// Globals
+		$twig->addFunction('self', new Twig_Function_Function('get_script_name'));
+		$twig->addFunction('path', new Twig_Function_Function('expand_path'));
+	}
+
+	return $twig->render($template, $args);
+}
+
 function threadUpdated($id) {
 	rebuildThread($id);
 	rebuildIndexes();
@@ -28,7 +63,7 @@ function newPost($parent = TINYIB_NEWTHREAD) {
 				'name' => '',
 				'tripcode' => '',
 				'email' => '',
-				'nameblock' => '',
+				'date' => '',
 				'subject' => '',
 				'message' => '',
 				'password' => '',
@@ -57,73 +92,46 @@ function convertBytes($number) {
 	return sprintf("%0.2fGB", $number/1024/1024/1024);						
 }
 
-function nameAndTripcode($name) {
-	if (preg_match("/(#|!)(.*)/", $name, $regs)) {
-		$cap = $regs[2];
-		$cap_full = '#' . $regs[2];
-		
-		if (function_exists('mb_convert_encoding')) {
-			$recoded_cap = mb_convert_encoding($cap, 'SJIS', 'UTF-8');
-			if ($recoded_cap != '') {
-				$cap = $recoded_cap;
-			}
-		}
-		
-		if (strpos($name, '#') === false) {
-			$cap_delimiter = '!';
-		} elseif (strpos($name, '!') === false) {
-			$cap_delimiter = '#';
-		} else {
-			$cap_delimiter = (strpos($name, '#') < strpos($name, '!')) ? '#' : '!';
-		}
-		
-		if (preg_match("/(.*)(" . $cap_delimiter . ")(.*)/", $cap, $regs_secure)) {
-			$cap = $regs_secure[1];
-			$cap_secure = $regs_secure[3];
-			$is_secure_trip = true;
-		} else {
-			$is_secure_trip = false;
-		}
-		
-		$tripcode = "";
-		if ($cap != "") { // Copied from Futabally
-			$cap = strtr($cap, "&amp;", "&");
-			$cap = strtr($cap, "&#44;", ", ");
-			$salt = substr($cap."H.", 1, 2);
-			$salt = preg_replace("/[^\.-z]/", ".", $salt);
-			$salt = strtr($salt, ":;<=>?@[\\]^_`", "ABCDEFGabcdef"); 
-			$tripcode = substr(crypt($cap, $salt), -10);
-		}
-		
-		if ($is_secure_trip) {
-			if ($cap != "") {
-				$tripcode .= "!";
-			}
-			
-			$tripcode .= "!" . substr(md5($cap_secure . TINYIB_TRIPSEED), 2, 10);
-		}
-		
-		return array(preg_replace("/(" . $cap_delimiter . ")(.*)/", "", $name), $tripcode);
+function make_name_tripcode($input, $tripkey = '!') {
+	$tripcode = '';
+
+	// Check if we can reencode strings
+	static $has_encode;
+	if (!isset($has_encode)) 
+		$has_encode = extension_loaded('mb_string');
+
+	// Split name into chunks
+	$bits = explode('#', $input, 3);
+	list($name, $trip, $secure) = array_pad($bits, 3, false);
+
+	// Anonymous?
+	if ($name === false || preg_match('/^\s*$/', $name))
+		$name = 'Anonymous';
+
+	// Do regular tripcodes
+	if ($trip !== false && (strlen($trip) !== 0 || $secure === false)) {
+		if ($has_encode)
+			$trip = mb_convert_encoding($trip, 'UTF-8', 'SJIS');
+
+		$salt = substr($trip.'H..', 1, 2);
+		$salt = preg_replace('/[^\.-z]/', '.', $salt);
+		$salt = strtr($salt, ':;<=>?@[\\]^_`', 'ABCDEFGabcdef');
+
+		$tripcode = $tripkey.substr(crypt($trip, $salt), -10);
 	}
-	
-	return array($name, "");
+
+	// Do secure tripcodes
+	if ($secure !== false) {
+		$hash = sha1($secure.TINYIB_TRIPSEED);
+		$hash = substr(base64_encode($hash), 0, 10);
+		$tripcode .= $tripkey.$tripkey.$hash;
+	}
+
+	return array($name, $tripcode);
 }
 
-function nameBlock($name, $tripcode, $email, $timestamp, $rawposttext) {
-	$output = '<span class="postername">';
-	$output .= ($name == '' && $tripcode == '') ? 'Anonymous' : $name;
-	
-	if ($tripcode != '') {
-		$output .= '</span><span class="postertrip">!' . $tripcode;
-	}
-	
-	$output .= '</span>';
-	
-	if ($email != '' && strtolower($email) != 'noko') {
-		$output = '<a href="mailto:' . $email . '">' . $output . '</a>';
-	}
-
-	return $output . $rawposttext . ' ' . date('y/m/d(D)H:i:s', $timestamp);
+function make_date($timestamp) {
+	return date('y/m/d(D)H:i:s', $timestamp);
 }
 
 function writePage($filename, $contents) {

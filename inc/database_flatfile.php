@@ -65,7 +65,7 @@ function insertPost($newpost) {
 	$post[POST_NAME] = $newpost['name'];
 	$post[POST_TRIPCODE] = $newpost['tripcode'];
 	$post[POST_EMAIL] = $newpost['email'];
-	$post[POST_NAMEBLOCK] = $newpost['nameblock'];
+	$post[POST_NAMEBLOCK] = $newpost['date'];
 	$post[POST_SUBJECT] = $newpost['subject'];
 	$post[POST_MESSAGE]	= $newpost['message'];
 	$post[POST_PASSWORD] = $newpost['password'];
@@ -111,7 +111,7 @@ function convertPostsToSQLStyle($posts, $singlepost=false) {
 		$post['name'] = $oldpost[POST_NAME];
 		$post['tripcode'] = $oldpost[POST_TRIPCODE];
 		$post['email'] = $oldpost[POST_EMAIL];
-		$post['nameblock'] = $oldpost[POST_NAMEBLOCK];
+		$post['date'] = $oldpost[POST_NAMEBLOCK];
 		$post['subject'] = $oldpost[POST_SUBJECT];
 		$post['message'] = $oldpost[POST_MESSAGE];
 		$post['password'] = $oldpost[POST_PASSWORD];

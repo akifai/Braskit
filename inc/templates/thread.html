@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "post_macros.html" as m %}
+
+{% set title = "Thread No."~thread %}
+
+{% block content %}
+	{{ m.returnlink() }}
+	<div class="theader">Posting mode: Reply</div>
+	{{ m.postform(thread) }}
+	<hr>
+	<form action="{{ self() }}" method="post" name="delform">
+		{{ m.thread(posts, thread) }}
+		<hr>
+		{{ m.returnlink() }}
+		{{ m.delfile() }}
+	</form>
+{% endblock %}

@@ -1,0 +1,206 @@
+body {
+	background: #ffffee;
+	color: #800000;
+	font-family: Times, 'Times New Roman', 'Nimbus Roman No9 L',
+		'Freeserif', serif;
+	font-size: 12pt;
+	margin: 0;
+	padding: 8px;
+}
+
+/* Board menus */
+.topmenu {
+}
+.bottommenu {
+}
+.leftmenu {
+}
+.rightmenu {
+	clear: both;
+	float: right;
+	text-align: right;
+}
+
+#logo {
+	clear: both;
+	text-align: center;
+}
+
+#header {
+	font-weight: normal;
+	font-size: 24pt;
+	margin: 0;
+}
+
+.theader {
+	background: #e04000;
+	color: #fff;
+	padding: 2px;
+	text-align: center;
+}
+
+/* Postform */
+
+.postarea {
+	display: table; /* why doesn't inline-block work? */
+	margin: 0px auto;
+}
+.postarea th {
+	background: #ea8;
+	font-weight: bold;
+	text-align: left;
+}
+.rules {
+	font-size: 0.7em;
+	padding: 1px 3px;
+}
+
+
+/* Thumbnails */
+.reply .imginfo {
+	margin: 0 20px;
+}
+.thumb {
+	float: left;
+	margin: 2px 20px;
+}
+
+.replywrap {
+	display: table;
+	border-spacing: 2px;
+}
+
+.doubledash {
+	display: table-cell;
+	padding: 1px;
+}
+.reply {
+	display: table-cell;
+	background: #f0e0d6;
+	padding: 1px;
+}
+
+/*
+ * Why use this when we could use "hr { clear: both }"? Because the margin
+ * beneath threads is larger with this for whatever reason, and fixing that when
+ * clearing horizontal lines is hard/impractical/impossible.
+ */
+.thread:after {
+	clear: both;
+	content: "";
+	display: block;
+}
+.thread {
+	zoom: 1; /* For shitty old versions of IE */
+}
+
+/* Post headers */
+.posthead {
+	font-size: 12pt;
+	font-weight: normal;
+	margin: 0;
+}
+.posttitle {
+	color: #cc1105;
+	font-size: 1.2em;
+	font-style: normal;
+	font-weight: bold;
+}
+.postname {
+	color: #117743;
+	font-weight: bold;
+}
+.posttrip {
+	color: #228854;
+}
+.reflink a {
+	color: inherit;
+	text-decoration: none;
+}
+.replylink {
+	margin-left: .5em;
+}
+
+/* Post text */
+
+.posttext {
+	margin: 1em 40px;
+}
+.reply .posttext {
+	margin-bottom: 0;
+}
+.posttext p {
+}
+.posttext em {
+}
+.posttext strong {
+}
+.posttext ol {
+}
+.posttext ul {
+}
+.posttext li {
+}
+.posttext ol li {
+}
+.posttext ul li {
+}
+.posttext blockquote {
+	color: #789922;
+}
+.posttext a.boardlink {
+	color: #000080;
+}
+.posttext .spoiler {
+	background: #000;
+	color: #000;
+}
+.posttext .spoiler:hover {
+	color: #fff;
+}
+
+.omitted {
+	color: #707070;
+}
+
+/* must be defined after the reflink stuff */
+a {
+	color: #00e;
+}
+a:hover {
+	color: #d00;
+}
+
+.deletefile {
+	float: right;
+}
+
+/* pages */
+.pages {
+	border: solid 1px;
+	border-left-color: #d8b2b2;
+	border-top-color: #d8b2b2;
+	border-right-color: #470000;
+	border-bottom-color: #470000;
+	border-spacing: 2px;
+	display: table;
+}
+.pages div {
+	display: table-cell;
+	border: solid 1px;
+	border-left-color: #470000;
+	border-top-color: #470000;
+	border-right-color: #d8b2b2;
+	border-bottom-color: #d8b2b2;
+	padding: 1px;
+}
+.pages form {
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+#footer {
+	font-size: 12px;
+	text-align: center;
+}

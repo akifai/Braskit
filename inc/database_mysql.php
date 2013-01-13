@@ -18,16 +18,16 @@ if (mysql_num_rows(mysql_query("SHOW TABLES LIKE '" . TINYIB_DBPOSTS . "'")) == 
 		`timestamp` int(20) NOT NULL,
 		`bumped` int(20) NOT NULL,
 		`ip` varchar(15) NOT NULL,
-		`name` varchar(75) NOT NULL,
-		`tripcode` varchar(10) NOT NULL,
-		`email` varchar(75) NOT NULL,
-		`nameblock` varchar(255) NOT NULL,
-		`subject` varchar(75) NOT NULL,
+		`name` text NOT NULL,
+		`tripcode` text NOT NULL,
+		`email` text NOT NULL,
+		`date` text NOT NULL,
+		`subject` text NOT NULL,
 		`message` text NOT NULL,
-		`password` varchar(255) NOT NULL,
-		`file` varchar(75) NOT NULL,
-		`file_hex` varchar(75) NOT NULL,
-		`file_original` varchar(255) NOT NULL,
+		`password` text NOT NULL,
+		`file` text NOT NULL,
+		`file_hex` varchar(32) NOT NULL,
+		`file_original` text NOT NULL,
 		`file_size` int(20) unsigned NOT NULL default '0',
 		`file_size_formatted` varchar(75) NOT NULL,
 		`image_width` smallint(5) unsigned NOT NULL default '0',
@@ -74,7 +74,7 @@ function threadExistsByID($id) {
 }
 
 function insertPost($post) {
-	mysql_query("INSERT INTO `" . TINYIB_DBPOSTS . "` (`parent`, `timestamp`, `bumped`, `ip`, `name`, `tripcode`, `email`, `nameblock`, `subject`, `message`, `password`, `file`, `file_hex`, `file_original`, `file_size`, `file_size_formatted`, `image_width`, `image_height`, `thumb`, `thumb_width`, `thumb_height`) VALUES (" . $post['parent'] . ", " . time() . ", " . time() . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . mysql_real_escape_string($post['name']) . "', '" . mysql_real_escape_string($post['tripcode']) . "',	'" . mysql_real_escape_string($post['email']) . "',	'" . mysql_real_escape_string($post['nameblock']) . "', '" . mysql_real_escape_string($post['subject']) . "', '" . mysql_real_escape_string($post['message']) . "', '" . mysql_real_escape_string($post['password']) . "', '" . $post['file'] . "', '" . $post['file_hex'] . "', '" . mysql_real_escape_string($post['file_original']) . "', " . $post['file_size'] . ", '" . $post['file_size_formatted'] . "', " . $post['image_width'] . ", " . $post['image_height'] . ", '" . $post['thumb'] . "', " . $post['thumb_width'] . ", " . $post['thumb_height'] . ")");
+	mysql_query("INSERT INTO `" . TINYIB_DBPOSTS . "` (`parent`, `timestamp`, `bumped`, `ip`, `name`, `tripcode`, `email`, `date`, `subject`, `message`, `password`, `file`, `file_hex`, `file_original`, `file_size`, `file_size_formatted`, `image_width`, `image_height`, `thumb`, `thumb_width`, `thumb_height`) VALUES (" . $post['parent'] . ", " . time() . ", " . time() . ", '" . $_SERVER['REMOTE_ADDR'] . "', '" . mysql_real_escape_string($post['name']) . "', '" . mysql_real_escape_string($post['tripcode']) . "',	'" . mysql_real_escape_string($post['email']) . "',	'" . mysql_real_escape_string($post['date']) . "', '" . mysql_real_escape_string($post['subject']) . "', '" . mysql_real_escape_string($post['message']) . "', '" . mysql_real_escape_string($post['password']) . "', '" . $post['file'] . "', '" . $post['file_hex'] . "', '" . mysql_real_escape_string($post['file_original']) . "', " . $post['file_size'] . ", '" . $post['file_size_formatted'] . "', " . $post['image_width'] . ", " . $post['image_height'] . ", '" . $post['thumb'] . "', " . $post['thumb_width'] . ", " . $post['thumb_height'] . ")");
 	return mysql_insert_id();
 }
 
@@ -116,7 +116,7 @@ function latestRepliesInThreadByID($id) {
 			$posts[] = $post;
 		}
 	}
-	return $posts;
+	return array_reverse($posts);
 }
 
 function postsByHex($hex) {	

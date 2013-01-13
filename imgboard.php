@@ -50,7 +50,7 @@ if (TINYIB_TRIPSEED == '' || TINYIB_ADMINPASS == '') {
 
 $redirect = true;
 // Check if the request is to make a post
-if (isset($_POST['message']) || isset($_POST['file'])) {
+if (isset($_POST['field4']) || isset($_POST['file'])) {
 	list($loggedin, $isadmin) = manageCheckLogIn();
 	$rawpost = isRawPost();
 	if (!$loggedin) {
@@ -62,20 +62,20 @@ if (isset($_POST['message']) || isset($_POST['file'])) {
 	$post = newPost(setParent());
 	$post['ip'] = $_SERVER['REMOTE_ADDR'];
 	
-	list($post['name'], $post['tripcode']) = nameAndTripcode($_POST['name']);
+	list($post['name'], $post['tripcode']) = make_name_tripcode($_POST['field1']);
 	
 	$post['name'] = cleanString(substr($post['name'], 0, 75));
-	$post['email'] = cleanString(str_replace('"', '&quot;', substr($_POST['email'], 0, 75)));
-	$post['subject'] = cleanString(substr($_POST['subject'], 0, 75));
+	$post['email'] = cleanString(str_replace('"', '&quot;', substr($_POST['field2'], 0, 75)));
+	$post['subject'] = cleanString(substr($_POST['field3'], 0, 75));
 	if ($rawpost) {
 		$rawposttext = ($isadmin) ? ' <span style="color: red;">## Admin</span>' : ' <span style="color: purple;">## Mod</span>';
-		$post['message'] = $_POST['message']; // Treat message as raw HTML
+		$post['message'] = $_POST['field4']; // Treat message as raw HTML
 	} else {
 		$rawposttext = '';
-		$post['message'] = str_replace("\n", '<br>', colorQuote(postLink(cleanString(rtrim($_POST['message'])))));
+		$post['message'] = str_replace("\n", '<br>', colorQuote(postLink(cleanString(rtrim($_POST['field4'])))));
 	}
 	$post['password'] = ($_POST['password'] != '') ? md5(md5($_POST['password'])) : '';
-	$post['nameblock'] = nameBlock($post['name'], $post['tripcode'], $post['email'], time(), $rawposttext);
+	$post['date'] = make_date(time());
 	
 	if (isset($_FILES['file'])) {
 		if ($_FILES['file']['name'] != "") {
@@ -286,7 +286,7 @@ if (isset($_POST['message']) || isset($_POST['file'])) {
 }
 
 if ($redirect) {
-	echo '--&gt; --&gt; --&gt;<meta http-equiv="refresh" content="0;url=' . (is_string($redirect) ? $redirect : 'index.html') . '">';
+	echo '--&gt; --&gt; --&gt;<!--<-->meta http-equiv="refresh" content="0;url=' . (is_string($redirect) ? $redirect : 'index.html') . '">';
 }
 
 ?>

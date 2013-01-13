@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ title }}</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="{{ path("css/base.css") }}">
+	<script src="{{ path("shana.js") }}"></script>
+</head>
+<body>
+	<div id="topmenu" class="boardmenu">
+		<div class="rightmenu">
+			[<a href="{{ path("index.html") }}" target="_top">Home</a>]
+			[<a href="{{ self() }}?manage">Manage</a>]
+		</div>
+	</div>
+	<div id="logo">
+		{%- block header -%}
+			<h1 id="header">{{ constant("TINYIB_BOARDDESC") }}</h1>
+			{%- if subheader -%}
+				<div id="subheader">{{ subheader }}</div>
+			{%- endif -%}
+		{%- endblock -%}
+	</div>
+	<hr>
+	{% block content %}{% endblock %}
+	<div id="bottommenu" class="boardmenu">{# TODO #}</div>
+	<p id="footer">
+		- <a href="https://shanachan.org/ib/" target="_top">ShanaIB</a>
+		+ <a href="https://github.com/tslocum/TinyIB" target="_top">TinyIB</a>
+		-
+	</p>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "post_macros.html" as m %}
+
+{% set title = constant("TINYIB_BOARDDESC") %}
+
+{% block content %}
+	{{ m.postform() }}
+	<hr>
+	<form action="{{ self() }}" method="post" name="delform">
+		{% for thread in threads %}
+			{{ m.thread(thread, thread.id) }}
+			<hr>
+		{% endfor %}
+		{{ m.delfile() }}
+	</form>
+	<div class="pages">
+		<div class="previous">
+			{% if not page %}
+				Previous
+			{% else %}
+				<form action="{{ path("TODO") }}">
+					<input type="submit" value="Previous">
+				</form>
+			{% endif %}
+		</div>
+		<div class="pagenums">
+			{% for page in pages %}
+				[<a href="{{ path(page ? page~".html" : "index.html") }}">{{ page }}</a>]
+			{% endfor %}
+		</div>
+		<div class="next">
+			{% if page %}
+				Next
+			{% else %}
+				<form action="{{ path("TODO") }}">
+					<input type="submit" value="Next">
+				</form>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

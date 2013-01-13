@@ -1,5 +1,6 @@
 settings.php
-*.html
+/*.html
+/res/*.html
 *.db
 .posts
 .posts.lock

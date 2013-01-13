@@ -70,7 +70,7 @@ EOF;
 	}
 	
 	$return .= <<<EOF
-${post["nameblock"]}
+${post["date"]}
 </label>
 <span class="reflink">
 	<a href="$postlink">No.${post["id"]}</a>
@@ -272,48 +272,49 @@ EOF;
 	return pageHeader() . $body . pageFooter();
 }
 
-function rebuildIndexes() {	
-	$page = 0; $i = 0; $htmlposts = '';
-	$pages = ceil(countThreads() / 10) - 1;
-	$threads = allThreads(); 
+function rebuildIndexes() {
+	$pagecount = ceil(countThreads() / 10) - 1;
+
+	$all_threads = allThreads(); 
 	
-	foreach ($threads as $thread) {
-		$replies = latestRepliesInThreadByID($thread['id']);
-		
-		$htmlreplies = array();
-		foreach ($replies as $reply) {
-			$htmlreplies[] = buildPost($reply, TINYIB_INDEXPAGE);
-		}
-		
-		$thread['omitted'] = (count($htmlreplies) == 3) ? (count(postsInThreadByID($thread['id'])) - 4) : 0;
-		
-		$htmlposts .= buildPost($thread, TINYIB_INDEXPAGE) . implode('', array_reverse($htmlreplies)) . "<br clear=\"left\">\n<hr>";
-		
-		$i += 1;
-		if ($i == 10) {
-			$file = ($page == 0) ? 'index.html' : $page . '.html';
-			writePage($file, buildPage($htmlposts, 0, $pages, $page));
-			
-			$page += 1; $i = 0; $htmlposts = '';
-		}
+	$threads = array();
+	foreach ($all_threads as $thread) {
+		$thread = array($thread);
+		$replies = latestRepliesInThreadByID($thread[0]['id']);
+
+		foreach ($replies as $reply)
+			$thread[] = $reply;
+
+		$thread[0]['omitted'] = (count($replies) == 3)
+			? (count(postsInThreadByID($thread[0]['id'])) - 4)
+			: 0;
+
+		$threads[] = $thread;
 	}
-	
-	if ($page == 0 || $htmlposts != '') {
-		$file = ($page == 0) ? 'index.html' : $page . '.html';
-		writePage($file, buildPage($htmlposts, 0, $pages, $page));
+
+	$num = 0;
+	$pages = range(0, $pagecount);
+	while ($page = array_splice($threads, 0, 10)) {
+		$file = !$num ? 'index.html' : $num.'.html';
+		$html = render('page.html', array(
+			'threads' => $page,
+			'pages' => $pages,
+			'current_page' => $num,
+		));
+
+		writePage($file, $html);
+		$num++;
 	}
 }
 
 function rebuildThread($id) {
-	$htmlposts = "";
 	$posts = postsInThreadByID($id);
-	foreach ($posts as $post) {
-		$htmlposts .= buildPost($post, TINYIB_RESPAGE);
-	}
+	$html = render('thread.html', array(
+		'posts' => $posts,
+		'thread' => $id,
+	));
 	
-	$htmlposts .= "<br clear=\"left\">\n<hr>\n";
-	
-	writePage('res/' . $id . '.html', fixLinksInRes(buildPage($htmlposts, $id)));
+	writePage(sprintf('res/%d.html', $id), $html);
 }
 
 function adminBar() {
