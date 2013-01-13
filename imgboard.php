@@ -25,9 +25,7 @@ if (!file_exists('settings.php')) {
 require 'settings.php';
 
 // Check directories are writable by the script
-$writedirs = array("res", "src", "thumb");
-if (TINYIB_DBMODE == 'flatfile') { $writedirs[] = "inc/flatfile"; }
-foreach ($writedirs as $dir) {
+foreach (array('res', 'src', 'thumb') as $dir) {
 	if (!is_writable($dir)) {
 		fancyDie("Directory '" . $dir . "' can not be written to.  Please modify its permissions.");
 	}
@@ -132,7 +130,7 @@ if (isset($_POST['field4']) || isset($_POST['file'])) {
 	}
 	
 	if ($post['file'] == '') { // No file uploaded
-		if ($post['parent'] == TINYIB_NEWTHREAD) {
+		if (!$post['parent']) {
 			fancyDie("An image is required to start a thread.");
 		}
 		if (str_replace('<br>', '', $post['message']) == "") {
@@ -144,13 +142,13 @@ if (isset($_POST['field4']) || isset($_POST['file'])) {
 	
 	$post['id'] = insertPost($post);
 	if (strtolower($post['email']) == 'noko') {
-		$redirect = 'res/' . ($post['parent'] == TINYIB_NEWTHREAD ? $post['id'] : $post['parent']) . '.html#' . $post['id'];
+		$redirect = 'res/' . ($post['parent'] == !$post['parent'] ? $post['id'] : $post['parent']) . '.html#' . $post['id'];
 	}
 	
 	trimThreads();
 	
 	echo 'Updating thread...<br>';
-	if ($post['parent'] != TINYIB_NEWTHREAD) {
+	if ($post['parent']) {
 		rebuildThread($post['parent']);
 		
 		if (strtolower($post['email']) != 'sage') {
@@ -175,7 +173,7 @@ if (isset($_POST['field4']) || isset($_POST['file'])) {
 			echo '--&gt; --&gt; --&gt;<meta http-equiv="refresh" content="0;url=' . basename($_SERVER['PHP_SELF']) . '?manage&moderate=' . $_POST['delete'] . '">';
 		} elseif ($post['password'] != '' && md5(md5($_POST['password'])) == $post['password']) {
 			deletePostByID($post['id']);
-			if ($post['parent'] == TINYIB_NEWTHREAD) { threadUpdated($post['id']); } else { threadUpdated($post['parent']); }
+			if (!$post['parent']) { threadUpdated($post['id']); } else { threadUpdated($post['parent']); }
 			fancyDie('Post deleted.');
 		} else {
 			fancyDie('Invalid password.');
@@ -239,7 +237,7 @@ if (isset($_POST['field4']) || isset($_POST['file'])) {
 			if ($post) {
 				deletePostByID($post['id']);
 				rebuildIndexes();
-				if ($post['parent'] != TINYIB_NEWTHREAD) {
+				if ($post['parent']) {
 					rebuildThread($post['parent']);
 				}
 				$text .= manageInfo('Post No.' . $post['id'] . ' deleted.');

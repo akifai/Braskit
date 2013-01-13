@@ -55,7 +55,7 @@ function threadUpdated($id) {
 	rebuildIndexes();
 }
 
-function newPost($parent = TINYIB_NEWTHREAD) {
+function newPost($parent = 0) {
 	return array('parent' => $parent,
 				'timestamp' => '0',
 				'bumped' => '0',
@@ -148,17 +148,10 @@ function writePage($filename, $contents) {
 	chmod($filename, 0664); /* it was created 0600 */
 }
 
-function fixLinksInRes($html) {
-	$search = array(' href="css/', ' href="src/', ' href="thumb/', ' href="res/', ' href="imgboard.php', ' href="favicon.ico', 'src="thumb/', ' action="imgboard.php');
-	$replace = array(' href="../css/', ' href="../src/', ' href="../thumb/', ' href="../res/', ' href="../imgboard.php', ' href="../favicon.ico', 'src="../thumb/', ' action="../imgboard.php');
-	
-	return str_replace($search, $replace, $html);
-}
-
 function _postLink($matches) {
 	$post = postByID($matches[1]);
 	if ($post) {
-		return '<a href="res/' . ($post['parent'] == TINYIB_NEWTHREAD ? $post['id'] : $post['parent']) . '.html#' . $matches[1] . '">' . $matches[0] . '</a>';
+		return '<a href="res/' . (!$post['parent'] ? $post['id'] : $post['parent']) . '.html#' . $matches[1] . '">' . $matches[0] . '</a>';
 	}
 	return $matches[0];
 }
@@ -231,7 +224,7 @@ function manageCheckLogIn() {
 
 function setParent() {
 	if (isset($_POST["parent"])) {
-		if ($_POST["parent"] != TINYIB_NEWTHREAD) {
+		if ($_POST["parent"]) {
 			if (!threadExistsByID($_POST['parent'])) {
 				fancyDie("Invalid parent thread ID supplied, unable to create post.");
 			}
@@ -240,7 +233,7 @@ function setParent() {
 		}
 	}
 	
-	return TINYIB_NEWTHREAD;
+	return 0;
 }
 
 function isRawPost() {
@@ -285,7 +278,7 @@ function checkDuplicateImage($hex) {
 	$hexmatches = postsByHex($hex);
 	if (count($hexmatches) > 0) {
 		foreach ($hexmatches as $hexmatch) {
-			fancyDie("Duplicate file uploaded. That file has already been posted <a href=\"res/" . (($hexmatch["parent"] == TINYIB_NEWTHREAD) ? $hexmatch["id"] : $hexmatch["parent"]) . ".html#" . $hexmatch["id"] . "\">here</a>.");
+			fancyDie("Duplicate file uploaded. That file has already been posted <a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"]) . ".html#" . $hexmatch["id"] . "\">here</a>.");
 		}
 	}
 }
