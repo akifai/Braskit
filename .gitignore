@@ -2,7 +2,4 @@ settings.php
 /*.html
 /res/*.html
 *.db
-.posts
-.posts.lock
 .project
-
