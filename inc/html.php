@@ -294,7 +294,9 @@ function rebuildIndexes() {
 
 	$num = 0;
 	$pages = range(0, $pagecount);
-	while ($page = array_splice($threads, 0, 10)) {
+
+	$page = array_splice($threads, 0, 10);
+	do {
 		$file = !$num ? 'index.html' : $num.'.html';
 		$html = render('page.html', array(
 			'threads' => $page,
@@ -304,7 +306,7 @@ function rebuildIndexes() {
 
 		writePage($file, $html);
 		$num++;
-	}
+	} while ($page = array_splice($threads, 0, 10));
 }
 
 function rebuildThread($id) {

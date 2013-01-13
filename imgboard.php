@@ -33,16 +33,10 @@ foreach ($writedirs as $dir) {
 	}
 }
 
-$includes = array("inc/defines.php", "inc/functions.php", "inc/html.php");
-if (in_array(TINYIB_DBMODE, array('flatfile', 'mysql', 'sqlite'))) {
-	$includes[] = 'inc/database_' . TINYIB_DBMODE . '.php';
-} else {
-	fancyDie("Unknown database mode specificed");
-}
-
-foreach ($includes as $include) {
-	include $include;
-}
+require 'inc/database.php';
+require 'inc/defines.php';
+require 'inc/functions.php';
+require 'inc/html.php';
 
 if (TINYIB_TRIPSEED == '' || TINYIB_ADMINPASS == '') {
 	fancyDie('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');

@@ -7,8 +7,7 @@ class TinyIB_DB extends PDO {
 
 	const DSN_FORMAT = '%s:dbname=%s;host=%s';
 	public function __construct() {
-		$dsn = sprintf(self::DSN_FORMAT,
-			TINYIB_DBMODE, TINYIB_DBNAME, TINYIB_DBHOST);
+		$dsn = self::create_dsn();
 
 		try {
 			$this->spawn($dsn);
@@ -30,6 +29,13 @@ class TinyIB_DB extends PDO {
 		self::$queries++;
 
 		return $sth;
+	}
+
+	private function create_dsn() {
+		if (TINYIB_DBMODE === 'mysql')
+			return 'mysql:dbname='.TINYIB_DBNAME.';host='.TINYIB_DBHOST;
+		if (TINYIB_DBMODE === 'sqlite')
+			return 'sqlite:'.TINYIB_DBNAME;
 	}
 
 	/**
