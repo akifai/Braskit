@@ -23,21 +23,19 @@ if (!file_exists('settings.php')) {
 	fancyDie('Please rename the file settings.default.php to settings.php');
 }
 require 'settings.php';
+require 'inc/database.php';
+require 'inc/functions.php';
+require 'inc/html.php';
+
+if (TINYIB_TRIPSEED == '' || TINYIB_ADMINPASS == '') {
+	fancyDie('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
+}
 
 // Check directories are writable by the script
 foreach (array('res', 'src', 'thumb') as $dir) {
 	if (!is_writable($dir)) {
 		fancyDie("Directory '" . $dir . "' can not be written to.  Please modify its permissions.");
 	}
-}
-
-require 'inc/database.php';
-require 'inc/defines.php';
-require 'inc/functions.php';
-require 'inc/html.php';
-
-if (TINYIB_TRIPSEED == '' || TINYIB_ADMINPASS == '') {
-	fancyDie('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
 }
 
 $redirect = true;
@@ -278,7 +276,7 @@ if (isset($_POST['field4']) || isset($_POST['file'])) {
 }
 
 if ($redirect) {
-	echo '--&gt; --&gt; --&gt;<!--<-->meta http-equiv="refresh" content="0;url=' . (is_string($redirect) ? $redirect : 'index.html') . '">';
+	echo '--&gt; --&gt; --&gt;<meta http-equiv="refresh" content="0;url=' . (is_string($redirect) ? $redirect : 'index.html') . '">';
 }
 
 ?>
