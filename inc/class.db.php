@@ -12,7 +12,7 @@ class TinyIB_DB extends PDO {
 		try {
 			$this->spawn($dsn);
 		} catch (PDOException $e) {
-			fancyDie($e->getMessage());
+			make_error($e->getMessage());
 		}
 	}
 
@@ -22,7 +22,7 @@ class TinyIB_DB extends PDO {
 		try {
 			$sth = parent::query($query);
 		} catch (PDOException $e) {
-			fancyDie($e->getMessage());
+			make_error($e->getMessage());
 		}
 
 		self::addTime($time);
@@ -65,7 +65,7 @@ class TinyIB_DBStatement extends PDOStatement {
 		try {
 			$sth = parent::execute($params);
 		} catch (PDOException $e) {
-			fancyDie($e->getMessage());
+			make_error($e->getMessage());
 		}
 
 		TinyIB_DB::addTime($time);

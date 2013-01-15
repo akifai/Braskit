@@ -204,3 +204,9 @@ a:hover {
 	font-size: 12px;
 	text-align: center;
 }
+
+.error {
+	font-size: 24pt;
+	font-weight: bold;
+	text-align: center;
+}

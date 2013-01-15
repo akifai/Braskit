@@ -1,18 +1,15 @@
 <?php
-if (!defined('TINYIB_BOARD')) { die(''); }
+defined('TINYIB_BOARD') or exit;
 
 function cleanString($string) {
-	$search = array("<", ">");
-	$replace = array("&lt;", "&gt;");
-	
-	return str_replace($search, $replace, $string);
+	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
 function plural($singular, $count, $plural = 's') {
 	if ($plural == 's') {
-        $plural = $singular . $plural;
-    }
-    return ($count == 1 ? $singular : $plural);
+		$plural = $singular . $plural;
+	}
+	return ($count == 1 ? $singular : $plural);
 }
 
 function expand_path($filename) {
@@ -21,6 +18,12 @@ function expand_path($filename) {
 
 function get_script_name() {
 	return $_SERVER['SCRIPT_NAME'];
+}
+
+function redirect($url) {
+	header(sprintf('Location: %s', $url), true, 303);
+
+	echo '<html><body><a href="'.$url.'">'.$url.'</a></body></html>';
 }
 
 function render($template, $args = array()) {
@@ -176,7 +179,7 @@ function checkBanned() {
 		if ($ban['expire'] == 0 || $ban['expire'] > time()) {
 			$expire = ($ban['expire'] > 0) ? ('<br>This ban will expire ' . date('y/m/d(D)H:i:s', $ban['expire'])) : '<br>This ban is permanent and will not expire.';
 			$reason = ($ban['reason'] == '') ? '' : ('<br>Reason: ' . $ban['reason']);
-			fancyDie('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
+			make_error('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
 		} else {
 			clearExpiredBans();
 		}
@@ -188,7 +191,7 @@ function checkFlood() {
 		$lastpost = lastPostByIP();
 		if ($lastpost) {
 			if ((time() - $lastpost['timestamp']) < TINYIB_DELAY) {
-				fancyDie("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
+				make_error("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
 			}
 		}
 	}
@@ -196,7 +199,7 @@ function checkFlood() {
 
 function checkMessageSize() {
 	if (strlen($_POST["message"]) > 8000) {
-		fancyDie("Please shorten your message, or post it in multiple parts. Your message is " . strlen($_POST["message"]) . " characters long, and the maximum allowed is 8000.");
+		make_error("Please shorten your message, or post it in multiple parts. Your message is " . strlen($_POST["message"]) . " characters long, and the maximum allowed is 8000.");
 	}
 }
 
@@ -226,7 +229,7 @@ function setParent() {
 	if (isset($_POST["parent"])) {
 		if ($_POST["parent"]) {
 			if (!threadExistsByID($_POST['parent'])) {
-				fancyDie("Invalid parent thread ID supplied, unable to create post.");
+				make_error("Invalid parent thread ID supplied, unable to create post.");
 			}
 			
 			return $_POST["parent"];
@@ -252,25 +255,25 @@ function validateFileUpload() {
 		case UPLOAD_ERR_OK:
 			break;
 		case UPLOAD_ERR_FORM_SIZE:
-			fancyDie("That file is larger than " . TINYIB_MAXKBDESC . ".");
+			make_error("That file is larger than " . TINYIB_MAXKBDESC . ".");
 			break;
 		case UPLOAD_ERR_INI_SIZE:
-			fancyDie("The uploaded file exceeds the upload_max_filesize directive (" . ini_get('upload_max_filesize') . ") in php.ini.");
+			make_error("The uploaded file exceeds the upload_max_filesize directive (" . ini_get('upload_max_filesize') . ") in php.ini.");
 			break;
 		case UPLOAD_ERR_PARTIAL:
-			fancyDie("The uploaded file was only partially uploaded.");
+			make_error("The uploaded file was only partially uploaded.");
 			break;
 		case UPLOAD_ERR_NO_FILE:
-			fancyDie("No file was uploaded.");
+			make_error("No file was uploaded.");
 			break;
 		case UPLOAD_ERR_NO_TMP_DIR:
-			fancyDie("Missing a temporary folder.");
+			make_error("Missing a temporary folder.");
 			break;
 		case UPLOAD_ERR_CANT_WRITE:
-			fancyDie("Failed to write file to disk");
+			make_error("Failed to write file to disk");
 			break;
 		default:
-			fancyDie("Unable to save the uploaded file.");
+			make_error("Unable to save the uploaded file.");
 	}
 }
 
@@ -278,7 +281,7 @@ function checkDuplicateImage($hex) {
 	$hexmatches = postsByHex($hex);
 	if (count($hexmatches) > 0) {
 		foreach ($hexmatches as $hexmatch) {
-			fancyDie("Duplicate file uploaded. That file has already been posted <a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"]) . ".html#" . $hexmatch["id"] . "\">here</a>.");
+			make_error("Duplicate file uploaded. That file has already been posted <a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"]) . ".html#" . $hexmatch["id"] . "\">here</a>.");
 		}
 	}
 }
@@ -297,7 +300,7 @@ function createThumbnail($name, $filename, $new_w, $new_h) {
 	}
 	
 	if (!$src_img) {
-		fancyDie("Unable to read uploaded file during thumbnailing. A common cause for this is an incorrect extension when the file is actually of a different type.");
+		make_error("Unable to read uploaded file during thumbnailing. A common cause for this is an incorrect extension when the file is actually of a different type.");
 	}
 	$old_x = imageSX($src_img);
 	$old_y = imageSY($src_img);
@@ -367,5 +370,3 @@ function strallpos($haystack, $needle, $offset = 0) {
 	}
 	return $result;
 }
-
-?>

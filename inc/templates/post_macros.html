@@ -159,6 +159,6 @@
 	</div>
 {% endmacro %}
 
-{% macro returnlink() -%}
-	[<a href="{{ path("index.html") }}">Return</a>]
+{% macro returnlink(dest) -%}
+	[<a href="{{ dest ? dest : path("index.html") }}">Return</a>]
 {%- endmacro %}
