@@ -283,10 +283,6 @@ function checkDuplicateImage($hex) {
 	}
 }
 
-function thumbnailDimensions($width, $height) {
-	return ($width > TINYIB_MAXW || $height > TINYIB_MAXH) ? array(TINYIB_MAXW, TINYIB_MAXH) : array($width, $height);
-}
-
 function createThumbnail($name, $filename, $new_w, $new_h) {
 	$system = explode(".", $filename);
 	$system = array_reverse($system);
