@@ -171,16 +171,56 @@
 {% endmacro %}
 
 {#
- # Links
+ # Links and stuff
  #}
 
-{% macro get_reply_link(context, p) %}
-	{% if not context.admin %}
-		{{ path("res/"~p.id~".html") }}	
-	{% else %}
-		{{ self()~"?task=manage&thread="~p.id }}
-	{% endif %}
-{% endmacro %}
+{% macro get_reply_link(context, p) -%}
+	{% spaceless %}
+		{% if not context.admin %}
+			{{ path("res/"~p.id~".html") }}	
+		{% else %}
+			{{ self()~"?task=manage&thread="~p.id }}
+		{% endif %}
+	{% endspaceless %}
+{%- endmacro %}
+
+{% macro get_page_link(context, i) -%}
+	{% spaceless %}
+		{% if not context.admin %}
+			{{ path(i ? i~".html" : "index.html") }}
+		{% else %}
+			{{ self()~"?task=manage"~(i ? "&page="~i : "") }}
+		{% endif %}
+	{% endspaceless %}
+{%- endmacro %}
+
+{% macro make_previous_page_button(context) -%}
+	{% spaceless %}
+		{% if not context.admin %}
+		<form action="{{ path(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html") }}" method="get">
+		{% else %}
+		<form action="{{ self() }}" method="get">
+			<input type="hidden" name="task" value="manage">
+			<input type="hidden" name="page" value="{{ context.pagenum - 1 }}">
+		{% endif %}
+			<input type="submit" value="Previous">
+		</form>
+	{% endspaceless %}
+{%- endmacro %}
+
+{% macro make_next_page_button(context) -%}
+	{% spaceless %}
+		{% if not context.admin %}
+		<form action="{{ path((context.pagenum + 1)~".html") }}" method="get">
+		{% else %}
+		<form action="{{ self() }}" method="get">
+			<input type="hidden" name="task" value="manage">
+			<input type="hidden" name="page" value="{{ context.pagenum + 1 }}">
+		{% endif %}
+			<input type="submit" value="Next">
+		</form>
+	{% endspaceless %}
+{%- endmacro %}
 
 
 {#
