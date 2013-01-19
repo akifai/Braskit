@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="theader">Manager Mode</div>
+
+	<div class="postarea loginform">
+		<form action="{{ self() }}?task=login" method="post">
+			<p>
+				<label for="password">Password</label>
+				<input type="password" name="password" id="password" size="12">
+				<input type="submit" value="Log in">
+			</p>
+			{% if error %}
+				<p class="important center">{{ error }}</p>
+			{% endif %}
+		</form>
+	</div>
+	<hr>
+{% endblock %}

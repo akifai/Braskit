@@ -210,3 +210,35 @@ a:hover {
 	font-weight: bold;
 	text-align: center;
 }
+
+/* Moderator stuff */
+.loginform {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.important {
+	color: red;
+	font-weight: bold;
+}
+p.center {
+	text-align: center;
+}
+div.center, table.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+.modlist thead tr {
+	background: #aa6;
+	color: #400;
+}
+.modlist th {
+	font-weight: bold;
+	text-align: left;
+}
+.modlist tr {
+	background: #eec;
+}
+.modlist .minimal {
+	width: 1%;
+}

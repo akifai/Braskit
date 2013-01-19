@@ -9,8 +9,17 @@
 <body>
 	<div id="topmenu" class="boardmenu">
 		<div class="rightmenu">
-			[<a href="{{ path("index.html") }}" target="_top">Home</a>]
-			[<a href="{{ self() }}?manage">Manage</a>]
+			{% if admin %}
+				[<a href="{{ self() }}?task=manage">Manage</a>]
+				[<a href="{{ self() }}?task=bans">Bans</a>]
+				[<a href="{{ self() }}?task=rebuild">Rebuild caches</a>]
+				[<a href="{{ self() }}?task=logout">Log out</a>]
+				-
+				[<a href="{{ path("index.html") }}" target="_top">Home</a>]
+			{% else %}
+				[<a href="{{ path("index.html") }}" target="_top">Home</a>]
+				[<a href="{{ self() }}?task=manage">Manage</a>]
+			{% endif %}
 		</div>
 	</div>
 	<div id="logo">
@@ -22,6 +31,11 @@
 		{%- endblock -%}
 	</div>
 	<hr>
+	{% block adminbar %}
+		{% if admin %}
+			<div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
+		{% endif %}
+	{% endblock %}
 	{% block content %}{% endblock %}
 	<div id="bottommenu" class="boardmenu">{# TODO #}</div>
 	<p id="footer">

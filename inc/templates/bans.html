@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% set manatitle = "Bans" %}
+
+{% block content %}
+	<div class="postarea">
+		<form action="{{ self() }}?task=addban" method="post">
+			<table><tbody>
+				<tr>
+					<th><label for="ip">IP address</label></th>
+					<td>
+						<input type="text" name="ip" id="ip" size="22">
+						<input type="submit" value="Add">
+					</td>
+				</tr>
+				<tr>
+					<th><label for="reason">Reason</label></th>
+					<td><textarea name="reason" id="reason" rows="4" cols="30"></textarea></td>
+				</tr>
+				<tr>
+					<th><label for="expire">Length</label></th>
+					<td>
+						<select name="expire" id="expire">
+							<option value="0" selected>Infinite</option>
+							<option value="259200">3 days</option>
+							<option value="604800">1 week</option>
+							<option value="2592000">1 month</option>
+							<option value="31536000">1 year</option>
+						</select>
+					</td>
+				</tr>
+			</tbody></table>
+		</form>
+	</div>
+	{% if bans %}
+		<hr>
+		<form action="{{ self() }}?task=liftban" method="post">
+			<table class="modlist">
+				<thead>
+					<tr>
+						<th class="minimal"></th>
+						<th class="minimal">IP address</th>
+						<th class="minimal">Expires</th>
+						<th>Reason</th>
+						<th class="minimal" colspan="2">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for ban in bans %}
+						<tr>
+							<th class="minimal"><input type="checkbox" name="ban[]" id="ban{{ ban.id }}" value="{{ ban.id }}"></th>
+							<td class="minimal"><label for="ban{{ ban.id }}">{{ ban.ip }}</label></td>
+							<td class="minimal">{{ ban.expire }}</td>
+							<td>{{ ban.reason }}</td>
+							<td class="minimal">[<a href="{{ self() }}?task=liftban&amp;ban={{ ban.id }}">Lift</a>]</td>
+							<td class="minimal">[<a href="{{ self() }}?task=editban&amp;ban={{ ban.id }}">Edit</a>]</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<p><input type="submit" value="Lift"></p>
+		</form>
+	{% endif %}
+	<hr>
+{% endblock %}

@@ -2,4 +2,5 @@ settings.php
 /*.html
 /res/*.html
 *.db
+*.sql
 .project

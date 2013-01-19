@@ -4,35 +4,43 @@
 {% set title = constant("TINYIB_BOARDDESC") %}
 
 {% block content %}
-	{{ m.postform() }}
+	{{ m.postform(_context) }}
 	<hr>
-	<form action="{{ self() }}" method="post" name="delform">
+	<form action="{{ self() }}?task=delete" method="post" name="delform">
 		{% for thread in threads %}
-			{{ m.thread(thread, thread.id) }}
+			{{ m.thread(loop.parent, thread) }}
 			<hr>
 		{% endfor %}
-		{{ m.delfile() }}
+		{{ m.delfile(_context) }}
 	</form>
 	<div class="pages">
 		<div class="previous">
-			{% if not page %}
+			{% if not pagenum %}
 				Previous
 			{% else %}
-				<form action="{{ path("TODO") }}">
+				{% if admin %}
+					<form action="{{ pagenum - 1 }}">
+				{% else %}
+					<form action="{{ path(pagenum - 1 ? (pagenum - 1)~".html" : "index.html") }}">
+				{% endif %}
 					<input type="submit" value="Previous">
 				</form>
 			{% endif %}
 		</div>
 		<div class="pagenums">
-			{% for page in pages %}
-				[<a href="{{ path(page ? page~".html" : "index.html") }}">{{ page }}</a>]
+			{% for i in range(0, pagecount) %}
+				{% if i == pagenum %}
+					[<strong>{{ i }}</strong>]
+				{% else %}
+					[<a href="{{ path(i ? i~".html" : "index.html") }}">{{ i }}</a>]
+				{% endif %}
 			{% endfor %}
 		</div>
 		<div class="next">
-			{% if page %}
+			{% if pagenum == pagecount %}
 				Next
 			{% else %}
-				<form action="{{ path("TODO") }}">
+				<form action="{{ path((pagenum + 1)~".html") }}">
 					<input type="submit" value="Next">
 				</form>
 			{% endif %}

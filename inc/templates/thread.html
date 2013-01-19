@@ -6,12 +6,12 @@
 {% block content %}
 	{{ m.returnlink() }}
 	<div class="theader">Posting mode: Reply</div>
-	{{ m.postform(thread) }}
+	{{ m.postform(_context) }}
 	<hr>
-	<form action="{{ self() }}" method="post" name="delform">
-		{{ m.thread(posts, thread) }}
+	<form action="{{ self() }}?task=delete" method="post" name="delform">
+		{{ m.thread(_context, posts) }}
 		<hr>
 		{{ m.returnlink() }}
-		{{ m.delfile() }}
+		{{ m.delfile(_context) }}
 	</form>
 {% endblock %}

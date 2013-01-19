@@ -1,8 +1,156 @@
 <?php
 defined('TINYIB_BOARD') or exit;
 
-function cleanString($string) {
-	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+//
+// Script utilities
+//
+
+function load_page($tasks) {
+	if (isset($_GET['task']))
+		$task = &$_GET['task'];
+	elseif (isset($_POST['task']))
+		$task = &$_POST['task'];
+
+	if (isset($task) && in_array($task, $tasks, true)) {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			do_task_function($task, 'post');
+		} else {
+			do_task_function($task, 'get');
+		}
+	} elseif (!isset($task)) {
+		redirect(expand_path('index.html'));
+	} else {
+		header('Status: 404 Not Found', true);
+		make_error('Invalid task.');
+	}
+}
+
+function do_task_function($page, $method) {
+	// Load the file
+	$filename = 'inc/task.'.$page.'.php';
+
+	if (!file_exists($filename))
+		make_error("Couldn't load page '$page'.", true, true);
+
+	require $filename;
+
+	$funcname = sprintf('%s_%s', $page, $method);
+	if (function_exists($funcname)) {
+		call_user_func($funcname);
+	} else {
+		header('Status: 405 Method Not Allowed', true);
+		make_error('Method not allowed.');
+	}
+}
+
+function make_error($message, $no_template = false, $trace = false) {
+	// Create a stack trace on request
+	if ($trace === true)
+		$trace = debug_backtrace();
+
+	// Error messages using Twig
+	if (!$no_template) {
+		$referrer = @$_SERVER['HTTP_REFERER'];
+		if ($trace)
+			$trace = var_export($trace, true);
+
+		echo render('error.html', array(
+			'message' => $message,
+			'stack_trace' => $trace,
+			'referrer' => $referrer,
+		));
+
+		exit;
+	}
+
+	echo '<h1>Error</h1><pre>';
+	echo nl2br(htmlspecialchars($message));
+	echo '</pre>';
+
+	// Print stack trace
+	if ($trace !== false) {
+		echo '<textarea cols="80" rows="25" readonly>';
+		echo htmlspecialchars(var_export($trace, true));
+		echo '</textarea>';
+	}
+
+	// Return link
+	echo '<p>[<a href="'.get_script_name().'">Return</a>]</p>';
+
+	exit;
+}
+
+
+
+//
+// Rebuild stuff
+//
+
+function rebuildIndexes() {
+	$threads = get_index_threads();
+	$pagecount = floor(count($threads) / 10);
+
+	$num = 0;
+
+	$page = array_splice($threads, 0, 10);
+	do {
+		$file = !$num ? 'index.html' : $num.'.html';
+		$html = render('page.html', array(
+			'threads' => $page,
+			'pagenum' => $num,
+			'pagecount' => $pagecount,
+		));
+
+		writePage($file, $html);
+		$num++;
+	} while ($page = array_splice($threads, 0, 10));
+}
+
+function rebuildThread($id) {
+	$posts = postsInThreadByID($id);
+	$html = render('thread.html', array(
+		'posts' => $posts,
+		'thread' => $id,
+	));
+
+	writePage(sprintf('res/%d.html', $id), $html);
+}
+
+// Threads/indexes/stuff
+function get_index_threads() {
+	$all_threads = allThreads(); 
+	$threads = array();
+
+	foreach ($all_threads as $thread) {
+		$thread = array($thread);
+		$replies = latestRepliesInThreadByID($thread[0]['id']);
+
+		foreach ($replies as $reply)
+			$thread[] = $reply;
+
+		$thread[0]['omitted'] = (count($replies) == 3)
+			? (count(postsInThreadByID($thread[0]['id'])) - 4)
+			: 0;
+
+		$threads[] = $thread;
+	}
+
+	return $threads;
+}
+
+
+
+
+
+
+
+
+//
+// Unsorted
+//
+
+function cleanString($str) {
+	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
 function plural($singular, $count, $plural = 's') {
@@ -50,7 +198,11 @@ function render($template, $args = array()) {
 		$twig->addFunction('path', new Twig_Function_Function('expand_path'));
 	}
 
-	return $twig->render($template, $args);
+	try {
+		return $twig->render($template, $args);
+	} catch (Twig_Error $e) {
+		make_error($e->getRawMessage(), true, $e->getTrace());
+	}
 }
 
 function threadUpdated($id) {
@@ -92,7 +244,7 @@ function convertBytes($number) {
 		return sprintf("%0.2fMB", $number/1024/1024);
 	}
 
-	return sprintf("%0.2fGB", $number/1024/1024/1024);						
+	return sprintf("%0.2fGB", $number/1024/1024/1024);
 }
 
 function make_name_tripcode($input, $tripkey = '!') {
@@ -147,7 +299,7 @@ function writePage($filename, $contents) {
 		copy($tempfile, $filename);
 		unlink($tempfile);
 	}
-	
+
 	chmod($filename, 0664); /* it was created 0600 */
 }
 
@@ -212,7 +364,7 @@ function manageCheckLogIn() {
 			$_SESSION['tinyib'] = TINYIB_MODPASS;
 		}
 	}
-	
+
 	if (isset($_SESSION['tinyib'])) {
 		if ($_SESSION['tinyib'] == TINYIB_ADMINPASS) {
 			$loggedin = true;
@@ -221,7 +373,7 @@ function manageCheckLogIn() {
 			$loggedin = true;
 		}
 	}
-	
+
 	return array($loggedin, $isadmin);
 }
 
@@ -231,11 +383,11 @@ function setParent() {
 			if (!threadExistsByID($_POST['parent'])) {
 				make_error("Invalid parent thread ID supplied, unable to create post.");
 			}
-			
+
 			return $_POST["parent"];
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -246,7 +398,7 @@ function isRawPost() {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -298,7 +450,7 @@ function createThumbnail($name, $filename, $new_w, $new_h) {
 	} else {
 		return false;
 	}
-	
+
 	if (!$src_img) {
 		make_error("Unable to read uploaded file during thumbnailing. A common cause for this is an incorrect extension when the file is actually of a different type.");
 	}
@@ -307,10 +459,10 @@ function createThumbnail($name, $filename, $new_w, $new_h) {
 	$percent = ($old_x > $old_y) ? ($new_w / $old_x) : ($new_h / $old_y);
 	$thumb_w = round($old_x * $percent);
 	$thumb_h = round($old_y * $percent);
-	
+
 	$dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
 	fastImageCopyResampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
-	
+
 	if (preg_match("/png/", $system[0])) {
 		if (!imagepng($dst_img, $filename)) {
 			return false;
@@ -324,10 +476,10 @@ function createThumbnail($name, $filename, $new_w, $new_h) {
 			return false;
 		}
 	}
-	
+
 	imagedestroy($dst_img); 
 	imagedestroy($src_img); 
-	
+
 	return true;
 }
 
@@ -337,7 +489,7 @@ function fastImageCopyResampled(&$dst_image, &$src_image, $dst_x, $dst_y, $src_x
 
 	if ($quality <= 1) {
 		$temp = imagecreatetruecolor ($dst_w + 1, $dst_h + 1);
-		
+
 		imagecopyresized ($temp, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w + 1, $dst_h + 1, $src_w, $src_h);
 		imagecopyresized ($dst_image, $temp, 0, 0, 0, 0, $dst_w, $dst_h, $dst_w, $dst_h);
 		imagedestroy ($temp);
@@ -345,14 +497,14 @@ function fastImageCopyResampled(&$dst_image, &$src_image, $dst_x, $dst_y, $src_x
 		$tmp_w = $dst_w * $quality;
 		$tmp_h = $dst_h * $quality;
 		$temp = imagecreatetruecolor ($tmp_w + 1, $tmp_h + 1);
-		
+
 		imagecopyresized ($temp, $src_image, $dst_x * $quality, $dst_y * $quality, $src_x, $src_y, $tmp_w + 1, $tmp_h + 1, $src_w, $src_h);
 		imagecopyresampled ($dst_image, $temp, 0, 0, 0, 0, $dst_w, $dst_h, $tmp_w, $tmp_h);
 		imagedestroy ($temp);
 	} else {
 		imagecopyresampled ($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
 	}
-	
+
 	return true;
 }
 

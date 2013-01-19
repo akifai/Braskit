@@ -176,6 +176,9 @@ function allThreads() {
 }
 
 function postsInThreadByID($id) {
+	if (!$id)
+		return false;
+
 	global $dbh;
 
 	$sth = $dbh->prepare('SELECT * FROM `'.TINYIB_DBPOSTS.'` WHERE id = :id OR parent = :id ORDER BY id ASC');
