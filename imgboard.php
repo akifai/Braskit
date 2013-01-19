@@ -6,6 +6,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+$start_time = microtime(true);
+
 ini_set('display_errors', true);
 error_reporting(E_ALL);
 session_start();
@@ -32,6 +34,12 @@ if (get_magic_quotes_gpc()) {
 	unset($process);
 }
 
+// force utf-8
+header('Content-Type: text/html; charset=UTF-8', true);
+
+// start buffering
+ob_start('ob_callback');
+
 if (!file_exists('settings.php'))
 	make_error('Please rename the file settings.default.php to settings.php');
 
@@ -56,3 +64,6 @@ $tasks = array(
 );
 
 load_page($tasks);
+
+// print buffer
+ob_end_flush();

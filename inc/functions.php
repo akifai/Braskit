@@ -80,6 +80,35 @@ function make_error($message, $no_template = false, $trace = false) {
 	exit;
 }
 
+function ob_callback($buffer) {
+	global $start_time;
+
+	// We don't want to modify non-html responses
+	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
+		return $buffer;
+
+	// the part of the buffer before the footer closes
+	$ins = strrpos($buffer, "</p>\n</body>");
+	if ($ins === false)
+		return $buffer;
+
+	// first part of the new buffer
+	$newbuf = substr($buffer, 0, $ins); 
+
+	$total_time = microtime(true) - $start_time;
+	$query_time = round(100 / $total_time * TinyIB_DB::$time);
+
+	// Append debug text
+	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
+	' of which %d%% was spent running %d database queries.',
+		$total_time, $query_time, TinyIB_DB::$queries);
+
+	// the rest of the buffer
+	$newbuf .= substr($buffer, $ins);
+
+	return $newbuf;
+}
+
 
 
 //
