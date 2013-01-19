@@ -3,7 +3,7 @@ defined('TINYIB_BOARD') or exit;
 require 'inc/class.IP.php';
 
 function addban_post() {
-	list($loggedin) = manageCheckLogIn();
+	$loggedin = check_login();
 
 	if (!$loggedin) {
 		redirect(get_script_name().'?task=login&nexttask=bans');

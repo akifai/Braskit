@@ -4,7 +4,7 @@ defined('TINYIB_BOARD') or exit;
 // FIXME TODO XXX THIS IS ALL SHIT AND HAS TO BE REWRITTEN
 
 function post_post() {
-	list($loggedin, $isadmin) = manageCheckLogIn();
+	$loggedin = check_login();
 	$rawpost = isRawPost();
 	if (!$loggedin) {
 		checkBanned();

@@ -2,7 +2,7 @@
 defined('TINYIB_BOARD') or exit;
 
 function bans_get() {
-	list($loggedin, $isadmin) = manageCheckLogIn();
+	$loggedin = check_login();
 
 	if (!$loggedin) {
 		redirect(get_script_name().'?task=login&nexttask=bans');

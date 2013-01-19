@@ -2,7 +2,7 @@
 defined('TINYIB_BOARD') or exit;
 
 function login_get() {
-	list($loggedin) = manageCheckLogIn();
+	$loggedin = check_login();
 
 	// we're logged in already
 	if ($loggedin) {
@@ -26,7 +26,7 @@ function login_get() {
 }
 
 function login_post() {
-	list($loggedin) = manageCheckLogIn();
+	$loggedin = check_login();
 
 	if ($loggedin) {
 		if (isset($_GET['nexttask']))

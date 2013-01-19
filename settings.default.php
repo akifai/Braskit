@@ -8,10 +8,8 @@ define('TINYIB_MAXKBDESC', "2 MB"); // Human-readable representation of the maxi
 define('TINYIB_MAXW', 200); // Maximum image width
 define('TINYIB_MAXH', 200); // Maximum image height - Images exceeding these sizes will be thumbnailed
 define('TINYIB_DELAY', 30); // Delay between posts to help control flooding  [0 to disable]
-define('TINYIB_LOGO', ""); // Logo HTML
 define('TINYIB_TRIPSEED', ""); // Enter some random text - Used when generating secure tripcodes - Must not change once set
 define('TINYIB_ADMINPASS', ""); // Text entered at the manage prompt to gain administrator access
-define('TINYIB_MODPASS', ""); // Moderators only have access to delete posts  ["" to disable]
 define('TINYIB_DBMODE', "mysql"); // Choose: mysql / sqlite
 define('TINYIB_DEBUG', true);
 

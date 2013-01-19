@@ -355,26 +355,18 @@ function checkMessageSize() {
 	}
 }
 
-function manageCheckLogIn() {
-	$loggedin = false; $isadmin = false;
-	if (isset($_POST['password'])) {
-		if ($_POST['password'] == TINYIB_ADMINPASS) {
-			$_SESSION['tinyib'] = TINYIB_ADMINPASS;
-		} elseif (TINYIB_MODPASS != '' && $_POST['password'] == TINYIB_MODPASS) {
-			$_SESSION['tinyib'] = TINYIB_MODPASS;
-		}
+function check_login() {
+	// Check session
+	if (isset($_SESSION['tinyib']) && $_SESSION['tinyib'])
+		return true;
+
+	// We're logging in
+	if (isset($_POST['password']) && $_POST['password'] === TINYIB_ADMINPASS) {
+		$_SESSION['tinyib'] = true;
+		return true;
 	}
 
-	if (isset($_SESSION['tinyib'])) {
-		if ($_SESSION['tinyib'] == TINYIB_ADMINPASS) {
-			$loggedin = true;
-			$isadmin = true;
-		} elseif (TINYIB_MODPASS != '' && $_SESSION['tinyib'] == TINYIB_MODPASS) {
-			$loggedin = true;
-		}
-	}
-
-	return array($loggedin, $isadmin);
+	return false;
 }
 
 function setParent() {

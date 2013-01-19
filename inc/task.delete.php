@@ -2,7 +2,7 @@
 defined('TINYIB_BOARD') or exit;
 
 function delete_get() {
-	list($loggedin, $isadmin) = manageCheckLogIn();
+	$loggedin = check_login();
 
 	$posts = isset($_GET['delete']) ? $_GET['delete'] : $_POST['delete'];
 
