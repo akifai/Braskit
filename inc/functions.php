@@ -384,12 +384,8 @@ function setParent() {
 }
 
 function isRawPost() {
-	if (isset($_POST['rawpost'])) {
-		list($loggedin, $isadmin) = manageCheckLogIn();
-		if ($loggedin) {
-			return true;
-		}
-	}
+	if (isset($_POST['rawpost']))
+		return check_login();
 
 	return false;
 }
