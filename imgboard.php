@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2013 shanachan.org
+ * Copyright (C) 2013 plainboards.org
  * Based on TinyIB, copyright (C) 2009(?)-2012 Trevor Slocum.
  *
  * See LICENSE for terms and conditions of use.
