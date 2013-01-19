@@ -175,6 +175,16 @@ function allThreads() {
 	return $sth->fetchAll();
 }
 
+function getThreads($offset) {
+	global $dbh;
+
+	$sth = $dbh->prepare('SELECT * FROM `'.TINYIB_DBPOSTS.'` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10');
+	$sth->bindParam(1, $offset, PDO::PARAM_INT);
+	$sth->execute();
+
+	return $sth->fetchAll();
+}
+
 function postsInThreadByID($id) {
 	if (!$id)
 		return false;

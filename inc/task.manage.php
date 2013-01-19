@@ -43,16 +43,14 @@ function manage_get() {
 	$offset = $page * 10;
 
 	// TODO: Fix this so we don't have to get all threads at once
-	$threads = get_index_threads();
-	$pagecount = floor(count($threads) / 10);
+	$threads = get_index_threads($offset);
+	$pagecount = floor(countThreads() / 10);
 
-	if ($page && !isset($threads[$offset])) {
-		// no threads at offset, redirect to page 0
+	if ($page && !count($threads)) {
+		// no threads on this page, redirect to page 0
 		redirect(get_script_name().'?task=manage');
 		return;
 	}
-
-	$threads = array_splice($threads, $offset, 10);
 
 	echo render('page.html', array(
 		'admin' => true,

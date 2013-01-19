@@ -146,8 +146,12 @@ function rebuildThread($id) {
 }
 
 // Threads/indexes/stuff
-function get_index_threads() {
-	$all_threads = allThreads(); 
+function get_index_threads($offset = false) {
+	if ($offset !== false)
+		$all_threads = getThreads($offset);
+	else
+		$all_threads = allThreads(); 
+
 	$threads = array();
 
 	foreach ($all_threads as $thread) {
