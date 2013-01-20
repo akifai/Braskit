@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 
 // FIXME TODO XXX THIS IS ALL SHIT AND HAS TO BE REWRITTEN
 

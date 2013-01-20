@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 require 'inc/class.IP.php';
 
 function addban_post() {

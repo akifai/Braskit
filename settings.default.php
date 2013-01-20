@@ -1,4 +1,6 @@
 ﻿<?php
+defined('TINYIB') or exit;
+
 define('TINYIB_BOARD', "b"); // Unique identifier for this board using only letters and numbers
 define('TINYIB_BOARDDESC', "TinyIB"); // Displayed at the top of every page
 define('TINYIB_MAXTHREADS', 100); // Oldest threads are discarded over this limit  [0 to disable]
@@ -20,3 +22,6 @@ define('TINYIB_DBPASSWORD', "");
 define('TINYIB_DBNAME', "");
 define('TINYIB_DBPOSTS', TINYIB_BOARD . "_posts");
 define('TINYIB_DBBANS', "bans");
+
+// Remove this line after editing your config
+make_error("Please edit 'settings.php'.");

@@ -12,9 +12,17 @@ ini_set('display_errors', true);
 error_reporting(E_ALL);
 session_start();
 
+define('TINYIB', true);
+
+// Must be loaded prior to anything else
+require 'inc/functions.php';
+
+// Copy default settings file if needed
+if (!file_exists('settings.php'))
+	copy('settings.default.php', 'settings.php');
+
 require 'settings.php';
 require 'inc/database.php';
-require 'inc/functions.php';
 
 // Unescape magic quotes
 if (get_magic_quotes_gpc()) {
@@ -39,9 +47,6 @@ header('Content-Type: text/html; charset=UTF-8', true);
 
 // start buffering
 ob_start('ob_callback');
-
-if (!file_exists('settings.php'))
-	make_error('Please rename the file settings.default.php to settings.php');
 
 if (!TINYIB_TRIPSEED || !TINYIB_ADMINPASS)
 	make_error('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');

@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 
 class TinyIB_DB extends PDO {
 	public static $time = 0;

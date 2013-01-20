@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 
 //
 // Script utilities

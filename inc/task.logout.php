@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 
 function logout_get() {
 	session_destroy();

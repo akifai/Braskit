@@ -1,5 +1,5 @@
 <?php
-defined('TINYIB_BOARD') or exit;
+defined('TINYIB') or exit;
 require 'class.db.php';
 
 $dbh = new TinyIB_DB();
