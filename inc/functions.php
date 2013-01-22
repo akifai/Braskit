@@ -112,6 +112,100 @@ function ob_callback($buffer) {
 
 
 //
+// Caching
+//
+
+function get_cache($key) {
+	// debug mode - don't get cache
+	if (TINYIB_DEBUG)
+		return false;
+
+	// APC
+	if (TINYIB_CACHE === 'apc')
+		return apc_fetch($key);
+
+	// Plain PHP cache
+	if (TINYIB_CACHE === 'php') {
+		$filename = sprintf('cache/cache-%s.php', $key);
+		include $filename;
+
+		// we couldn't load the cache
+		if (!isset($cache))
+			return false;
+
+		// the cache expired, remove it
+		if ($expired) {
+			unlink($filename);
+			return false;
+		}
+
+		return $cache;
+	}
+
+	// unknown cache type
+	return false;
+}
+
+function set_cache($key, $data, $ttl = 0) {
+	// debug mode - don't save cache
+	if (TINYIB_DEBUG)
+		return false;
+
+	// APC
+	if (TINYIB_CACHE === 'apc')
+		return apc_add($key, $data, $ttl);
+
+	// Plain PHP cache
+	if (TINYIB_CACHE === 'php') {
+		@mkdir('cache'); // FIXME
+
+		// Content of the cache file
+		$content = '<?php ';
+
+		if ($ttl) {
+			$eol = time() + $ttl; // end of life for cache
+			$content .= sprintf('$expired = time() > %d;', $eol);
+		} else {
+			// the cache never expires
+			$content .= '$expired = false;';
+		}
+
+		$dumped_data = var_export($data, true);
+		$content .= sprintf('$cache = %s;', $dumped_data);
+
+		writePage(sprintf('cache/cache-%s.php', $key), $content);
+		return true;
+	}
+
+	// unknown cache type
+	return false;
+}
+
+function empty_cache() {
+	// APC
+	if (TINYIB_CACHE === 'apc')
+		return apc_clear_cache('user');
+
+	// Plain PHP cache
+	if (TINYIB_CACHE === 'php') {
+		// get list of cache files
+		$files = glob('cache/cache-*.php');
+
+		// that didn't work for some reason
+		if (!is_array($files))
+			return false;
+
+		foreach ($files as $file)
+			unlink($file);
+	}
+
+	// unknown cache type
+	return false;
+}
+
+
+
+//
 // Rebuild stuff
 //
 
