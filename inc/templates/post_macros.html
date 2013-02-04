@@ -59,7 +59,12 @@
 {% macro fileinfo(context, p) %}
 	<div class="imginfo">
 		File: <a href="{{ path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
-		<em>({{ p.file_size }}, {{ p.image_width }}x{{ p.image_height }}{% if context.thread and p.file_original %}, {{ p.file_original }}{% endif %})</em>
+		<em>(
+			{{- p.file_size_formatted }}, {{ p.image_width }}x{{ p.image_height -}}
+			{%- if context.thread and p.file_original %},
+				<span title="{{ p.file_original }}">{{- filename(p.file_original) -}}</span>
+			{%- endif -%}
+		)</em>
 		{% if context.admin %}
 			[<a href="{{ self() }}?task=delete&amp;delete={{ p.id }}&amp;fileonly=on" class="imgdellink" title="Delete Image">Del</a>]
 		{% endif %}

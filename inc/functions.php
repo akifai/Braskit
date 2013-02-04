@@ -325,6 +325,7 @@ function render($template, $args = array()) {
 		// Globals
 		$twig->addFunction('self', new Twig_Function_Function('get_script_name'));
 		$twig->addFunction('path', new Twig_Function_Function('expand_path'));
+		$twig->addFunction('filename', new Twig_Function_Function('shorten_filename'));
 	}
 
 	try {
@@ -416,6 +417,46 @@ function length($str) {
 		return mb_strlen($str, 'UTF-8');
 
 	return strlen($str);
+}
+
+function make_size($size, $base2 = false) {
+	if (!$size)
+		return '0 B';
+
+	if ($base2) {
+		$n = 1024;
+		$s = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+	} else {
+		$n = 1000;
+		$s = array('B', 'kB', 'MB', 'GB', 'TB');
+	}
+
+	for ($i = 0; $i <= 3; $i++) {
+		if ($size >= pow($n, $i) && $size < pow($n, $i + 1)) {
+			$unit = $s[$i];
+			$number = round($size / pow($n, $i), 2);
+			return sprintf('%s %s', $number, $unit);
+		}
+	}
+
+	$unit = $s[4];
+	$number = round($size / pow($n, 4), 2);
+	return sprintf('%s %s', $number, $unit);
+}
+
+function shorten_filename($filename) {
+	$info = pathinfo($filename);
+
+	// short enough
+	if (length($info['basename']) <= 25)
+		return $filename;
+
+	// cut basename while preserving UTF-8 if possible
+	$short = !ctype_digit($info['basename']) && extension_loaded('mbstring')
+		? mb_substr($info['basename'], 0, 25, 'UTF-8')
+		: substr($info['basename'], 0, 25);
+
+	return sprintf('%s(...).%s', $short, $info['extension']);
 }
 
 function handle_upload($name) {
@@ -529,6 +570,7 @@ function newPost($parent = 0) {
 		'md5' => '',
 		'origname' => '',
 		'size' => 0,
+		'prettysize' => '',
 		'width' => 0,
 		'height' => 0,
 		'thumb' => '',

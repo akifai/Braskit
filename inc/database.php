@@ -143,7 +143,7 @@ function insertPost($post) {
 		$post['md5'],
 		$post['origname'],
 		$post['size'],
-		'', // file_size_formatted - obsolete, FIXME
+		$post['prettysize'],
 		$post['width'],
 		$post['height'],
 		$post['thumb'],

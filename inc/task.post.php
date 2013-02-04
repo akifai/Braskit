@@ -48,7 +48,7 @@ function post_post() {
 
 	if (!$loggedin) {
 		checkBanned();
-		checkMessageSize();
+		checkMessageSize($comment);
 		checkFlood();
 	}
 
@@ -86,6 +86,7 @@ function post_post() {
 	if ($file) {
 		$post['file'] = $file['file'];
 		$post['size'] = $file['size'];
+		$post['prettysize'] = make_size($file['size']);
 		$post['md5'] = $file['md5'];
 		$post['origname'] = $file['origname'];
 		$post['width'] = $file['width'];
