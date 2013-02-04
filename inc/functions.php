@@ -272,10 +272,6 @@ function get_index_threads($offset = false) {
 
 
 
-//
-// Unsorted
-//
-
 function cleanString($str) {
 	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
@@ -288,7 +284,13 @@ function plural($singular, $count, $plural = 's') {
 }
 
 function expand_path($filename) {
-	return dirname(get_script_name()).'/'.$filename;
+	$dirname = dirname(get_script_name());
+
+	// avoid double slashes
+	if ($dirname === '/')
+		return "/$filename";
+
+	return "$dirname/$filename";
 }
 
 function get_script_name() {
@@ -332,46 +334,207 @@ function render($template, $args = array()) {
 	}
 }
 
-function threadUpdated($id) {
-	rebuildThread($id);
-	rebuildIndexes();
+
+
+
+//
+// Parameter fetching
+//
+
+define('PARAM_STRING', 1); // can be string
+define('PARAM_ARRAY', 2); // can be array
+define('PARAM_GET', 4); // can be GET value
+define('PARAM_POST', 8); // can be POST value
+define('PARAM_COOKIE', 16); // can be cookie value
+define('PARAM_STRICT', 32); // must be defined
+define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
+
+function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
+	// no flags - nothing to do
+	if (!$flags)
+		return false;
+
+	$value = false;
+
+	if (($flags & PARAM_POST) && isset($_POST[$name])) {
+		// POST values
+		$value = $_POST[$name];
+	} elseif (($flags & PARAM_GET) && isset($_GET[$name])) {
+		// GET values
+		$value = $_GET[$name];
+	} elseif (($flags & PARAM_COOKIE) && isset($_COOKIE[$name])) {
+		// COOKIE values
+		$value = $_COOKIE[$name];
+	}
+
+	// return empty value in non-strict mode
+	if (!($flags & PARAM_STRICT) && $value === false) {
+		// Empty string
+		if ($flags & PARAM_STRING)
+			return '';
+
+		// Empty array
+		if ($flags & PARAM_ARRAY)
+			return array();
+	}
+
+	// return defined string
+	if (($flags & PARAM_STRING) && is_string($value))
+		return $value;
+
+	// return defined array
+	if (($flags & PARAM_ARRAY) && is_array($value))
+		return $value;
+
+	return false;
+}
+
+
+//
+// Unsorted
+//
+
+function random_string($length = 8,
+$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+    // Number of possible outcomes
+    $outcomes = is_array($pool) ? count($pool) : strlen($pool);
+	$outcomes--;
+
+	$str = '';
+	while ($length--)
+		$str .= $pool[mt_rand(0, $outcomes)];
+
+	return $str;
+}
+
+function length($str) {
+	// Don't remove trailing spaces - wakabamark/markdown uses them for
+	// block code formatting
+	$str = rtrim($str);
+
+	if (extension_loaded('mbstring'))
+		return mb_strlen($str, 'UTF-8');
+
+	return strlen($str);
+}
+
+function handle_upload($name) {
+	if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
+		return false; // no file uploaded - nothing to do
+
+	// Check for file[] or variable tampering through register_globals
+	if (is_array($_FILES[$name]['name']))
+		make_error('Abnormal post.');
+
+	// Check for uploading errors
+	validateFileUpload($_FILES[$name]);
+
+	extract($_FILES[$name], EXTR_REFS);
+
+	// load image functions
+	require 'inc/image.php';
+
+	// Check file size
+	if ((TINYIB_MAXKB > 0) && ($size > (TINYIB_MAXKB * 1024)))
+		make_error(sprintf('That file is larger than %s.', TINYIB_MAXKBDESC));
+
+	// set some values
+	$file['tmp'] = $tmp_name;
+	$file['md5'] = md5_file($tmp_name);
+	$file['size'] = $size;
+	$file['origname'] = $name;
+
+	// check for duplicate upload
+	checkDuplicateImage($file['md5']);
+
+	// generate a number to use as our filename
+	$basename = time().substr(microtime(), 2, 3);
+
+	$info = analyse_image($tmp_name);
+
+	if ($info === false)
+		make_error('Only GIF, JPG, and PNG files are allowed.'); 
+
+	$file['width'] = $info['width'];
+	$file['height'] = $info['height'];
+
+	// filename for main file
+	$file['file'] = sprintf('%s.%s', $basename, $info['ext']);
+
+	// filename for thumbnail
+	$file['thumb'] = sprintf('%ss.%s', $basename, $info['ext']);
+
+	// paths
+	$file['location'] = 'src/'.$file['file'];
+	$file['t_location'] = 'thumb/'.$file['thumb'];
+
+	// make thumbnail sizes
+	$t_size = make_thumb_size(
+		$info['width'],
+		$info['height'],
+		TINYIB_MAXW,
+		TINYIB_MAXH
+	);
+
+	if ($t_size === false) {
+		// TODO: It may be desirable to thumbnail the image even if it's
+		// small enough already.
+		$file['t_tmp'] = true;
+
+		$file['t_width'] = $info['width'];
+		$file['t_height'] = $info['height'];
+	} else {
+		list($t_width, $t_height) = $t_size;
+
+		// create a temporary name for thumbnail
+		$file['t_tmp'] = tempnam(sys_get_temp_dir(), 'tinyib');
+
+		// create thumbnail
+		$created = createThumbnail($tmp_name, $file['t_tmp'],
+			$info['ext'], $info['width'], $info['height'],
+			$t_width, $t_height);
+
+		if ($created) {
+			// success
+			$file['t_width'] = $t_width;
+			$file['t_height'] = $t_height;
+		} else {
+			// we couldn't create the thumbnail for whatever reason
+			// 0x0 indicates failure
+			$file['t_width'] = 0;
+			$file['t_height'] = 0;
+
+			// indicate that we shouldn't bother with this further
+			$file['t_tmp'] = false;
+		}
+	}
+
+	return $file;
 }
 
 function newPost($parent = 0) {
-	return array('parent' => $parent,
-				'timestamp' => '0',
-				'bumped' => '0',
-				'ip' => '',
-				'name' => '',
-				'tripcode' => '',
-				'email' => '',
-				'date' => '',
-				'subject' => '',
-				'message' => '',
-				'password' => '',
-				'file' => '',
-				'file_hex' => '',
-				'file_original' => '',
-				'file_size' => '0',
-				'file_size_formatted' => '',
-				'image_width' => '0',
-				'image_height' => '0',
-				'thumb' => '',
-				'thumb_width' => '0',
-				'thumb_height' => '0');
-}
-
-function convertBytes($number) {
-	$len = strlen($number);
-	if ($len < 4) {
-		return sprintf("%dB", $number);
-	} elseif ($len <= 6) {
-		return sprintf("%0.2fKB", $number/1024);
-	} elseif ($len <= 9) {
-		return sprintf("%0.2fMB", $number/1024/1024);
-	}
-
-	return sprintf("%0.2fGB", $number/1024/1024/1024);
+	return array(
+		'parent' => $parent,
+		'timestamp' => 0,
+		'bumped' => 0,
+		'ip' => '',
+		'name' => '',
+		'tripcode' => '',
+		'email' => '',
+		'date' => '',
+		'subject' => '',
+		'comment' => '',
+		'password' => '',
+		'file' => '',
+		'md5' => '',
+		'origname' => '',
+		'size' => 0,
+		'width' => 0,
+		'height' => 0,
+		'thumb' => '',
+		't_width' => 0,
+		't_height' => 0,
+	);
 }
 
 function make_name_tripcode($input, $tripkey = '!') {
@@ -430,23 +593,6 @@ function writePage($filename, $contents) {
 	chmod($filename, 0664); /* it was created 0600 */
 }
 
-function _postLink($matches) {
-	$post = postByID($matches[1]);
-	if ($post) {
-		return '<a href="res/' . (!$post['parent'] ? $post['id'] : $post['parent']) . '.html#' . $matches[1] . '">' . $matches[0] . '</a>';
-	}
-	return $matches[0];
-}
-
-function postLink($message) {
-	return preg_replace_callback('/&gt;&gt;([0-9]+)/', '_postLink', $message);
-}
-
-function colorQuote($message) {
-	if (substr($message, -1, 1) != "\n") { $message .= "\n"; }
-	return preg_replace('/^(&gt;[^\>](.*))\n/m', '<span class="unkfunc">\\1</span>' . "\n", $message);
-}
-
 function deletePostImages($post) {
 	if ($post['file'] != '') { @unlink('src/' . $post['file']); }
 	if ($post['thumb'] != '') { @unlink('thumb/' . $post['thumb']); }
@@ -496,106 +642,84 @@ function check_login() {
 	return false;
 }
 
-function setParent() {
-	if (isset($_POST["parent"])) {
-		if ($_POST["parent"]) {
-			if (!threadExistsByID($_POST['parent'])) {
-				make_error("Invalid parent thread ID supplied, unable to create post.");
-			}
+function validateFileUpload($file) {
+	$msg = false;
 
-			return $_POST["parent"];
-		}
+	// Detect tampering through register_globals
+	if (!isset($file['error']) || !isset($file['tmp_name']))
+		make_error('Abnormal post.');
+
+	switch ($file['error']) {
+	case UPLOAD_ERR_OK:
+		// The upload is seemingly okay - now let's be sure the file
+		// actually did originate from an upload and not through
+		// tampering with register_globals
+		if (!is_uploaded_file($file['tmp_name']))
+			make_error('Abnormal post.');
+
+		// We're done.
+		return;
+	case UPLOAD_ERR_FORM_SIZE:
+		$msg = sprintf('That file is larger than %s.', TINYIB_MAXKBDESC);
+		break;
+	case UPLOAD_ERR_INI_SIZE:
+		$msg = 'The file is too large.';
+		break;
+	case UPLOAD_ERR_PARTIAL:
+		$msg = 'The file was only partially uploaded.';
+		break;
+	case UPLOAD_ERR_NO_FILE:
+		$msg = 'No file was uploaded.';
+		break;
+	case UPLOAD_ERR_NO_TMP_DIR:
+		$msg = 'Missing a temporary folder.';
+		break;
+	case UPLOAD_ERR_CANT_WRITE:
+		$msg = 'Failed to write file to disk.';
+		break;
+	default:
+		$msg = 'Unable to save the uploaded file.';
 	}
 
-	return 0;
-}
-
-function isRawPost() {
-	if (isset($_POST['rawpost']))
-		return check_login();
-
-	return false;
-}
-
-function validateFileUpload() {
-	switch ($_FILES['file']['error']) {
-		case UPLOAD_ERR_OK:
-			break;
-		case UPLOAD_ERR_FORM_SIZE:
-			make_error("That file is larger than " . TINYIB_MAXKBDESC . ".");
-			break;
-		case UPLOAD_ERR_INI_SIZE:
-			make_error("The uploaded file exceeds the upload_max_filesize directive (" . ini_get('upload_max_filesize') . ") in php.ini.");
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			make_error("The uploaded file was only partially uploaded.");
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			make_error("No file was uploaded.");
-			break;
-		case UPLOAD_ERR_NO_TMP_DIR:
-			make_error("Missing a temporary folder.");
-			break;
-		case UPLOAD_ERR_CANT_WRITE:
-			make_error("Failed to write file to disk");
-			break;
-		default:
-			make_error("Unable to save the uploaded file.");
-	}
+	make_error('Error: '.$msg);
 }
 
 function checkDuplicateImage($hex) {
-	$hexmatches = postsByHex($hex);
-	if (count($hexmatches) > 0) {
-		foreach ($hexmatches as $hexmatch) {
-			make_error("Duplicate file uploaded. That file has already been posted <a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"]) . ".html#" . $hexmatch["id"] . "\">here</a>.");
-		}
-	}
+	$row = postByHex($hex);
+	if ($row === false)
+		return;
+
+	make_error('Duplicate file uploaded.');
+
+	// TODO: doesn't work because HTML is escaped
+	#make_error("Duplicate file uploaded. That file has already been posted
+	#<a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"])
+	#. ".html#" . $hexmatch["id"] . "\">here</a>.");
 }
 
-function createThumbnail($name, $filename, $new_w, $new_h) {
-	$system = explode(".", $filename);
-	$system = array_reverse($system);
-	if (preg_match("/jpg|jpeg/", $system[0])) {
-		$src_img = imagecreatefromjpeg($name);
-	} else if (preg_match("/png/", $system[0])) {
-		$src_img = imagecreatefrompng($name);
-	} else if (preg_match("/gif/", $system[0])) {
-		$src_img = imagecreatefromgif($name);
-	} else {
-		return false;
-	}
+function createThumbnail($src, $dst, $ext, $width, $height, $t_width, $t_height) {
+	if ($ext === 'jpg')
+		$ext = 'jpeg';
 
-	if (!$src_img) {
-		make_error("Unable to read uploaded file during thumbnailing. A common cause for this is an incorrect extension when the file is actually of a different type.");
-	}
-	$old_x = imageSX($src_img);
-	$old_y = imageSY($src_img);
-	$percent = ($old_x > $old_y) ? ($new_w / $old_x) : ($new_h / $old_y);
-	$thumb_w = round($old_x * $percent);
-	$thumb_h = round($old_y * $percent);
+	$src_img = call_user_func('imagecreatefrom'.$ext, $src);
+	$dst_img = ImageCreateTrueColor($t_width, $t_height);
 
-	$dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
-	fastImageCopyResampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
+	fastImageCopyResampled($dst_img, $src_img, 0, 0, 0, 0,
+		$t_width, $t_height, $width, $height);
 
-	if (preg_match("/png/", $system[0])) {
-		if (!imagepng($dst_img, $filename)) {
-			return false;
-		}
-	} else if (preg_match("/jpg|jpeg/", $system[0])) {
-		if (!imagejpeg($dst_img, $filename, 70)) {
-			return false;
-		}
-	} else if (preg_match("/gif/", $system[0])) {
-		if (!imagegif($dst_img, $filename)) { 
-			return false;
-		}
-	}
+	$success = false;
 
-	imagedestroy($dst_img); 
-	imagedestroy($src_img); 
+	if ($ext === 'jpeg')
+		$success = imagejpeg($dst_img, $dst, 70);
+	elseif ($ext === 'png')
+		$success = imagepng($dst_img, $dst);
+	elseif ($ext === 'gif')
+		$success = imagegif($dst_img, $dst);
 
-	return true;
+	imagedestroy($dst_img);
+	imagedestroy($src_img);
+
+	return $success;
 }
 
 function fastImageCopyResampled(&$dst_image, &$src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h, $quality = 3) {
@@ -621,19 +745,4 @@ function fastImageCopyResampled(&$dst_image, &$src_image, $dst_x, $dst_y, $src_x
 	}
 
 	return true;
-}
-
-function strallpos($haystack, $needle, $offset = 0) {
-	$result = array();
-	for ($i = $offset;$i<strlen($haystack);$i++) {
-		$pos = strpos($haystack, $needle, $i);
-		if ($pos !== False) {
-			$offset = $pos;
-			if ($offset >= $i) {
-				$i = $offset;
-				$result[] = $offset;
-			}
-		}
-	}
-	return $result;
 }

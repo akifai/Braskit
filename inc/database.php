@@ -129,26 +129,26 @@ function insertPost($post) {
 	) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
 	$sth->execute(array(
 		$post['parent'],
-		$_SERVER['REQUEST_TIME'],
-		$_SERVER['REQUEST_TIME'],
+		$post['time'],
+		$post['time'],
 		$post['ip'],
 		$post['name'],
 		$post['tripcode'],
 		$post['email'],
 		$post['date'],
 		$post['subject'],
-		$post['message'],
+		$post['comment'],
 		$post['password'],
 		$post['file'],
-		$post['file_hex'],
-		$post['file_original'],
-		$post['file_size'],
-		$post['file_size_formatted'],
-		$post['image_width'],
-		$post['image_height'],
+		$post['md5'],
+		$post['origname'],
+		$post['size'],
+		'', // file_size_formatted - obsolete, FIXME
+		$post['width'],
+		$post['height'],
 		$post['thumb'],
-		$post['thumb_width'],
-		$post['thumb_height'],
+		$post['t_width'],
+		$post['t_height'],
 	));
 
 	return $dbh->lastInsertID();
@@ -210,13 +210,13 @@ function latestRepliesInThreadByID($id) {
 	return $posts;
 }
 
-function postsByHex($hex) {
+function postByHex($hex) {
 	global $dbh;
 
 	$sth = $dbh->prepare('SELECT id, parent FROM `'.TINYIB_DBPOSTS.'` WHERE file_hex = ? LIMIT 1');
 	$sth->execute(array($hex));
 
-	return $sth->fetchAll();
+	return $sth->fetch();
 }
 
 function latestPosts() {
