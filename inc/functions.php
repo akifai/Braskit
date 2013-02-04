@@ -397,8 +397,8 @@ function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
 
 function random_string($length = 8,
 $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-    // Number of possible outcomes
-    $outcomes = is_array($pool) ? count($pool) : strlen($pool);
+	// Number of possible outcomes
+	$outcomes = is_array($pool) ? count($pool) : strlen($pool);
 	$outcomes--;
 
 	$str = '';
@@ -585,7 +585,7 @@ function make_name_tripcode($input, $tripkey = '!') {
 	// Check if we can reencode strings
 	static $has_encode;
 	if (!isset($has_encode)) 
-		$has_encode = extension_loaded('mb_string');
+		$has_encode = extension_loaded('mbstring');
 
 	// Split name into chunks
 	$bits = explode('#', $input, 3);
