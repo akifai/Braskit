@@ -145,7 +145,7 @@ body {
 }
 .posttext ul li {
 }
-.posttext blockquote {
+.posttext blockquote, .posttext .unkfunc {
 	color: #789922;
 }
 .posttext a.boardlink {
