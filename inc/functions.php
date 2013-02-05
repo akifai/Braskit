@@ -88,7 +88,7 @@ function ob_callback($buffer) {
 		return $buffer;
 
 	// the part of the buffer before the footer closes
-	$ins = strrpos($buffer, "</p>\n</body>");
+	$ins = strrpos($buffer, "</p></body>");
 	if ($ins === false)
 		return $buffer;
 
@@ -311,7 +311,7 @@ function format_post($comment, $raw = false) {
 			$line = '<span class="unkfunc">'.$line.'</span>';
 	}
 
-	$comment = implode("<br>\n", $lines);
+	$comment = implode("<br>", $lines);
 
 	return $comment;
 }
@@ -347,36 +347,47 @@ function redirect($url) {
 	echo '<html><body><a href="'.$url.'">'.$url.'</a></body></html>';
 }
 
+function load_twig() {
+	require_once 'inc/class.template.php';
+
+	$loader = new TinyIB_Twig_Loader('inc/templates/');
+	$twig = new Twig_Environment($loader, array(
+		'cache' => TINYIB_DEBUG ? false : 'cache/',
+		'debug' => TINYIB_DEBUG,
+	));
+
+	// Load debugging stuff
+	if (TINYIB_DEBUG) {
+		$twig->addExtension(new Twig_Extension_Debug());
+	}
+
+	// Globals
+	$functions = array(
+		'self' => 'get_script_name',
+		'path' => 'expand_path',
+		'filename' => 'shorten_filename',
+	);
+
+	foreach ($functions as $name => $value)
+		$twig->addFunction($name, new Twig_Function_Function($value));
+
+	return $twig;
+}
+
 function render($template, $args = array()) {
 	global $twig;
 
 	// Load Twig if necessary
-	if (!isset($twig)) {
-		require_once 'inc/lib/Twig/Autoloader.php';
-		Twig_Autoloader::register();
-
-		$loader = new Twig_Loader_Filesystem('inc/templates/');
-		$twig = new Twig_Environment($loader, array(
-			'cache' => !TINYIB_DEBUG,
-			'debug' => TINYIB_DEBUG,
-		));
-
-		// Load debugging stuff
-		if (TINYIB_DEBUG) {
-			$twig->addExtension(new Twig_Extension_Debug());
-		}
-
-		// Globals
-		$twig->addFunction('self', new Twig_Function_Function('get_script_name'));
-		$twig->addFunction('path', new Twig_Function_Function('expand_path'));
-		$twig->addFunction('filename', new Twig_Function_Function('shorten_filename'));
-	}
+	if (!isset($twig))
+		$twig = load_twig();
 
 	try {
-		return $twig->render($template, $args);
+		$output = $twig->render($template, $args);
 	} catch (Twig_Error $e) {
 		make_error($e->getRawMessage(), true, $e->getTrace());
 	}
+
+	return $output;
 }
 
 
