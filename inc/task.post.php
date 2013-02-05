@@ -29,15 +29,21 @@ function post_post() {
 	// We get the password from cookies
 	$password = param('password', PARAM_COOKIE | PARAM_STRING);
 
+	// Moderator options
+	$raw = param('raw', $flags);
+	$capcode = param('capcode', $flags);
+
 	// Checks
 	if (!ctype_digit($parent)
 	|| length($parent) > 10
-	|| length($name) > 100
-	|| length($email) > 100
-	|| length($subject) > 100
-	|| length($comment) > 10000
 	|| length($password) > 100)
 		make_error('Abnormal post.');
+
+	if (length($name) > 100
+	|| length($email) > 100
+	|| length($subject) > 100
+	|| length($comment) > 10000)
+		make_error('Too many characters in text field.');
 
 	// check if thread exists
 	if ($parent && !threadExistsByID($parent))
@@ -48,16 +54,13 @@ function post_post() {
 
 	if (!$loggedin) {
 		checkBanned();
-		checkMessageSize($comment);
-		checkFlood();
+		$comment = format_post($comment);
+	} else {
+		$comment = format_post($comment, $raw);
 	}
 
 	// make name/tripcode
 	list($name, $tripcode) = make_name_tripcode($name);
-
-	// XXX: do formatting
-	$comment = str_replace("\n", '<br>',
-		htmlspecialchars(trim($comment), ENT_QUOTES, 'UTF-8'));
 
 	// Do file uploads
 	$file = handle_upload('file');

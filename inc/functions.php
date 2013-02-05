@@ -268,9 +268,53 @@ function get_index_threads($offset = false) {
 
 
 
+function do_post_ref($match) {
+	$row = postByID($match[1]);
 
+	if ($row === false)
+		return $match[0]; // post does not exist
 
+	$thread = $row['parent'] ? $row['parent'] : $row['id'];
+	
+	$url = expand_path(sprintf('res/%d.html#%d', $thread, $row['id']));
+	$html = sprintf('<a href="%s" class="postref">&gt;&gt;%s</a>',
+		$url, $row['id']);
 
+	return $html;
+}
+
+function format_post($comment, $raw = false) {
+	// Simple formatting
+
+	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
+	$comment = trim($comment);
+
+	if ($raw)
+		return $comment;
+
+	do {
+		// remove excessive newlines
+		$comment = str_replace("\n\n\n", "\n\n", $comment, $count);
+	} while ($count);
+	
+	$lines = explode("\n", $comment);
+
+	foreach ($lines as &$line) {
+		$line = trim($line);
+		$line = cleanString($line);
+
+		// do >>1 references
+		$line = preg_replace_callback('/&gt;&gt;(\d+)/', 'do_post_ref', $line);
+
+		// "greentexting"
+		if (strpos($line, '&gt;') === 0)
+			$line = '<span class="unkfunc">'.$line.'</span>';
+	}
+
+	$comment = implode("<br>\n", $lines);
+
+	return $comment;
+}
 
 function cleanString($str) {
 	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
@@ -661,12 +705,6 @@ function checkFlood() {
 				make_error("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
 			}
 		}
-	}
-}
-
-function checkMessageSize() {
-	if (strlen($_POST["message"]) > 8000) {
-		make_error("Please shorten your message, or post it in multiple parts. Your message is " . strlen($_POST["message"]) . " characters long, and the maximum allowed is 8000.");
 	}
 }
 
