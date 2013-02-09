@@ -151,7 +151,9 @@
 				</tr>
 				<tr>
 					<th>File</th>
-					<td><input type="file" name="file" size="35"></td>
+					{# We use javascript to change the size. The size attribute isn't
+					 # allowed on file inputs in HTML5 for some strange reason. #}
+					<td><input type="file" name="file" data-size="35"></td>
 				</tr>
 				{% if context.admin %}
 					<tr>
