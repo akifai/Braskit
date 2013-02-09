@@ -9,6 +9,9 @@
 	{{ m.postform(_context) }}
 	<hr>
 	<form action="{{ self() }}?task=delete" method="post" name="delform">
+		{% if admin %}
+			<input type="hidden" name="nexttask" value="manage">
+		{% endif %}
 		{{ m.thread(_context, posts) }}
 		<hr>
 		{{ m.returnlink() }}

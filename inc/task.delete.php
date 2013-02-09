@@ -1,18 +1,23 @@
 <?php
 defined('TINYIB') or exit;
 
-function delete_get() {
+function delete_any() {
 	$loggedin = check_login();
 
-	$posts = isset($_GET['delete']) ? $_GET['delete'] : $_POST['delete'];
+	$password = param('password', PARAM_STRING | PARAM_COOKIE);
+	$posts = param('delete', PARAM_DEFAULT | PARAM_ARRAY);
+
+	// Where to redirect after deleting
+	$nexttask = $loggedin
+		? param('nexttask')
+		: false;
 
 	// Nothing to do
-	if (!isset($posts) || !$posts) {
-		if ($loggedin)
-			redirect(get_script_name().'?task=manage');
-		else
-			redirect(expand_path('index.html'));
-
+	if (!$posts && $nexttask) {
+		redirect(get_script_name().'?task='.$nexttask);
+		return;
+	} elseif (!$posts) {
+		redirect(expand_path('index.html'));
 		return;
 	}
 
@@ -25,13 +30,9 @@ function delete_get() {
 		sort($posts);
 	}
 
-	if (!$loggedin) {
-		if (isset($_POST['password']) && $_POST['password'] !== '')
-			make_error('Incorrect password for deletion.');
-
-		// TODO: This is a stupid algorithm. Replace it.
-		$hash = md5(md5($_POST['password']));
-	}
+	// check for blank password, which is always invalid
+	if (!$loggedin && $password === '')
+		make_error('Incorrect password for deletion.');
 
 	$rebuild_queue = array();
 	$deleted_threads = array();
@@ -46,11 +47,11 @@ function delete_get() {
 			continue;
 
 		// Skip if parent is deleted
-		if (isset($deleted_threads[$post['parent']]))
+		if (array_key_exists($post['parent'], $deleted_threads))
 			continue;
 
 		// Check password
-		if (!$loggedin && $post['password'] !== $hash) {
+		if (!$loggedin && $post['password'] !== $password) {
 			$error = true;
 			continue;
 		}
@@ -59,7 +60,7 @@ function delete_get() {
 
 		// Collect parents so we can rebuild or delete them
 		if ($post['parent'])
-			@$rebuild_queue[$post['parent']] = true;
+			$rebuild_queue[$post['parent']] = true;
 		else
 			$deleted_threads[$id] = true;
 	}
@@ -67,19 +68,19 @@ function delete_get() {
 	// Rebuild threads
 	foreach ($rebuild_queue as $id)
 		rebuildThread($id);
+
+	// Rebuild indexes
 	rebuildIndexes();
 
 	// Show an error if any posts had the incorrect password.
 	if ($error)
 		make_error('Incorrect password for deletion.');
 
-	// TODO: Determine if we were deleting from the admin area or not.
-	if ($loggedin)
-		redirect(get_script_name().'?task=manage');
+	if ($nexttask)
+		redirect(get_script_name().'?task='.$nexttask);
 	else
 		redirect(expand_path('index.html'));
 }
 
-function delete_post() {
-	delete_get();
-}
+function delete_get() { delete_any(); }
+function delete_post() { delete_any(); }
