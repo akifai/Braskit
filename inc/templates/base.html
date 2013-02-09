@@ -2,14 +2,29 @@
 <html>
 <head>
 	<title>{{ title }}</title>
+	
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="{{ path("static/css/futaba.css") }}">
+	<link rel="stylesheet" id="sitestyle" href="{{ path("static/css/futaba.css") }}" title="Futaba">
+
+	<script>
+	{% autoescape "js" %}
+
+		var styles = {
+			"Burichan": "{{ path("static/css/burichan.css" ) }}",
+			"Futaba": "{{ path("static/css/futaba.css") }}"
+		};
+
+	{% endautoescape %}
+	</script>
+
 	<script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
 	<script src="{{ path("static/js/PlainIB.js") }}"></script>
 </head>
 <body>
 	<div id="topmenu" class="boardmenu">
 		<div class="rightmenu">
+			{# Style selector #}
+			<span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
 			{% if admin %}
 				[<a href="{{ self() }}?task=manage">Manage</a>]
 				[<a href="{{ self() }}?task=bans">Bans</a>]
@@ -23,6 +38,7 @@
 			{% endif %}
 		</div>
 	</div>
+
 	<div id="logo">
 		{%- block header -%}
 			<h1 id="header">{{ constant("TINYIB_BOARDDESC") }}</h1>
@@ -31,14 +47,18 @@
 			{%- endif -%}
 		{%- endblock -%}
 	</div>
+
 	<hr>
+
 	{% block adminbar %}
 		{% if admin %}
 			<div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
 		{% endif %}
 	{% endblock %}
 	{% block content %}{% endblock %}
+
 	<div id="bottommenu" class="boardmenu">{# TODO #}</div>
+
 	<p id="footer">
 		- <a href="https://github.com/frankusrs/PlainIB/" target="_top">PlainIB</a>
 		+ <a href="http://www.2chan.net/script/" target="_top">futaba</a>

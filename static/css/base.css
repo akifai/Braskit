@@ -224,3 +224,7 @@ div.center, table.center {
 .modlist .minimal {
 	width: 1%;
 }
+
+.noscreen {
+	display: none;
+}
