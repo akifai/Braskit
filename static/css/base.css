@@ -1,6 +1,4 @@
 body {
-	background: #ffffee;
-	color: #800000;
 	font-family: Times, 'Times New Roman', 'Nimbus Roman No9 L',
 		'Freeserif', serif;
 	font-size: 12pt;
@@ -33,10 +31,7 @@ body {
 }
 
 .theader {
-	background: #e04000;
-	color: #fff;
-	padding: 2px;
-	text-align: center;
+	/* intentionally left blank */
 }
 
 /* Postform */
@@ -46,7 +41,6 @@ body {
 	margin: 0px auto;
 }
 .postarea th {
-	background: #ea8;
 	font-weight: bold;
 	text-align: left;
 }
@@ -76,7 +70,6 @@ body {
 }
 .reply {
 	display: table-cell;
-	background: #f0e0d6;
 	padding: 1px;
 }
 
@@ -101,17 +94,13 @@ body {
 	margin: 0;
 }
 .posttitle {
-	color: #cc1105;
-	font-size: 1.2em;
 	font-style: normal;
 	font-weight: bold;
 }
 .postname {
-	color: #117743;
 	font-weight: bold;
 }
 .posttrip {
-	color: #228854;
 }
 .reflink a {
 	color: inherit;
@@ -145,11 +134,10 @@ body {
 }
 .posttext ul li {
 }
-.posttext blockquote, .posttext .unkfunc {
-	color: #789922;
+.posttext blockquote,
+.posttext .unkfunc {
 }
 .posttext a.boardlink {
-	color: #000080;
 }
 .posttext .spoiler {
 	background: #000;
@@ -160,38 +148,35 @@ body {
 }
 
 .omitted {
-	color: #707070;
 }
-
-/* must be defined after the reflink stuff */
-a {
-	color: #00e;
-}
-a:hover {
-	color: #d00;
-}
-
 .deletefile {
 	float: right;
 }
 
-/* pages */
+/* Page navigator
+ *
+ * The border stuff emulates <table border="1"> as it appears in chrome.
+ * We could let every substyle define its own border colours so it appears like
+ * border="1" in Firefox, but frankly that's more effort than it's worth.
+ * Chrome's defaults aren't bad either, at least not compared to Opera. :shrug:
+ */
+
 .pages {
 	border: solid 1px;
-	border-left-color: #d8b2b2;
-	border-top-color: #d8b2b2;
-	border-right-color: #470000;
-	border-bottom-color: #470000;
+	border-left-color: #808080;
+	border-top-color: #808080;
+	border-right-color: #2c2c2c;
+	border-bottom-color: #2c2c2c;
 	border-spacing: 2px;
 	display: table;
 }
 .pages div {
 	display: table-cell;
 	border: solid 1px;
-	border-left-color: #470000;
-	border-top-color: #470000;
-	border-right-color: #d8b2b2;
-	border-bottom-color: #d8b2b2;
+	border-left-color: #2c2c2c;
+	border-top-color: #2c2c2c;
+	border-right-color: #808080;
+	border-bottom-color: #808080;
 	padding: 1px;
 }
 .pages form {
@@ -229,15 +214,12 @@ div.center, table.center {
 	margin-right: auto;
 }
 .modlist thead tr {
-	background: #aa6;
-	color: #400;
 }
 .modlist th {
 	font-weight: bold;
 	text-align: left;
 }
 .modlist tr {
-	background: #eec;
 }
 .modlist .minimal {
 	width: 1%;

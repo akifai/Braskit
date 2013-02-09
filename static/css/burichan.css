@@ -1,0 +1,71 @@
+@import url("base.css");
+
+body {
+	background: #eef2ff;
+	color: #000;
+}
+#header {
+	color: #af0a0f;
+}
+.theader {
+	background: #0010e0;
+	color: #fff;
+	padding: 2px;
+	text-align: center;
+}
+.postarea th {
+	background: #98e;
+}
+.reply {
+	background: #d6daf0;
+}
+.imginfo {
+	font-family: helvetica, arial, sans-serif;
+	font-size: 12px;
+	margin-left: 3em;
+	text-decoration: underline;
+}
+.posttitle {
+	color: #0f0c5d;
+	font-size: 1.2em;
+}
+.postname {
+	color: #117743;
+}
+.posttrip {
+	color: #228854;
+}
+.posttext blockquote,
+.posttext .unkfunc {
+	color: #789922;
+}
+/*
+.posttext a.postref {
+	color: #000080;
+}
+*/
+.omitted {
+	color: #070707;
+	font-size: 18px;
+	font-weight: bold;
+}
+a {
+	color: #34345c;
+	font-family: helvetica, arial, sans-serif;
+}
+a:hover {
+	color: #d00;
+}
+.modlist thead tr {
+	background: #66a;
+	color: #fff;
+}
+.modlist tr {
+	background: #cce;
+}
+.modlist th {
+	font-weight: normal;
+}
+#footer {
+	font-size: 10px;
+}
