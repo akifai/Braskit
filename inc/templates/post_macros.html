@@ -7,7 +7,7 @@
 {% macro thread(context, posts) %}
 	{% import _self as post -%}
 
-	<div class="thread" id="post_{{ posts[0].id }}">
+	<div class="thread" id="{{ posts[0].id }}">
 		{% for p in posts %}
 			{% if not p.parent %}
 				{{ post.op(context, p) }}
@@ -109,7 +109,7 @@
 
 	<div class="replywrap">
 		<div class="doubledash">&gt;&gt;</div>
-		<div class="reply" id="post_{{ p.id }}">
+		<div class="reply" id="{{ p.id }}">
 			{{ m.head(context, p) }}
 			{% if p.file %}
 				{{ m.fileinfo(context, p) }}
