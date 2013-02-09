@@ -62,6 +62,13 @@ function post_post() {
 	// make name/tripcode
 	list($name, $tripcode) = make_name_tripcode($name);
 
+	// set password if none is defined
+	if ($password === '') {
+		$password = random_string();
+		$expire = $time + 86400 * 365;
+		setcookie('password', $password, $expire, '/');
+	}
+
 	// Do file uploads
 	$file = handle_upload('file');
 
@@ -141,13 +148,6 @@ function post_post() {
 	}
 
 	rebuildIndexes();
-
-	// set password if none is defined
-	if ($password === '') {
-		$password = random_string();
-		$expire = $time + 86400 * 365;
-		setcookie('password', $password, $expire, '/');
-	}
 
 	// redirect to thread
 	redirect(expand_path($dest));
