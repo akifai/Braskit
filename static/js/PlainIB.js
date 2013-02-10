@@ -38,7 +38,7 @@ function Cookie(options) {
 		name = escape(name);
 		value = escape(value);
 
-		var cookie = name + "=" + value;
+		var cookie = name + "=" + value + "; path=/";
 
 		if (expires)
 			cookie += "; expires=" + expires;
