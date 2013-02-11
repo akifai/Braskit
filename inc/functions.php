@@ -585,6 +585,9 @@ function handle_upload($name) {
 		// create a temporary name for thumbnail
 		$file['t_tmp'] = tempnam(sys_get_temp_dir(), 'tinyib');
 
+		// tempnam sets the wrong file permissions
+		chmod($file['t_tmp'], 0664);
+
 		// create thumbnail
 		$created = createThumbnail($tmp_name, $file['t_tmp'],
 			$info['ext'], $info['width'], $info['height'],
