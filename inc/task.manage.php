@@ -9,14 +9,15 @@ function manage_get() {
 		return;
 	}
 
+	$boardname = param('board');
+	$thread = param('thread');
+	$page = param('page');
 
-	//
+	$board = new Board($boardname);
+
 	// Show thread
-	//
-
-	if (isset($_GET['thread'])) {
-		// Show thread
-		$posts = postsInThreadByID($_GET['thread']);
+	if ($thread) {
+		$posts = postsInThreadByID($board, $_GET['thread']);
 
 		if (!$posts) {
 			// thread is non-existent, redirect to page 0
@@ -26,6 +27,7 @@ function manage_get() {
 
 		echo render('thread.html', array(
 			'admin' => true,
+			'board' => $board,
 			'posts' => $posts,
 			'thread' => $_GET['thread'],
 		));
@@ -33,18 +35,15 @@ function manage_get() {
 		return;
 	}
 
-
-	//
 	// Show index
-	//
 
 	// Page number
 	$page = isset($_GET['page']) ? $_GET['page'] : 0;
 	$offset = $page * 10;
 
 	// TODO: Fix this so we don't have to get all threads at once
-	$threads = get_index_threads($offset);
-	$pagecount = floor(countThreads() / 10);
+	$threads = $board->getIndexThreads($offset);
+	$pagecount = floor($board->countThreads() / 10);
 
 	if ($page && !count($threads)) {
 		// no threads on this page, redirect to page 0
@@ -54,6 +53,7 @@ function manage_get() {
 
 	echo render('page.html', array(
 		'admin' => true,
+		'board' => $board,
 		'pagenum' => $page,
 		'pagecount' => $pagecount,
 		'threads' => $threads,

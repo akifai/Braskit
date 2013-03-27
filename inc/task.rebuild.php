@@ -9,6 +9,8 @@ function rebuild_get() {
 		return;
 	}
 
+	$boardname = param('board');
+	$board = new Board($boardname);
 
 	$redir_after = true;
 
@@ -22,13 +24,13 @@ function rebuild_get() {
 	}
 
 	// Rebuild all threads
-	$threads = allThreads();
+	$threads = $board->getAllThreads();
 	foreach ($threads as $thread)
-		rebuildThread($thread['id']);
+		$board->rebuildThread($thread['id']);
 
 	// Rebuild all indexes
-	rebuildIndexes();
+	$board->rebuildIndexes();
 
 	if ($redir_after)
-		redirect(expand_path('index.html'));
+		redirect($board->path('index.html'));
 }

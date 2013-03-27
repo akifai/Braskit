@@ -7,6 +7,7 @@
 	{{ m.postform(_context) }}
 	<hr>
 	<form action="{{ self() }}?task=delete" method="post" name="delform">
+		<input type="hidden" name="board" value="{{ board }}">
 		{% if admin %}
 			<input type="hidden" name="nexttask" value="manage">
 		{% endif %}

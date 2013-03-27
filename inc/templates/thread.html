@@ -4,17 +4,18 @@
 {% set title = "Thread No."~thread %}
 
 {% block content %}
-	{{ m.returnlink() }}
+	{{ m.returnlink(_context) }}
 	<div class="theader">Posting mode: Reply</div>
 	{{ m.postform(_context) }}
 	<hr>
-	<form action="{{ self() }}?task=delete" method="post" name="delform">
+	<form action="{{ self() }}" method="post" name="delform">
+		<input type="hidden" name="board" value="{{ board }}">
 		{% if admin %}
 			<input type="hidden" name="nexttask" value="manage">
 		{% endif %}
 		{{ m.thread(_context, posts) }}
 		<hr>
-		{{ m.returnlink() }}
+		{{ m.returnlink(_context) }}
 		{{ m.delfile(_context) }}
 	</form>
 {% endblock %}

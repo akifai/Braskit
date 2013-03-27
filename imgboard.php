@@ -17,11 +17,15 @@ define('TINYIB', true);
 // Must be loaded prior to anything else
 require 'inc/functions.php';
 
+// Default exception handler for web shit
+set_exception_handler('make_error_page');
+
 // Copy default settings file if needed
 if (!file_exists('settings.php'))
 	copy('settings.default.php', 'settings.php');
 
 require 'settings.php';
+require 'inc/class.board.php';
 require 'inc/database.php';
 
 // Unescape magic quotes
@@ -49,23 +53,18 @@ header('Content-Type: text/html; charset=UTF-8', true);
 ob_start('ob_callback');
 
 if (!TINYIB_TRIPSEED || !TINYIB_ADMINPASS)
-	make_error('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
-
-// Check directories are writable by the script
-foreach (array('.', 'res', 'src', 'thumb') as $dir)
-	if (!is_writable($dir))
-		make_error("Directory '$dir/' can not be written to. Please modify its permissions.");
-
-if (!file_exists('index.html'))
-	rebuildIndexes();
+	throw new Exception('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
 
 // Array of valid tasks
 $tasks = array(
+	// user actions
 	'post', 'delete',
-	'manage',
+	// mod actions
+	'manage', 'login', 'logout',
+	// - bans
 	'bans', 'addban', 'liftban',
+	// - other
 	'rebuild',
-	'login', 'logout',
 );
 
 load_page($tasks);

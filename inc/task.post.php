@@ -20,6 +20,7 @@ function post_post() {
 	$flags = PARAM_DEFAULT ^ PARAM_GET;
 
 	// POST values
+	$boardname = param('board', $flags);
 	$parent = param('parent', $flags);
 	$name = param('field1', $flags);
 	$email = param('field2', $flags);
@@ -37,26 +38,32 @@ function post_post() {
 	if (!ctype_digit($parent)
 	|| length($parent) > 10
 	|| length($password) > 100)
-		make_error('Abnormal post.');
+		throw new Exception('Abnormal post.');
 
 	if (length($name) > 100
 	|| length($email) > 100
 	|| length($subject) > 100
 	|| length($comment) > 10000)
-		make_error('Too many characters in text field.');
+		throw new Exception('Too many characters in text field.');
+
+	// create new board object
+	$board = new Board($boardname);
 
 	// check if thread exists
-	if ($parent && !threadExistsByID($parent))
-		make_error('The specified thread does not exist.');
+	if ($parent && !threadExistsByID($board, $parent))
+		throw new Exception('The specified thread does not exist.');
 
 	// check if we're logged in
 	$loggedin = check_login();
 
+	// This callable gets run to handle board-specific post formatting crap
+	$format_cb = array($board, 'formatPostRef');
+
 	if (!$loggedin) {
 		checkBanned();
-		$comment = format_post($comment);
+		$comment = format_post($comment, $format_cb);
 	} else {
-		$comment = format_post($comment, $raw);
+		$comment = format_post($comment, $format_cb, $raw);
 	}
 
 	// make name/tripcode
@@ -70,15 +77,15 @@ function post_post() {
 	}
 
 	// Do file uploads
-	$file = handle_upload('file');
+	$file = $board->handleUpload('file');
 
 	// require a file for new threads
 	if (!$parent && !$file)
-		make_error('An image is required to start a thread.');
+		throw new Exception('An image is required to start a thread.');
 	
 	// make sure replies have either a comment or file
 	if ($parent && !$file && !length($comment))
-		make_error('Please enter a message and/or upload an image to make a reply.');
+		throw new Exception('Please enter a message and/or upload an image to make a reply.');
 
 	// Set up database values
 	$post = newPost($parent);
@@ -110,7 +117,10 @@ function post_post() {
 	$dbh->beginTransaction();
 
 	// Insert the post
-	$id = insertPost($post);
+	$id = $board->insert($post);
+
+	// commit changes to database
+	$dbh->commit();
 
 	if ($file) {
 		// Move full image
@@ -125,30 +135,27 @@ function post_post() {
 		}
 	}
 
-	// commit changes to database
-	$dbh->commit();
-
 	if ($parent) {
 		// rebuild thread cache
-		rebuildThread($post['parent']);
+		$board->rebuildThread($post['parent']);
 
 		// bump the thread if we're not saging
 		if (!stristr($email, 'sage'))
-			bumpThreadByID($post['parent']);
+			$board->bump($post['parent']);
 
 		$dest = sprintf('res/%d.html#%d', $parent, $id);
 	} else {
 		// clear old threads
-		trimThreads();
+		$board->trim();
 
 		// build thread cache
-		rebuildThread($id);
+		$board->rebuildThread($id);
 
 		$dest = sprintf('res/%d.html#%d', $id, $id);
 	}
 
-	rebuildIndexes();
+	$board->rebuildIndexes();
 
 	// redirect to thread
-	redirect(expand_path($dest));
+	redirect($board->path($dest));
 }

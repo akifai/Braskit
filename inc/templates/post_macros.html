@@ -42,8 +42,8 @@
 		{%- spaceless %}
 			<span class="reflink">
 				{% if not context.thread %}
-					<a href="{{ path("res/"~p.id~".html#"~p.id) }}" class="no">No.</a>
-					<a href="{{ path("res/"~p.id~".html#i"~p.id) }}" class="val">{{ p.id }}</a>
+					<a href="{{ path(context.board~"/res/"~p.id~".html#"~p.id) }}" class="no">No.</a>
+					<a href="{{ path(context.board~"/res/"~p.id~".html#i"~p.id) }}" class="val">{{ p.id }}</a>
 				{% else %}
 					<a href="#{{ p.id }}" class="no">No.</a>
 					<a href="#i{{ p.id }}" class="val">{{ p.id }}</a>
@@ -58,7 +58,7 @@
 
 {% macro fileinfo(context, p) %}
 	<div class="imginfo">
-		File: <a href="{{ path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
+		File: <a href="{{ path(context.board~"/src/"~p.file) }}" target="_blank">{{ p.file }}</a>
 		<em>(
 			{{- p.file_size_formatted }}, {{ p.image_width }}x{{ p.image_height -}}
 			{%- if context.thread and p.file_original %},
@@ -66,18 +66,20 @@
 			{%- endif -%}
 		)</em>
 		{% if context.admin %}
-			[<a href="{{ self() }}?task=delete&amp;delete={{ p.id }}&amp;fileonly=on" class="imgdellink" title="Delete Image">Del</a>]
+			[<a href="{{ self() }}?task=delete&amp;delete={{ p.id }}&amp;fileonly=on&amp;board={{ context.board }}" class="imgdellink" title="Delete Image">Del</a>]
 		{% endif %}
 	</div>
 {% endmacro %}
 
 {% macro thumb(context, p) %}
+	{% import _self as m %}
+
 	{% if p.thumb_width and p.thumb_height %}
-		<a href="{{ path("src/"~p.file) }}" class="thumblink" target="_blank">
-			<img src="{{ path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.thumb_width }}" height="{{ p.thumb_height }}">
+		<a href="{{ path(context.board~"/src/"~p.file) }}" class="thumblink" target="_blank">
+			<img src="{{ path(context.board~"/thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.thumb_width }}" height="{{ p.thumb_height }}">
 		</a>
 	{% else %}
-		<a href="{{ path("src/"~p.file) }}" class="nothumb">(No thumbnail)</a>
+		<a href="{{ path(context.board~"/src/"~p.file) }}" class="nothumb">(No thumbnail)</a>
 	{% endif %}
 {% endmacro %}
 
@@ -128,6 +130,8 @@
 {% macro postform(context) %}
 	<div class="postarea">
 		<form action="{{ self() }}?task=post" method="post" enctype="multipart/form-data" name="postform" id="postform">
+			{# context.board shouldn't be blank - if it is, we're doing it wrong #}
+			<input type="hidden" name="board" value="{{ context.board }}">
 			<input type="hidden" name="parent" value="{{ context.thread ? context.thread : 0 }}">
 			<table><tbody>
 				<tr>
@@ -182,19 +186,21 @@
  #}
 
 {% macro get_reply_link(context, p) -%}
+	{%- import _self as m -%}
 	{% spaceless %}
 		{% if not context.admin %}
-			{{ path("res/"~p.id~".html") }}	
+			{{ path(context.board~"/res/"~p.id~".html") }}	
 		{% else %}
-			{{ self()~"?task=manage&thread="~p.id }}
+			{{ self()~"?task=manage&board="~context.board~"&thread="~p.id }}
 		{% endif %}
 	{% endspaceless %}
 {%- endmacro %}
 
 {% macro get_page_link(context, i) -%}
+	{% import _self as m %}
 	{% spaceless %}
 		{% if not context.admin %}
-			{{ path(i ? i~".html" : "index.html") }}
+			{{ path(context.board~"/"~(i ? i~".html" : "index.html")) }}
 		{% else %}
 			{{ self()~"?task=manage"~(i ? "&page="~i : "") }}
 		{% endif %}
@@ -202,13 +208,15 @@
 {%- endmacro %}
 
 {% macro make_previous_page_button(context) -%}
+	{%- import _self as m -%}
 	{% spaceless %}
 		{% if not context.admin %}
-		<form action="{{ path(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html") }}" method="get">
+		<form action="{{ path(context.board~"/"~(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html")) }}" method="get">
 		{% else %}
 		<form action="{{ self() }}" method="get">
-			<input type="hidden" name="task" value="manage">
+			<input type="hidden" name="board" value="{{ context.board }}">
 			<input type="hidden" name="page" value="{{ context.pagenum - 1 }}">
+			<input type="hidden" name="task" value="manage">
 		{% endif %}
 			<input type="submit" value="Previous">
 		</form>
@@ -216,9 +224,10 @@
 {%- endmacro %}
 
 {% macro make_next_page_button(context) -%}
+	{%- import _self as m -%}
 	{% spaceless %}
 		{% if not context.admin %}
-		<form action="{{ path((context.pagenum + 1)~".html") }}" method="get">
+		<form action="{{ path(context.board~"/"~(context.pagenum + 1)~".html") }}" method="get">
 		{% else %}
 		<form action="{{ self() }}" method="get">
 			<input type="hidden" name="task" value="manage">
@@ -246,8 +255,18 @@
 	</div>
 {% endmacro %}
 
-{% macro returnlink(dest) -%}
-	[<a href="{{ dest ? dest : path("index.html") }}">Return</a>]
+{% macro returnlink(context, dest="") -%}
+	{% if dest %}
+		[<a href="{{ dest }}">Return</a>]
+	{% elseif context.admin %}
+		{% if context.board %}
+			[<a href="{{ self() }}?task=manage&board={{ context.board }}">Return</a>]
+		{% else %}
+			[<a href="{{ self() }}?task=login">Return</a>]
+		{% endif %}
+	{% else %}
+		[<a href="{{ path(context.board ~ "/index.html") }}">Return</a>]
+	{% endif %}
 {%- endmacro %}
 
 {# vim: set ts=4 sw=4 ft=htmldjango : #}

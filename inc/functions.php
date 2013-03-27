@@ -21,7 +21,7 @@ function load_page($tasks) {
 		redirect(expand_path('index.html'));
 	} else {
 		header('Status: 404 Not Found', true);
-		make_error('Invalid task.');
+		throw new Exception('Invalid task.');
 	}
 }
 
@@ -30,7 +30,7 @@ function do_task_function($page, $method) {
 	$filename = 'inc/task.'.$page.'.php';
 
 	if (!file_exists($filename))
-		make_error("Couldn't load page '$page'.", true, true);
+		throw new Exception("Couldn't load page '$page'.", true, true);
 
 	require $filename;
 
@@ -39,43 +39,22 @@ function do_task_function($page, $method) {
 		call_user_func($funcname);
 	} else {
 		header('Status: 405 Method Not Allowed', true);
-		make_error('Method not allowed.');
+		throw new Exception('Method not allowed.');
 	}
 }
 
-function make_error($message, $no_template = false, $trace = false) {
-	// Create a stack trace on request
-	if ($trace === true)
-		$trace = debug_backtrace();
+function make_error_page($e) {
+	$referrer = @$_SERVER['HTTP_REFERER'];
 
-	// Error messages using Twig
-	if (!$no_template) {
-		$referrer = @$_SERVER['HTTP_REFERER'];
-		if ($trace)
-			$trace = var_export($trace, true);
-
+	try {
+		// Error messages using Twig
 		echo render('error.html', array(
-			'message' => $message,
-			'stack_trace' => $trace,
+			'message' => $e->getMessage(),
 			'referrer' => $referrer,
 		));
+	} catch (Exception $yolo) {
 
-		exit;
 	}
-
-	echo '<h1>Error</h1><pre>';
-	echo nl2br(htmlspecialchars($message));
-	echo '</pre>';
-
-	// Print stack trace
-	if ($trace !== false) {
-		echo '<textarea cols="80" rows="25" readonly>';
-		echo htmlspecialchars(var_export($trace, true));
-		echo '</textarea>';
-	}
-
-	// Return link
-	echo '<p>[<a href="'.get_script_name().'">Return</a>]</p>';
 
 	exit;
 }
@@ -209,81 +188,7 @@ function empty_cache() {
 // Rebuild stuff
 //
 
-function rebuildIndexes() {
-	$threads = get_index_threads();
-	$pagecount = floor(count($threads) / 10);
-
-	$num = 0;
-
-	$page = array_splice($threads, 0, 10);
-	do {
-		$file = !$num ? 'index.html' : $num.'.html';
-		$html = render('page.html', array(
-			'threads' => $page,
-			'pagenum' => $num,
-			'pagecount' => $pagecount,
-		));
-
-		writePage($file, $html);
-		$num++;
-	} while ($page = array_splice($threads, 0, 10));
-}
-
-function rebuildThread($id) {
-	$posts = postsInThreadByID($id);
-	$html = render('thread.html', array(
-		'posts' => $posts,
-		'thread' => $id,
-	));
-
-	writePage(sprintf('res/%d.html', $id), $html);
-}
-
-// Threads/indexes/stuff
-function get_index_threads($offset = false) {
-	if ($offset !== false)
-		$all_threads = getThreads($offset);
-	else
-		$all_threads = allThreads(); 
-
-	$threads = array();
-
-	foreach ($all_threads as $thread) {
-		$thread = array($thread);
-		$replies = latestRepliesInThreadByID($thread[0]['id']);
-
-		foreach ($replies as $reply)
-			$thread[] = $reply;
-
-		$thread[0]['omitted'] = (count($replies) == 3)
-			? (count(postsInThreadByID($thread[0]['id'])) - 4)
-			: 0;
-
-		$threads[] = $thread;
-	}
-
-	return $threads;
-}
-
-
-
-
-function do_post_ref($match) {
-	$row = postByID($match[1]);
-
-	if ($row === false)
-		return $match[0]; // post does not exist
-
-	$thread = $row['parent'] ? $row['parent'] : $row['id'];
-	
-	$url = expand_path(sprintf('res/%d.html#%d', $thread, $row['id']));
-	$html = sprintf('<a href="%s" class="postref">&gt;&gt;%s</a>',
-		$url, $row['id']);
-
-	return $html;
-}
-
-function format_post($comment, $raw = false) {
+function format_post($comment, Callable $cb, $raw = false) {
 	// Simple formatting
 
 	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
@@ -304,7 +209,7 @@ function format_post($comment, $raw = false) {
 		$line = cleanString($line);
 
 		// do >>1 references
-		$line = preg_replace_callback('/&gt;&gt;(\d+)/', 'do_post_ref', $line);
+		$line = preg_replace_callback('/&gt;&gt;(\d+)/', $cb, $line);
 
 		// "greentexting"
 		if (strpos($line, '&gt;') === 0)
@@ -384,7 +289,9 @@ function render($template, $args = array()) {
 	try {
 		$output = $twig->render($template, $args);
 	} catch (Twig_Error $e) {
-		make_error($e->getRawMessage(), true, $e->getTrace());
+		// lol
+		echo "<plaintext>$e";
+		die();
 	}
 
 	return $output;
@@ -514,103 +421,6 @@ function shorten_filename($filename) {
 	return sprintf('%s(...).%s', $short, $info['extension']);
 }
 
-function handle_upload($name) {
-	if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
-		return false; // no file uploaded - nothing to do
-
-	// Check for file[] or variable tampering through register_globals
-	if (is_array($_FILES[$name]['name']))
-		make_error('Abnormal post.');
-
-	// Check for uploading errors
-	validateFileUpload($_FILES[$name]);
-
-	extract($_FILES[$name], EXTR_REFS);
-
-	// load image functions
-	require 'inc/image.php';
-
-	// Check file size
-	if ((TINYIB_MAXKB > 0) && ($size > (TINYIB_MAXKB * 1024)))
-		make_error(sprintf('That file is larger than %s.', TINYIB_MAXKBDESC));
-
-	// set some values
-	$file['tmp'] = $tmp_name;
-	$file['md5'] = md5_file($tmp_name);
-	$file['size'] = $size;
-	$file['origname'] = $name;
-
-	// check for duplicate upload
-	checkDuplicateImage($file['md5']);
-
-	// generate a number to use as our filename
-	$basename = time().substr(microtime(), 2, 3);
-
-	$info = analyse_image($tmp_name);
-
-	if ($info === false)
-		make_error('Only GIF, JPG, and PNG files are allowed.'); 
-
-	$file['width'] = $info['width'];
-	$file['height'] = $info['height'];
-
-	// filename for main file
-	$file['file'] = sprintf('%s.%s', $basename, $info['ext']);
-
-	// filename for thumbnail
-	$file['thumb'] = sprintf('%ss.%s', $basename, $info['ext']);
-
-	// paths
-	$file['location'] = 'src/'.$file['file'];
-	$file['t_location'] = 'thumb/'.$file['thumb'];
-
-	// make thumbnail sizes
-	$t_size = make_thumb_size(
-		$info['width'],
-		$info['height'],
-		TINYIB_MAXW,
-		TINYIB_MAXH
-	);
-
-	if ($t_size === false) {
-		// TODO: It may be desirable to thumbnail the image even if it's
-		// small enough already.
-		$file['t_tmp'] = true;
-
-		$file['t_width'] = $info['width'];
-		$file['t_height'] = $info['height'];
-	} else {
-		list($t_width, $t_height) = $t_size;
-
-		// create a temporary name for thumbnail
-		$file['t_tmp'] = tempnam(sys_get_temp_dir(), 'tinyib');
-
-		// tempnam sets the wrong file permissions
-		chmod($file['t_tmp'], 0664);
-
-		// create thumbnail
-		$created = createThumbnail($tmp_name, $file['t_tmp'],
-			$info['ext'], $info['width'], $info['height'],
-			$t_width, $t_height);
-
-		if ($created) {
-			// success
-			$file['t_width'] = $t_width;
-			$file['t_height'] = $t_height;
-		} else {
-			// we couldn't create the thumbnail for whatever reason
-			// 0x0 indicates failure
-			$file['t_width'] = 0;
-			$file['t_height'] = 0;
-
-			// indicate that we shouldn't bother with this further
-			$file['t_tmp'] = false;
-		}
-	}
-
-	return $file;
-}
-
 function newPost($parent = 0) {
 	return array(
 		'parent' => $parent,
@@ -680,7 +490,7 @@ function make_date($timestamp) {
 }
 
 function writePage($filename, $contents) {
-	$tempfile = tempnam('res/', TINYIB_BOARD . 'tmp'); /* Create the temporary file */
+	$tempfile = tempnam('tmp/', 'tmp'); /* Create the temporary file */
 	$fp = fopen($tempfile, 'w');
 	fwrite($fp, $contents);
 	fclose($fp);
@@ -693,9 +503,18 @@ function writePage($filename, $contents) {
 	chmod($filename, 0664); /* it was created 0600 */
 }
 
-function deletePostImages($post) {
-	if ($post['file'] != '') { @unlink('src/' . $post['file']); }
-	if ($post['thumb'] != '') { @unlink('thumb/' . $post['thumb']); }
+function deletePostImages($board, $post) {
+	$files = array();
+
+	if ($post['file'])
+		$files[] = "{$board}/src/{$post['file']}";
+	if ($post['thumb'])
+		$files[] = "{$board}/thumb/{$post['thumb']}";
+	if (!$post['parent'])
+		$files[] = "{$board}/res/{$post['id']}.html";
+
+	foreach ($files as $file)
+		@unlink($file);
 }
 
 function checkBanned() {
@@ -704,7 +523,7 @@ function checkBanned() {
 		if ($ban['expire'] == 0 || $ban['expire'] > time()) {
 			$expire = ($ban['expire'] > 0) ? ('<br>This ban will expire ' . date('y/m/d(D)H:i:s', $ban['expire'])) : '<br>This ban is permanent and will not expire.';
 			$reason = ($ban['reason'] == '') ? '' : ('<br>Reason: ' . $ban['reason']);
-			make_error('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
+			throw new Exception('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
 		} else {
 			clearExpiredBans();
 		}
@@ -716,7 +535,7 @@ function checkFlood() {
 		$lastpost = lastPostByIP();
 		if ($lastpost) {
 			if ((time() - $lastpost['timestamp']) < TINYIB_DELAY) {
-				make_error("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
+				throw new Exception("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
 			}
 		}
 	}
@@ -741,7 +560,7 @@ function validateFileUpload($file) {
 
 	// Detect tampering through register_globals
 	if (!isset($file['error']) || !isset($file['tmp_name']))
-		make_error('Abnormal post.');
+		throw new Exception('Abnormal post.');
 
 	switch ($file['error']) {
 	case UPLOAD_ERR_OK:
@@ -749,7 +568,7 @@ function validateFileUpload($file) {
 		// actually did originate from an upload and not through
 		// tampering with register_globals
 		if (!is_uploaded_file($file['tmp_name']))
-			make_error('Abnormal post.');
+			throw new Exception('Abnormal post.');
 
 		// We're done.
 		return;
@@ -775,20 +594,7 @@ function validateFileUpload($file) {
 		$msg = 'Unable to save the uploaded file.';
 	}
 
-	make_error('Error: '.$msg);
-}
-
-function checkDuplicateImage($hex) {
-	$row = postByHex($hex);
-	if ($row === false)
-		return;
-
-	make_error('Duplicate file uploaded.');
-
-	// TODO: doesn't work because HTML is escaped
-	#make_error("Duplicate file uploaded. That file has already been posted
-	#<a href=\"res/" . ((!$hexmatch["parent"]) ? $hexmatch["id"] : $hexmatch["parent"])
-	#. ".html#" . $hexmatch["id"] . "\">here</a>.");
+	throw new Exception('Error: '.$msg);
 }
 
 function createThumbnail($src, $dst, $ext, $width, $height, $t_width, $t_height) {

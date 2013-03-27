@@ -9,21 +9,13 @@ class TinyIB_DB extends PDO {
 	public function __construct() {
 		$dsn = self::create_dsn();
 
-		try {
-			$this->spawn($dsn);
-		} catch (PDOException $e) {
-			make_error($e->getMessage());
-		}
+		$this->spawn($dsn);
 	}
 
 	public function query($query) {
 		$time = microtime(true);
 
-		try {
-			$sth = parent::query($query);
-		} catch (PDOException $e) {
-			make_error($e->getMessage());
-		}
+		$sth = parent::query($query);
 
 		self::addTime($time);
 		self::$queries++;
@@ -34,6 +26,7 @@ class TinyIB_DB extends PDO {
 	private function create_dsn() {
 		if (TINYIB_DBMODE === 'mysql')
 			return 'mysql:dbname='.TINYIB_DBNAME.';host='.TINYIB_DBHOST;
+
 		if (TINYIB_DBMODE === 'sqlite')
 			return 'sqlite:'.TINYIB_DBNAME;
 	}
@@ -62,11 +55,8 @@ class TinyIB_DBStatement extends PDOStatement {
 
 	public function execute($params = null) {
 		$time = microtime(true);
-		try {
-			$sth = parent::execute($params);
-		} catch (PDOException $e) {
-			make_error($e->getMessage());
-		}
+
+		$sth = parent::execute($params);
 
 		TinyIB_DB::addTime($time);
 		TinyIB_DB::$queries++;

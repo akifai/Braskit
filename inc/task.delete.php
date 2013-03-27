@@ -4,6 +4,7 @@ defined('TINYIB') or exit;
 function delete_any() {
 	$loggedin = check_login();
 
+	$boardname = param('board');
 	$password = param('password', PARAM_STRING | PARAM_COOKIE);
 	$posts = param('delete', PARAM_DEFAULT | PARAM_ARRAY);
 
@@ -11,6 +12,8 @@ function delete_any() {
 	$nexttask = $loggedin
 		? param('nexttask')
 		: false;
+
+	$board = new Board($boardname);
 
 	// Nothing to do
 	if (!$posts && $nexttask) {
@@ -32,7 +35,7 @@ function delete_any() {
 
 	// check for blank password, which is always invalid
 	if (!$loggedin && $password === '')
-		make_error('Incorrect password for deletion.');
+		throw new Exception('Incorrect password for deletion.');
 
 	$rebuild_queue = array();
 	$deleted_threads = array();
@@ -40,7 +43,7 @@ function delete_any() {
 	$error = false;
 
 	foreach ($posts as $id) {
-		$post = PostByID($id);
+		$post = $board->getPost($id);
 
 		// Skip non-existent posts
 		if ($post === false)
@@ -56,7 +59,7 @@ function delete_any() {
 			continue;
 		}
 
-		deletePostByID($id);
+		$board->delete($id);
 
 		// Collect parents so we can rebuild or delete them
 		if ($post['parent'])
@@ -67,19 +70,19 @@ function delete_any() {
 
 	// Rebuild threads
 	foreach ($rebuild_queue as $id)
-		rebuildThread($id);
+		$board->rebuildThread($id);
 
 	// Rebuild indexes
-	rebuildIndexes();
+	$board->rebuildIndexes();
 
 	// Show an error if any posts had the incorrect password.
 	if ($error)
-		make_error('Incorrect password for deletion.');
+		throw new Exception('Incorrect password for deletion.');
 
 	if ($nexttask)
 		redirect(get_script_name().'?task='.$nexttask);
 	else
-		redirect(expand_path('index.html'));
+		redirect($board->path('index.html'));
 }
 
 function delete_get() { delete_any(); }

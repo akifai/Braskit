@@ -11,7 +11,7 @@ function addban_post() {
 	}
 
 	if (!isset($_POST['ip']) || !$_POST['ip'])
-		make_error('No IP address entered');
+		throw new Exception('No IP address entered');
 
 	$ip = trim($_POST['ip']);
 
@@ -22,7 +22,7 @@ function addban_post() {
 		// If we've made it so far, then the IP is valid.
 		$ip = $iplib->toShort();
 	} catch (Exception $e) {
-		make_error($e->getMessage());
+		throw new Exception($e->getMessage());
 	}
 
 	$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
