@@ -1,7 +1,7 @@
 <?php
 defined('TINYIB') or exit;
 
-class TinyIB_DB extends PDO {
+class Database extends PDO {
 	public static $time = 0;
 	public static $queries = 0;
 
@@ -37,7 +37,7 @@ class TinyIB_DB extends PDO {
 	private function spawn($dsn) {
 		return parent::__construct($dsn, TINYIB_DBUSERNAME, TINYIB_DBPASSWORD, array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_STATEMENT_CLASS => array('TinyIB_DBStatement', array($this)),
+			PDO::ATTR_STATEMENT_CLASS => array('DBStatement', array($this)),
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 		));
 	}
@@ -47,7 +47,7 @@ class TinyIB_DB extends PDO {
 	}
 }
 
-class TinyIB_DBStatement extends PDOStatement {
+class DBStatement extends PDOStatement {
 	protected $dbh;
 	protected function __construct($dbh) {
 		$this->dbh = $dbh;
@@ -58,8 +58,8 @@ class TinyIB_DBStatement extends PDOStatement {
 
 		$sth = parent::execute($params);
 
-		TinyIB_DB::addTime($time);
-		TinyIB_DB::$queries++;
+		Database::addTime($time);
+		Database::$queries++;
 
 		return $sth;
 	}

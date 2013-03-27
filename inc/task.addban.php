@@ -1,6 +1,5 @@
 <?php
 defined('TINYIB') or exit;
-require 'inc/class.IP.php';
 
 function addban_post() {
 	$loggedin = check_login();
@@ -10,28 +9,30 @@ function addban_post() {
 		return;
 	}
 
-	if (!isset($_POST['ip']) || !$_POST['ip'])
-		throw new Exception('No IP address entered');
+	$flags = PARAM_DEFAULT ^ PARAM_GET; // no gets
 
-	$ip = trim($_POST['ip']);
+	$expire = param('expire', $flags);
+	$reason = param('reason', $flags);
+	$ip = param('ip', $flags);
 
-	// TODO: Make a wrapper function for this perhaps?
-	try {
-		$iplib = new IP($ip);
+	// remove whitespace
+	$ip = trim($ip);
 
-		// If we've made it so far, then the IP is valid.
-		$ip = $iplib->toShort();
-	} catch (Exception $e) {
-		throw new Exception($e->getMessage());
-	}
+	if ($ip === '')
+		throw new Exception('No IP entered.');
 
-	$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
+	// get the short form of the ip (i.e., 127.000.000.001 -> 127.0.0.1)
+	$iplib = new IP($ip);
+	$ip = $iplib->toShort();
 
 	// Ban expiration
-	if (!isset($_POST['expire']) && ctype_digit($_POST['expire']))
-		$expire = $_SERVER['REQUEST_TIME'] + $_POST['expire'];
-	else
+	if ($expire && ctype_digit($expire)) {
+		// expiry time + request time = when the ban expires
+		$expire += $_SERVER['REQUEST_TIME'];
+	} else {
+		// never expire
 		$expire = 0;
+	}
 
 	$ban = array(
 		'ip' => $ip,

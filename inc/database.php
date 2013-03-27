@@ -1,8 +1,7 @@
 <?php
 defined('TINYIB') or exit;
-require 'class.db.php';
 
-$dbh = new TinyIB_DB();
+$dbh = new Database();
 
 // Create the posts table if it does not exist
 function createBoardTable($board) {

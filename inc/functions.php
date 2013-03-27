@@ -75,12 +75,12 @@ function ob_callback($buffer) {
 	$newbuf = substr($buffer, 0, $ins); 
 
 	$total_time = microtime(true) - $start_time;
-	$query_time = round(100 / $total_time * TinyIB_DB::$time);
+	$query_time = round(100 / $total_time * Database::$time);
 
 	// Append debug text
 	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
 	' of which %d%% was spent running %d database queries.',
-		$total_time, $query_time, TinyIB_DB::$queries);
+		$total_time, $query_time, Database::$queries);
 
 	// the rest of the buffer
 	$newbuf .= substr($buffer, $ins);
@@ -253,8 +253,6 @@ function redirect($url) {
 }
 
 function load_twig() {
-	require_once 'inc/class.template.php';
-
 	$loader = new TinyIB_Twig_Loader('inc/templates/');
 	$twig = new Twig_Environment($loader, array(
 		'cache' => TINYIB_DEBUG ? false : 'cache/',
