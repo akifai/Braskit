@@ -140,7 +140,7 @@ class Board {
 	 */
 	public function rebuildIndexes() {
 		$threads = $this->getIndexThreads();
-		$pagecount = floor(count($threads) / 10);
+		$pagecount = ceil(count($threads) / 10) - 1;
 
 		$num = 0;
 
@@ -157,6 +157,12 @@ class Board {
 			$this->write($file, $html);
 			$num++;
 		} while ($page = array_splice($threads, 0, 10));
+
+		// delete old caches
+		while ($this->fileExists($num.'.html')) {
+			$this->unlink($num.'.html');
+			$num++;
+		}
 	}
 
 	/**
@@ -179,6 +185,14 @@ class Board {
 	public function write($filename, $contents) {
 		$filename = sprintf('%s/%s', $this->board, $filename);
 		return writePage($filename, $contents);
+	}
+
+	public function unlink($filename) {
+		return unlink($this->board.'/'.$filename);
+	}
+
+	public function fileExists($filename) {
+		return file_exists($this->board.'/'.$filename);
 	}
 
 	public function checkDuplicateImage($hex) {

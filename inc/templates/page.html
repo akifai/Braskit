@@ -3,6 +3,10 @@
 
 {% set title = constant("TINYIB_BOARDDESC") %}
 
+{% block adminbar_login %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
+{% block adminbar_manage %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
+{% block adminbar_rebuild %}[<a href="{{ self() }}?task=rebuild&board={{ board }}">Rebuild caches</a>]{% endblock %}
+
 {% block content %}
 	{{ m.postform(_context) }}
 	<hr>

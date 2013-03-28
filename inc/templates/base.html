@@ -1,69 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{{ title }}</title>
-	
-	<meta charset="utf-8">
-	<link rel="stylesheet" id="sitestyle" href="{{ path("static/css/futaba.css") }}" title="Futaba">
+  <title>{{ title }}</title>
+  
+  <meta charset="utf-8">
+  <link rel="stylesheet" id="sitestyle" href="{{ path("static/css/futaba.css") }}" title="Futaba">
 
-	<script>
-	{% autoescape "js" %}
+  <script>
+  {% autoescape "js" %}
 
-		var styles = {
-			"Burichan": "{{ path("static/css/burichan.css" ) }}",
-			"Futaba": "{{ path("static/css/futaba.css") }}",
-			"Tomorrow": "{{ path("static/css/tomorrow.css") }}"
-		};
+    var styles = {
+      "Burichan": "{{ path("static/css/burichan.css" ) }}",
+      "Futaba": "{{ path("static/css/futaba.css") }}",
+      "Tomorrow": "{{ path("static/css/tomorrow.css") }}"
+    };
 
-	{% endautoescape %}
-	</script>
+  {% endautoescape %}
+  </script>
 
-	<script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
-	<script src="{{ path("static/js/PlainIB.js") }}"></script>
+  <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
+  <script src="{{ path("static/js/PlainIB.js") }}"></script>
 </head>
 <body>
-	<div id="topmenu" class="boardmenu">
-		<div class="rightmenu">
-			{# Style selector #}
-			<span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
-			{% if admin %}
-				[<a href="{{ self() }}?task=manage">Manage</a>]
-				[<a href="{{ self() }}?task=bans">Bans</a>]
-				[<a href="{{ self() }}?task=rebuild">Rebuild caches</a>]
-				[<a href="{{ self() }}?task=logout">Log out</a>]
-				-
-				[<a href="{{ path("index.html") }}" target="_top">Home</a>]
-			{% else %}
-				[<a href="{{ path("index.html") }}" target="_top">Home</a>]
-				[<a href="{{ self() }}?task=manage">Manage</a>]
-			{% endif %}
-		</div>
-	</div>
+  <div id="topmenu" class="boardmenu">
+    <div class="rightmenu">
+      {# Style selector #}
+      <span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
 
-	<div id="logo">
-		{%- block header -%}
-			<h1 id="header">{{ constant("TINYIB_BOARDDESC") }}</h1>
-			{%- if subheader -%}
-				<div id="subheader">{{ subheader }}</div>
-			{%- endif -%}
-		{%- endblock -%}
-	</div>
+      {% block adminbar %}
+        {% if admin %}
+          {% block adminbar_manage %}[<a href="{{ self() }}?task=manage">Manage</a>]{% endblock %}
+          {% block adminbar_bans %}[<a href="{{ self() }}?task=bans">Bans</a>]{% endblock %}
+          {% block adminbar_rebuild %}[<a href="{{ self() }}?task=rebuild">Rebuild caches</a>]{% endblock %}
+          {% block adminbar_logout %}[<a href="{{ self() }}?task=logout">Log out</a>]{% endblock %}
+          -
+        {% endif %}
 
-	<hr>
+        {% block adminbar_home %}[<a href="{{ path("index.html") }}" target="_top">Home</a>]{% endblock %}
 
-	{% block adminbar %}
-		{% if admin %}
-			<div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
-		{% endif %}
-	{% endblock %}
-	{% block content %}{% endblock %}
+        {% if not admin %}
+          {% block adminbar_login %}[<a href="{{ self() }}?task=manage">Manage</a>]{% endblock %}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
 
-	<div id="bottommenu" class="boardmenu">{# TODO #}</div>
+  <div id="logo">
+    {%- block header -%}
+      <h1 id="header">{{ constant("TINYIB_BOARDDESC") }}</h1>
+      {%- if subheader -%}
+        <div id="subheader">{{ subheader }}</div>
+      {%- endif -%}
+    {%- endblock -%}
+  </div>
 
-	<p id="footer">
-		- <a href="https://github.com/frankusrs/PlainIB/" target="_top">PlainIB</a>
-		+ <a href="http://www.2chan.net/script/" target="_top">futaba</a>
-		-
-	</p>
+  <hr>
+
+  {% block modeheader %}
+    {% if admin %}
+      <div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
+    {% endif %}
+  {% endblock %}
+  {% block content %}{% endblock %}
+
+  <div id="bottommenu" class="boardmenu">{# TODO #}</div>
+
+  <p id="footer">
+    - <a href="https://github.com/frankusrs/PlainIB/" target="_top">PlainIB</a>
+    + <a href="http://www.2chan.net/script/" target="_top">futaba</a>
+    -
+  </p>
 </body>
 </html>
