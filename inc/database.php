@@ -1,92 +1,16 @@
 <?php
 defined('TINYIB') or exit;
 
-$dbh = new Database();
-
-// Create the posts table if it does not exist
-function createBoardTable($board) {
-	global $dbh;
-
-	if (TINYIB_DBMODE === 'mysql') {
-		$dbh->query('CREATE TABLE IF NOT EXISTS `'.$board.'` (
-			`id` mediumint(7) unsigned NOT NULL auto_increment,
-			`parent` mediumint(7) unsigned NOT NULL,
-			`timestamp` int(20) NOT NULL,
-			`bumped` int(20) NOT NULL,
-			`ip` varchar(15) NOT NULL,
-			`name` text NOT NULL,
-			`tripcode` text NOT NULL,
-			`email` text NOT NULL,
-			`date` text NOT NULL,
-			`subject` text NOT NULL,
-			`message` text NOT NULL,
-			`password` text NOT NULL,
-			`file` text NOT NULL,
-			`file_hex` varchar(32) NOT NULL,
-			`file_original` text NOT NULL,
-			`file_size` int(20) unsigned NOT NULL default "0",
-			`file_size_formatted` varchar(75) NOT NULL,
-			`image_width` smallint(5) unsigned NOT NULL default "0",
-			`image_height` smallint(5) unsigned NOT NULL default "0",
-			`thumb` varchar(255) NOT NULL,
-			`thumb_width` smallint(5) unsigned NOT NULL default "0",
-			`thumb_height` smallint(5) unsigned NOT NULL default "0",
-			PRIMARY KEY (`id`),
-			KEY `parent` (`parent`),
-			KEY `bumped` (`bumped`)
-		) ENGINE=MyISAM');
-	} elseif (TINYIB_DBMODE === 'sqlite') {
-		$dbh->query('CREATE TABLE IF NOT EXISTS `'.$board.'` (
-			id INTEGER PRIMARY KEY,
-			parent INTEGER NOT NULL,
-			timestamp INTEGER NOT NULL,
-			bumped INTEGER NOT NULL,
-			ip TEXT NOT NULL,
-			name TEXT NOT NULL,
-			tripcode TEXT NOT NULL,
-			email TEXT NOT NULL,
-			date TEXT NOT NULL,
-			subject TEXT NOT NULL,
-			message TEXT NOT NULL,
-			password TEXT NOT NULL,
-			file TEXT NOT NULL,
-			file_hex TEXT NOT NULL,
-			file_original text NOT NULL,
-			file_size INTEGER NOT NULL DEFAULT "0",
-			file_size_formatted TEXT NOT NULL,
-			image_width INTEGER NOT NULL DEFAULT "0",
-			image_height INTEGER NOT NULL DEFAULT "0",
-			thumb TEXT NOT NULL,
-			thumb_width INTEGER NOT NULL DEFAULT "0",
-			thumb_height INTEGER NOT NULL DEFAULT "0"
-		)');
-	}
-}
-
-// Create the bans table if it does not exist
-if (TINYIB_DBMODE === 'mysql') {
-	$dbh->query('CREATE TABLE IF NOT EXISTS `'.TINYIB_DBBANS.'` (
-		`id` mediumint(7) unsigned NOT NULL auto_increment,
-		`ip` varchar(15) NOT NULL,
-		`timestamp` int(20) NOT NULL,
-		`expire` int(20) NOT NULL,
-		`reason` text NOT NULL,
-		PRIMARY KEY (`id`),
-		KEY `ip` (`ip`)
-	) ENGINE=MyISAM');
-} elseif (TINYIB_DBMODE === 'sqlite') {
-	$dbh->query('CREATE TABLE IF NOT EXISTS `'.TINYIB_DBBANS.'` (
-		id INTEGER PRIMARY KEY,
-		ip TEXT NOT NULL,
-		timestamp INTEGER NOT NULL,
-		expire INTEGER NOT NULL,
-		reason TEXT NOT NULL
-	)');
-}
-
-# Board functions
+//
+// General shit
+//
 
 function boardExists($board) {
+	return tableExists($board);
+	// TODO ^
+}
+
+function tableExists($board) {
 	global $dbh;
 
 	try {
@@ -98,8 +22,10 @@ function boardExists($board) {
 }
 
 
+//
+// Post functions
+//
 
-# Post Functions
 function postByID($board, $id) {
 	global $dbh;
 
@@ -284,11 +210,15 @@ function lastPostByIP($board) {
 	return $sth->fetch();
 }
 
-# Ban Functions
+
+//
+// Ban functions
+//
+
 function banByID($id) {
 	global $dbh;
 
-	$sth = $dbh->prepare('SELECT * FROM `'.TINYIB_DBBANS.'` WHERE id = ?');
+	$sth = $dbh->prepare('SELECT * FROM _bans WHERE id = ?');
 	$sth->execute(array($id));
 
 	return $sth->fetch();
@@ -297,7 +227,7 @@ function banByID($id) {
 function banByIP($ip) {
 	global $dbh;
 	
-	$sth = $dbh->prepare('SELECT * FROM `'.TINYIB_DBBANS.'` WHERE ip = ? LIMIT 1');
+	$sth = $dbh->prepare('SELECT * FROM _bans WHERE ip = ? LIMIT 1');
 	$sth->execute(array($ip));
 
 	return $sth->fetch();
@@ -306,14 +236,14 @@ function banByIP($ip) {
 function allBans() {
 	global $dbh;
 
-	$sth = $dbh->query('SELECT * FROM `'.TINYIB_DBBANS.'` ORDER BY timestamp DESC');
+	$sth = $dbh->query('SELECT * FROM _bans ORDER BY timestamp DESC');
 	return $sth->fetchAll();
 }
 
 function insertBan($ban) {
 	global $dbh;
 
-	$sth = $dbh->prepare('INSERT INTO `'.TINYIB_DBBANS.'`
+	$sth = $dbh->prepare('INSERT INTO _bans
 	(id, ip, timestamp, expire, reason)
 	VALUES (null, :ip, :time, :expire, :reason)');
 
@@ -330,14 +260,14 @@ function insertBan($ban) {
 function clearExpiredBans() {
 	global $dbh;
 
-	$sth = $dbh->prepare('DELETE FROM `'.TINYIB_DBBANS.'` WHERE expire > 0 AND expire <= ?');
+	$sth = $dbh->prepare('DELETE FROM _bans WHERE expire > 0 AND expire <= ?');
 	$sth->execute(array($_SERVER['REQUEST_TIME']));
 }
 
 function deleteBanByID($id) {
 	global $dbh;
 	
-	$sth = $dbh->prepare('DELETE FROM `'.TINYIB_DBBANS.'` WHERE id = :id');
+	$sth = $dbh->prepare('DELETE FROM _bans WHERE id = :id');
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->execute();
 }

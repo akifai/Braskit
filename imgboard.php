@@ -11,11 +11,11 @@ $start_time = microtime(true);
 // this is a valid entry point
 define('TINYIB', null);
 
+// Default exception handler for web shit
+define('TINYIB_EXCEPTION_HANDLER', 'make_error_page');
+
 // start sessions, load config, escape magic quotes, etc
 require('inc/global_init.php');
-
-// Default exception handler for web shit
-set_exception_handler('make_error_page');
 
 // force utf-8
 header('Content-Type: text/html; charset=UTF-8', true);

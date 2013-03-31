@@ -36,6 +36,20 @@ require(TINYIB_ROOT.'/inc/database.php');
 // Misc functions
 require(TINYIB_ROOT.'/inc/functions.php');
 
+// Exception handlers rely on the above include
+if (defined('TINYIB_EXCEPTION_HANDLER'))
+	set_exception_handler(TINYIB_EXCEPTION_HANDLER);
+
+// Load DB-specific query functions
+$db_code = TINYIB_ROOT.'/inc/schema/'.TINYIB_DBMODE.'.php';
+
+if (file_exists($db_code)) {
+	require($db_code);
+	unset($db_code);
+} else {
+	throw new Exception('Unknown database type: '.TINYIB_DBMODE);
+}
+
 // Unescape magic quotes
 if (get_magic_quotes_gpc()) {
 	$process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
@@ -58,3 +72,6 @@ if (get_magic_quotes_gpc()) {
 
 if (!TINYIB_TRIPSEED || !TINYIB_ADMINPASS)
 	throw new Exception('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
+
+// Connect to database
+$dbh = new Database();
