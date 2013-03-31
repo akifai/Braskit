@@ -53,7 +53,7 @@ function threadExistsByID($board, $id) {
 function insertPost($board, $post) {
 	global $dbh;
 
-	$sth = $dbh->prepare('INSERT INTO `'.$board.'` (
+	$sth = $dbh->prepare("INSERT INTO `{$board}_posts` (
 		id,
 		parent,
 		timestamp,
@@ -76,7 +76,7 @@ function insertPost($board, $post) {
 		thumb,
 		thumb_width,
 		thumb_height
-	) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+	) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 	$sth->execute(array(
 		$post['parent'],
 		$post['time'],
