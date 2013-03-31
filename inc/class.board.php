@@ -10,7 +10,7 @@ class Board {
 			throw new Exception('Board name cannot be blank.');
 
 		// Check for invalid characters
-		if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9_]*$/', $board))
+		if (!preg_match('/^[A-Za-z0-9]+$/', $board))
 			throw new Exception('Board name contains invalid characters.');
 
 		$this->board = (string)$board;
@@ -41,20 +41,24 @@ class Board {
 	/**
 	 * Creates a board.
 	 */
-	public function create() {
+	public function create($longname) {
 		if ($this->exists())
 			throw new Exception('A board with that name already exists.');
 
-		// TODO: protect against infecting existing folders or w/e
-
-		// create table for board
-		createBoardTable($this->board);
+		if (file_exists($this->board))
+			throw new Exception('Folder name collision - refusing to create board.');
 
 		// create folders
-		@mkdir($this->board);
-		@mkdir($this->board.'/res');
-		@mkdir($this->board.'/src');
-		@mkdir($this->board.'/thumb');
+		foreach (array('', '/res', '/src', '/thumb') as $folder) {
+			$folder = $this->board.$folder;
+
+			if (!@mkdir(TINYIB_ROOT."/$folder"))
+				throw new Exception("Couldn't create folder: {$folder}");
+		}
+
+		// create table for board
+		createBoardTables($this->board);
+		createBoardEntry($this->board, $longname);
 
 		$this->exists = true;
 	}

@@ -5,7 +5,7 @@ function createBoardTable($board) {
 	global $dbh, $db_prefix;
 
 	$sql = <<<EOSQL
-CREATE TABLE IF NOT EXISTS {$db_prefix}{$board} (
+CREATE TABLE {$db_prefix}{$board} (
 	`id` mediumint(7) unsigned NOT NULL auto_increment,
 	`parent` mediumint(7) unsigned NOT NULL,
 	`timestamp` int(20) NOT NULL,
@@ -41,7 +41,7 @@ function createBansTable() {
 	global $dbh, $db_prefix;
 
 	$sql = <<<EOSQL
-CREATE TABLE IF NOT EXISTS {$db_prefix}_bans (
+CREATE TABLE {$db_prefix}_bans (
 	`id` mediumint(7) unsigned NOT NULL auto_increment,
 	`ip` varchar(15) NOT NULL,
 	`timestamp` int(20) NOT NULL,

@@ -1,20 +1,26 @@
 <?php
 defined('TINYIB') or exit;
 
+// TODO: table prefixes
+
 //
 // General shit
 //
 
 function boardExists($board) {
-	return tableExists($board);
-	// TODO ^
+	global $dbh;
+
+	$sth = $dbh->prepare("SELECT 1 FROM `_boards` WHERE name = ?");
+	$sth->execute(array($board));
+
+	return (bool)$sth->fetchColumn();
 }
 
 function tableExists($board) {
 	global $dbh;
 
 	try {
-		$dbh->query("SELECT 1 FROM `$board`");
+		$dbh->query("SELECT 1 FROM `${board}_posts`");
 		return true;
 	} catch (Exception $e) { }
 
@@ -29,7 +35,7 @@ function tableExists($board) {
 function postByID($board, $id) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT * FROM `$board` WHERE id = ?");
+	$sth = $dbh->prepare("SELECT * FROM `${board}_posts` WHERE id = ?");
 	$sth->execute(array($id));
 
 	return $sth->fetch();
@@ -38,7 +44,7 @@ function postByID($board, $id) {
 function threadExistsByID($board, $id) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT 1 FROM `$board` WHERE id = ? AND NOT parent");
+	$sth = $dbh->prepare("SELECT 1 FROM `${board}_posts` WHERE id = ? AND NOT parent");
 	$sth->execute(array($id));
 
 	return (bool)$sth->fetchColumn();
@@ -101,28 +107,28 @@ function insertPost($board, $post) {
 function bumpThreadByID($board, $id) {
 	global $dbh;
 
-	$sth = $dbh->prepare("UPDATE `$board` SET bumped = ? WHERE id = ?");
+	$sth = $dbh->prepare("UPDATE `${board}_posts` SET bumped = ? WHERE id = ?");
 	$sth->execute(array($_SERVER['REQUEST_TIME'], $id));
 }
 
 function countThreads($board) {
 	global $dbh;
 
-	$sth = $dbh->query("SELECT COUNT(*) FROM `$board` WHERE `parent` = 0");
+	$sth = $dbh->query("SELECT COUNT(*) FROM `${board}_posts` WHERE `parent` = 0");
 	return $sth->fetchColumn();
 }
 
 function allThreads($board) {
 	global $dbh;
 
-	$sth = $dbh->query("SELECT * FROM `$board` WHERE NOT parent ORDER BY bumped DESC");
+	$sth = $dbh->query("SELECT * FROM `${board}_posts` WHERE NOT parent ORDER BY bumped DESC");
 	return $sth->fetchAll();
 }
 
 function getThreads($board, $offset) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT * FROM `$board` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
+	$sth = $dbh->prepare("SELECT * FROM `${board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
 	$sth->bindParam(1, $offset, PDO::PARAM_INT);
 	$sth->execute();
 
@@ -135,7 +141,7 @@ function postsInThreadByID($board, $id) {
 
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT * FROM `$board` WHERE id = :id OR parent = :id ORDER BY id ASC");
+	$sth = $dbh->prepare("SELECT * FROM `${board}_posts` WHERE id = :id OR parent = :id ORDER BY id ASC");
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->execute();
 
@@ -145,7 +151,7 @@ function postsInThreadByID($board, $id) {
 function latestRepliesInThreadByID($board, $id) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT * FROM `$board` WHERE parent = ? ORDER BY id DESC LIMIT 3");
+	$sth = $dbh->prepare("SELECT * FROM `${board}_posts` WHERE parent = ? ORDER BY id DESC LIMIT 3");
 	$sth->execute(array($id));
 
 	if ($posts = $sth->fetchAll())
@@ -157,7 +163,7 @@ function latestRepliesInThreadByID($board, $id) {
 function postByHex($board, $hex) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT id, parent FROM `$board` WHERE file_hex = ? LIMIT 1");
+	$sth = $dbh->prepare("SELECT id, parent FROM `${board}_posts` WHERE file_hex = ? LIMIT 1");
 	$sth->execute(array($hex));
 
 	return $sth->fetch();
@@ -166,7 +172,7 @@ function postByHex($board, $hex) {
 function latestPosts($board) {
 	global $dbh;
 
-	$sth = $dbh->query("SELECT * FROM `$board` ORDER BY timestamp DESC LIMIT 10");
+	$sth = $dbh->query("SELECT * FROM `${board}_posts` ORDER BY timestamp DESC LIMIT 10");
 	return $sth->fetchAll();
 }
 
@@ -175,14 +181,14 @@ function deletePostByID($board, $post) {
 
 	if ($post['parent']) {
 		// delete reply
-		$sth = $dbh->prepare("DELETE FROM `$board` WHERE id = ?");
+		$sth = $dbh->prepare("DELETE FROM `${board}_posts` WHERE id = ?");
 		$sth->execute(array($post['id']));
 
 		return;
 	}
 
 	// delete thread
-	$sth = $dbh->prepare("DELETE FROM `$board` WHERE id = ? OR parent = ?");
+	$sth = $dbh->prepare("DELETE FROM `${board}_posts` WHERE id = ? OR parent = ?");
 	$sth->execute(array($post['id'], $post['id']));
 }
 
@@ -192,7 +198,7 @@ function trimThreads($board) {
 
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT id FROM `$board` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
+	$sth = $dbh->prepare("SELECT id FROM `${board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
 	$sth->bindValue(1, TINYIB_MAXTHREADS, PDO::PARAM_INT);
 	$sth->execute();
 
@@ -204,7 +210,7 @@ function trimThreads($board) {
 function lastPostByIP($board) {
 	global $dbh;
 
-	$sth = $dbh->prepare("SELECT * FROM `$board` WHERE ip = ? ORDER BY id DESC LIMIT 1");
+	$sth = $dbh->prepare("SELECT * FROM `${board}_posts` WHERE ip = ? ORDER BY id DESC LIMIT 1");
 	$sth->execute(array($_SERVER['REMOTE_ADDR']));
 
 	return $sth->fetch();
@@ -270,4 +276,21 @@ function deleteBanByID($id) {
 	$sth = $dbh->prepare('DELETE FROM _bans WHERE id = :id');
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->execute();
+}
+
+//
+// Board functions
+//
+
+function createBoardTables($board) {
+	createBoardTable($board);
+	createBoardConfigTable($board);
+}
+
+function createBoardEntry($name, $longname) {
+	global $dbh;
+
+	$sth = $dbh->prepare('INSERT INTO `_boards` (name, longname, minlevel)
+	VALUES (?, ?, 0)');
+	$sth->execute(array($name, $longname));
 }
