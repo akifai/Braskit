@@ -95,8 +95,10 @@ function ob_callback($buffer) {
 //
 
 function get_cache($key) {
+	global $debug;
+
 	// debug mode - don't get cache
-	if (TINYIB_DEBUG)
+	if ($debug)
 		return false;
 
 	// APC
@@ -126,8 +128,10 @@ function get_cache($key) {
 }
 
 function set_cache($key, $data, $ttl = 0) {
+	global $debug;
+
 	// debug mode - don't save cache
-	if (TINYIB_DEBUG)
+	if ($debug)
 		return false;
 
 	// APC
@@ -253,14 +257,16 @@ function redirect($url) {
 }
 
 function load_twig() {
+	global $debug;
+
 	$loader = new TinyIB_Twig_Loader('inc/templates/');
 	$twig = new Twig_Environment($loader, array(
-		'cache' => TINYIB_DEBUG ? false : 'cache/',
-		'debug' => TINYIB_DEBUG,
+		'cache' => $debug ? false : 'cache/',
+		'debug' => $debug,
 	));
 
 	// Load debugging stuff
-	if (TINYIB_DEBUG) {
+	if ($debug) {
 		$twig->addExtension(new Twig_Extension_Debug());
 	}
 
@@ -488,7 +494,9 @@ function make_date($timestamp) {
 }
 
 function writePage($filename, $contents) {
-	$tempfile = tempnam('tmp/', 'tmp'); /* Create the temporary file */
+	global $temp_dir;
+
+	$tempfile = tempnam($temp_dir, 'tmp'); /* Create the temporary file */
 	$fp = fopen($tempfile, 'w');
 	fwrite($fp, $contents);
 	fclose($fp);

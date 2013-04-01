@@ -5,9 +5,17 @@ class Database extends PDO {
 	public static $time = 0;
 	public static $queries = 0;
 
+	private $driver, $name, $host, $user, $pass;
+
 	const DSN_FORMAT = '%s:dbname=%s;host=%s';
-	public function __construct() {
-		$dsn = self::create_dsn();
+	public function __construct($driver, $name, $host, $user, $pass) {
+		$this->driver = $driver;
+		$this->name = $name;
+		$this->host = $host;
+		$this->user = $user;
+		$this->pass = $pass;
+
+		$dsn = $this->create_dsn();
 
 		$this->spawn($dsn);
 	}
@@ -24,18 +32,18 @@ class Database extends PDO {
 	}
 
 	private function create_dsn() {
-		if (TINYIB_DBMODE === 'mysql')
-			return 'mysql:dbname='.TINYIB_DBNAME.';host='.TINYIB_DBHOST;
+		if ($this->driver === 'mysql')
+			return 'mysql:dbname='.$this->name.';host='.$this->host;
 
-		if (TINYIB_DBMODE === 'sqlite')
-			return 'sqlite:'.TINYIB_DBNAME;
+		if ($this->driver === 'sqlite')
+			return 'sqlite:'.$this->name;
 	}
 
 	/**
 	 * Call PDO's __construct() method and return the resulting PDO object
 	 */
 	private function spawn($dsn) {
-		return parent::__construct($dsn, TINYIB_DBUSERNAME, TINYIB_DBPASSWORD, array(
+		return parent::__construct($dsn, $this->user, $this->pass, array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_STATEMENT_CLASS => array('DBStatement', array($this)),
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

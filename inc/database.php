@@ -294,3 +294,8 @@ function createBoardEntry($name, $longname) {
 	VALUES (?, ?, 0)');
 	$sth->execute(array($name, $longname));
 }
+
+
+//
+// Config
+//

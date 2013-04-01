@@ -1,0 +1,15 @@
+{% extends "install_base.html" %}
+
+{% block content %}
+  <p>In order to finish the installation, copy the config below to
+    <kbd>config.php</kbd> in the board's root directory. Alternatively, you may
+    <a href="?p=download&amp;{{ session_name }}={{ session_id }}">download the
+    configuration</a> or <a href="?p=restart">restart the installation</a>.</p>
+
+    <p>When you're done, <a href="{{ path("imgboard.php") }}?task=login">log in</a> to
+      create boards.</p>
+
+    <div class="row">
+      <textarea readonly cols="80" rows="24">{{ config }}</textarea>
+    </div>
+{% endblock %}

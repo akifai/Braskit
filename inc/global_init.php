@@ -19,14 +19,6 @@ session_start();
 // some constants
 define('TINYIB_ROOT', realpath(dirname(__FILE__).'/..'));
 
-// Copy default settings file if needed.
-if (!file_exists(TINYIB_ROOT.'/settings.php'))
-	copy(TINYIB_ROOT.'/settings.default.php', TINYIB_ROOT.'/settings.php');
-
-// Load settings. The default settings will throw an exception, forcing the
-// administrator to edit the file.
-require(TINYIB_ROOT.'/settings.php');
-
 // Load classes automagically
 require(TINYIB_ROOT.'/inc/autoload.php');
 
@@ -39,16 +31,6 @@ require(TINYIB_ROOT.'/inc/functions.php');
 // Exception handlers rely on the above include
 if (defined('TINYIB_EXCEPTION_HANDLER'))
 	set_exception_handler(TINYIB_EXCEPTION_HANDLER);
-
-// Load DB-specific query functions
-$db_code = TINYIB_ROOT.'/inc/schema/'.TINYIB_DBMODE.'.php';
-
-if (file_exists($db_code)) {
-	require($db_code);
-	unset($db_code);
-} else {
-	throw new Exception('Unknown database type: '.TINYIB_DBMODE);
-}
 
 // Unescape magic quotes
 if (get_magic_quotes_gpc()) {
@@ -70,8 +52,29 @@ if (get_magic_quotes_gpc()) {
 	set_magic_quotes_runtime(false);
 }
 
-if (!TINYIB_TRIPSEED || !TINYIB_ADMINPASS)
-	throw new Exception('TINYIB_TRIPSEED and TINYIB_ADMINPASS must be configured');
+if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
+	// we can't use a config or database for this entry point
+	return;
+}
+
+if (file_exists(TINYIB_ROOT.'/config.php')) {
+	// Load the config
+	require(TINYIB_ROOT.'/config.php');
+} else {
+	// no config == not installed
+	redirect('install.php');
+	exit;
+}
+
+// Load DB-specific query functions
+$db_code = TINYIB_ROOT."/inc/schema/{$db_driver}.php";
+
+if (file_exists($db_code)) {
+	require($db_code);
+	unset($db_code);
+} else {
+	throw new Exception('Unknown database type: '.TINYIB_DBMODE);
+}
 
 // Connect to database
-$dbh = new Database();
+$dbh = new Database($db_driver, $db_name, $db_host, $db_username, $db_password);

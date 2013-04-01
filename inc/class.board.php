@@ -209,6 +209,8 @@ class Board {
 	}
 
 	public function handleUpload($name) {
+		global $temp_dir;
+
 		if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
 			return false; // no file uploaded - nothing to do
 
@@ -278,7 +280,7 @@ class Board {
 			list($t_width, $t_height) = $t_size;
 
 			// create a temporary name for thumbnail
-			$file['t_tmp'] = tempnam(sys_get_temp_dir(), 'tinyib');
+			$file['t_tmp'] = tempnam($temp_dir, 'tinyib');
 
 			// tempnam sets the wrong file permissions
 			chmod($file['t_tmp'], 0664);
