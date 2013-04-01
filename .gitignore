@@ -1,6 +1,19 @@
-settings.php
-/*.html
-/res/*.html
-*.db
+# Global stuff
+
+.DS_Store
+thumbs.db
+*~
+*.swp
+*.bak
+
+
+# PlainIB-specific
+
+/cache
+/index.html
+.htaccess
+config.php
+#*/src/
+#*/thumb/
+#*/res/
 *.sql
-.project
