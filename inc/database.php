@@ -331,3 +331,28 @@ function insertUser($user) {
 
 	return $dbh->lastInsertID();
 }
+
+function modifyUser($user) {
+	global $dbh, $db_prefix;
+
+	$values = array();
+	$sqlargs = array();
+
+	// generate argument list
+	// the array keys are not from user input and are thus safe
+	foreach ($user as $key => $value) {
+		if ($key !== "id") {
+			$sqlargs[] = "$key = ?";
+			$values[] = $value;
+		}
+	}
+
+	// turn $sqlargs into string
+	$sqlargs = implode(', ', $sqlargs);
+
+	// must be last
+	$values[] = $user['id'];
+
+	$sth = $dbh->prepare("UPDATE `{$db_prefix}_users` SET {$sqlargs} WHERE id = ?");
+	$sth->execute($values);
+}

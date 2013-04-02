@@ -51,7 +51,7 @@ class User {
 	}
 
 	public function edit($id) {
-		$target = new UserEdit($id, $this->level);
+		return new UserEdit($id, $this->level);
 	}
 
 	public function delete($id) {
@@ -86,6 +86,7 @@ class User {
 		// TODO
 
 		$this->capcode = $capcode;
+		$this->changes[] = 'capcode';
 	}
 
 	public function level($level = false) {
@@ -186,10 +187,8 @@ class User {
 
 		foreach ($values as $var) {
 			if ($this->$var === false) {
-				$variable = ucfirst($var);
-
 				// false variables means something is missing
-				throw new Exception("{$variable} isn't set.");
+				throw new Exception("{$var} isn't set.");
 			}
 
 			$user[$var] = $this->$var;
@@ -279,7 +278,11 @@ class UserNologin extends User {
 }
 
 class UserCreate extends User {
-	public function __construct() {}
+	protected $self_level = 0;
+
+	public function __construct($self_level) {
+		$this->self_level = $self_level;
+	}
 
 	public function commit() {
 		$user = $this->createArray(array(
@@ -297,13 +300,21 @@ class UserCreate extends User {
 }
 
 class UserEdit extends User {
-	public function __construct() {}
+	protected $self_level = 0;
+
+	public function __construct($id, $self_level) {
+		$this->id = $id;
+
+		// TODO - check if we have permission to edit this user
+	}
 
 	public function commit() {
 		if (!$this->changes)
 			return; // nothing to do
 
 		$values = array_unique($this->changes);
+		$values[] = 'id';
+
 		$user = $this->createArray($values);
 
 		modifyUser($user);
