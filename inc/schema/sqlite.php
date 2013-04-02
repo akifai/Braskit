@@ -129,7 +129,7 @@ function createUserTable() {
 	$sql = <<<EOSQL
 CREATE TABLE {$db_prefix}_users (
 	id INTEGER PRIMARY KEY,
-	username TEXT NOT NULL,
+	username TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL,
 	hashtype INTEGER NOT NULL,
 	lastlogin INTEGER NOT NULL,

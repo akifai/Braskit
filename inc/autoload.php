@@ -8,6 +8,10 @@ class AutoLoader {
 		'DBStatement' => 'class.db.php',
 		'IP' => 'class.IP.php',
 		'TinyIB_Twig_Loader' => 'class.template.php',
+		'User' => 'class.user.php',
+		'UserEdit' => 'class.user.php',
+		'UserCreate' => 'class.user.php',
+		'UserNologin' => 'class.user.php',
 	);
 
 	public static function autoload($class) {

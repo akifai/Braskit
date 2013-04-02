@@ -299,3 +299,35 @@ function createBoardEntry($name, $longname) {
 //
 // Config
 //
+
+//
+// Users
+//
+
+function getUserByName($username) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}_users` WHERE username = ?");
+	$sth->execute(array($username));
+
+	return $sth->fetch();
+}
+
+function insertUser($user) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}_users`
+	(id, username, password, hashtype, lastlogin, level, email, capcode)
+	VALUES (null, ?, ?, ?, ?, ?, ?, ?)");
+	$sth->execute(array(
+		$user['username'],
+		$user['password'],
+		$user['hashtype'],
+		$user['lastlogin'],
+		$user['level'],
+		$user['email'],
+		$user['capcode'],
+	));
+
+	return $dbh->lastInsertID();
+}
