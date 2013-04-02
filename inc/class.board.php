@@ -144,7 +144,7 @@ class Board {
 	 */
 	public function rebuildIndexes() {
 		$threads = $this->getIndexThreads();
-		$pagecount = ceil(count($threads) / 10) - 1;
+		$maxpage = get_page_count(count($threads)) - 1;
 
 		$num = 0;
 
@@ -153,9 +153,9 @@ class Board {
 			$file = !$num ? 'index.html' : $num.'.html';
 			$html = render('page.html', array(
 				'board' => $this->board,
+				'maxpage' => $maxpage,
 				'threads' => $page,
 				'pagenum' => $num,
-				'pagecount' => $pagecount,
 			));
 
 			$this->write($file, $html);

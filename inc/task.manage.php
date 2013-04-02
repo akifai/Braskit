@@ -43,7 +43,7 @@ function manage_get() {
 
 	// TODO: Fix this so we don't have to get all threads at once
 	$threads = $board->getIndexThreads($offset);
-	$pagecount = floor($board->countThreads() / 10);
+	$maxpage = get_page_count($board->countThreads()) - 1;
 
 	if ($page && !count($threads)) {
 		// no threads on this page, redirect to page 0
@@ -54,8 +54,8 @@ function manage_get() {
 	echo render('page.html', array(
 		'admin' => true,
 		'board' => $board,
+		'maxpage' => $maxpage,
 		'pagenum' => $page,
-		'pagecount' => $pagecount,
 		'threads' => $threads,
 	));
 }

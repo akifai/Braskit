@@ -30,7 +30,7 @@
 			{% endif %}
 		</div>
 		<div class="pagenums">
-			{% for i in range(0, pagecount) %}
+			{% for i in range(0, maxpage) %}
 				{% if i == pagenum %}
 					[<strong>{{ i }}</strong>]
 				{% else %}
@@ -39,7 +39,7 @@
 			{% endfor %}
 		</div>
 		<div class="next">
-			{% if pagenum == pagecount %}
+			{% if pagenum == maxpage %}
 				Next
 			{% else %}
 				{{ m.make_next_page_button(_context) }}
