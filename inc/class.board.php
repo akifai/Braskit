@@ -87,7 +87,7 @@ class Board {
 	 */
 	public function delete($id) {
 		// make the parent post last
-		$posts = array_reverse(postsInThreadByID($this->board, $id)); 
+		$posts = array_reverse($this->postsInThread($id)); 
 
 		foreach ($posts as $post) {
 			// delete files belonging to the post
@@ -119,7 +119,7 @@ class Board {
 				$thread[] = $reply;
 
 			$thread[0]['omitted'] = (count($replies) == 3)
-				? (count(postsInThreadByID($this->board, $thread[0]['id'])) - 4)
+				? (count($this->postsInThread($thread[0]['id'])) - 4)
 				: 0;
 
 			$threads[] = $thread;
@@ -169,11 +169,16 @@ class Board {
 		}
 	}
 
+	public function postsInThread($id) {
+		return postsInThreadByID($this->board, $id);
+	}
+
 	/**
 	 * Rebuilds a thread cache
 	 */
 	public function rebuildThread($id) {
-		$posts = postsInThreadByID($this->board, $id);
+		$posts = $this->postsInThread($id);
+
 		$html = render('thread.html', array(
 			'board' => $this->board,
 			'posts' => $posts,

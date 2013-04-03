@@ -38,14 +38,14 @@ $tasks = array(
 	'/rebuild' => 'rebuild', // deprecated
 
 	# /b/ | /b/index.html | /b/1 | /b/1.html
-	#'/([A-Za-z0-9]+)/(?:(?:index\.html)?|/([1-9]\d{0,9})(?:\.html)?)'
-	#	=> 'viewpage',
+	'/([A-Za-z0-9]+)/(?:(?:index\.html)?|/([1-9]\d{0,9})(?:\.html)?)'
+		=> 'viewpage',
 
 	# /b/res/1 | /b/res/1.html
-	#'/([A-Za-z0-9]+)/res/([1-9]\d{0,9})(?:\.html)?' => 'viewthread',
+	'/([A-Za-z0-9]+)/res/([1-9]\d{0,9})(?:\.html)?' => 'viewthread',
 
 	# /b/rebuild
-	#'/([A-Za-z0-9]+)/rebuild' => 'rebuild',
+	'/([A-Za-z0-9]+)/rebuild' => 'rebuild',
 );
 
 // Temp. fix for legacy URLs
