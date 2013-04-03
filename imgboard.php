@@ -25,17 +25,37 @@ ob_start('ob_callback');
 
 // Array of valid tasks
 $tasks = array(
-	// user actions
-	'post', 'delete',
-	// mod actions
-	'manage', 'login', 'logout',
-	// - bans
-	'bans', 'addban', 'liftban',
-	// - other
-	'rebuild',
+	'/post' => 'post',
+	'/delete' => 'delete',
+
+	'/addban' => 'addban',
+	'/bans' => 'bans',
+	'/liftban' => 'liftban',
+	'/delete' => 'delete',
+	'/login' => 'login',
+	'/logout' => 'logout',
+	'/manage' => 'manage', // deprecated
+	'/rebuild' => 'rebuild', // deprecated
+
+	# /b/ | /b/index.html | /b/1 | /b/1.html
+	#'/([A-Za-z0-9]+)/(?:(?:index\.html)?|/([1-9]\d{0,9})(?:\.html)?)'
+	#	=> 'viewpage',
+
+	# /b/res/1 | /b/res/1.html
+	#'/([A-Za-z0-9]+)/res/([1-9]\d{0,9})(?:\.html)?' => 'viewthread',
+
+	# /b/rebuild
+	#'/([A-Za-z0-9]+)/rebuild' => 'rebuild',
 );
 
-load_page($tasks);
+// Temp. fix for legacy URLs
+if (isset($_SERVER['QUERY_STRING'])
+&& substr($_SERVER['QUERY_STRING'], 0, 5) === 'task='
+&& strlen($_SERVER['QUERY_STRING']) > 5)
+	$_SERVER['QUERY_STRING'] = '/'.substr($_SERVER['QUERY_STRING'], 5);
+
+$loader = new TaskLoader($tasks, 'pages');
+$loader->run();
 
 // print buffer
 ob_end_flush();

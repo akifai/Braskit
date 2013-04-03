@@ -5,44 +5,6 @@ defined('TINYIB') or exit;
 // Script utilities
 //
 
-function load_page($tasks) {
-	if (isset($_GET['task']))
-		$task = &$_GET['task'];
-	elseif (isset($_POST['task']))
-		$task = &$_POST['task'];
-
-	if (isset($task) && in_array($task, $tasks, true)) {
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			do_task_function($task, 'post');
-		} else {
-			do_task_function($task, 'get');
-		}
-	} elseif (!isset($task)) {
-		redirect(expand_path('index.html'));
-	} else {
-		header('Status: 404 Not Found', true);
-		throw new Exception('Invalid task.');
-	}
-}
-
-function do_task_function($page, $method) {
-	// Load the file
-	$filename = 'inc/task.'.$page.'.php';
-
-	if (!file_exists($filename))
-		throw new Exception("Couldn't load page '$page'.", true, true);
-
-	require $filename;
-
-	$funcname = sprintf('%s_%s', $page, $method);
-	if (function_exists($funcname)) {
-		call_user_func($funcname);
-	} else {
-		header('Status: 405 Method Not Allowed', true);
-		throw new Exception('Method not allowed.');
-	}
-}
-
 function make_error_page($e) {
 	$referrer = @$_SERVER['HTTP_REFERER'];
 
