@@ -304,6 +304,15 @@ function createBoardEntry($name, $longname) {
 // Users
 //
 
+function getUserByID($id) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}_users` WHERE id = ?");
+	$sth->execute(array($id));
+
+	return $sth->fetch();
+}
+
 function getUserByName($username) {
 	global $dbh, $db_prefix;
 

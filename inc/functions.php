@@ -222,6 +222,15 @@ function get_script_name() {
 	return $_SERVER['SCRIPT_NAME'];
 }
 
+/// Internal redirect
+function diverge($dest, $args = array()) {
+	// missing slash
+	if (substr($dest, 0, 1) !== '/')
+		$dest = "/$goto";
+
+	redirect(TaskQueryString::create($dest, $args));
+}
+
 function redirect($url) {
 	header(sprintf('Location: %s', $url), true, 303);
 
@@ -519,18 +528,54 @@ function checkFlood() {
 	}
 }
 
-function check_login() {
-	// Check session
-	if (isset($_SESSION['tinyib']) && $_SESSION['tinyib'])
-		return true;
+function get_login_credentials() {
+	return array(
+		param('login_user', PARAM_DEFAULT ^ PARAM_GET),
+		param('login_pass', PARAM_DEFAULT ^ PARAM_GET),
+	);
+}
 
-	// We're logging in
-	if (isset($_POST['password']) && $_POST['password'] === TINYIB_ADMINPASS) {
-		$_SESSION['tinyib'] = true;
-		return true;
+/**
+ * Despite the name, this does not log us in - it merely check if we're logged
+ * in. If we are, it returns an instance of User. If we aren't, it redirects us
+ * or returns false.
+ *
+ * Use this in page functions to check the login.
+ */
+function do_login($url = false) {
+	try {
+		$user = get_session_login();
+	} catch (UserException $e) {
+		$user = false;
+	}
+
+	if ($user !== false)
+		return $user;
+
+	if ($url !== false) {
+		diverge('/login', array('goto' => urlencode($url)));
+		exit;
 	}
 
 	return false;
+}
+
+function get_session_login() {
+	if (isset($_SESSION['login']) && $_SESSION['login'] !== false)
+		return unserialize($_SESSION['login']);
+	
+	return false;
+}
+
+function redirect_after_login($goto = false) {
+	if ($goto) {
+		$goto = urldecode($goto);
+
+		diverge($goto);
+		return;
+	}
+
+	diverge("/manage");
 }
 
 function validateFileUpload($file) {

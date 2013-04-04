@@ -1,7 +1,7 @@
 <?php
 defined('TINYIB') or exit;
 
-function post_post() {
+function post_post($url) {
 	global $dbh;
 
 	// get the ip
@@ -54,12 +54,12 @@ function post_post() {
 		throw new Exception('The specified thread does not exist.');
 
 	// check if we're logged in
-	$loggedin = check_login();
+	$user = do_login();
 
 	// This callable gets run to handle board-specific post formatting crap
 	$format_cb = array($board, 'formatPostRef');
 
-	if (!$loggedin) {
+	if (!$user) {
 		checkBanned();
 		$comment = format_post($comment, $format_cb);
 	} else {

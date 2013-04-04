@@ -1,20 +1,20 @@
 <?php
 defined('TINYIB') or exit;
 
-function login_get() {
-	$loggedin = check_login();
+function login_get($url) {
+	$error = false;
 
-	// we're logged in already
-	if ($loggedin) {
-		if (isset($_GET['nexttask']))
-			redirect(get_script_name().'?task='.$_GET['nexttask']);
-		else
-			redirect(get_script_name().'?task=manage');
-
-		return;
+	try {
+		$user = do_login();
+	} catch (UserException $e) {
+		$user = false;
+		$error = $e->getMessage();
 	}
 
-	$error = false;
+	if ($user) {
+		redirect_after_login();
+		return;
+	}
 
 	// get the login error, if any
 	if (isset($_SESSION['login_error'])) {
@@ -22,22 +22,38 @@ function login_get() {
 		unset($_SESSION['login_error']);
 	}
 
-	echo render('login.html', array('error' => $error));
+	$goto = param('goto');
+
+	echo render('login.html', array(
+		'error' => $error,
+		'goto' => $goto,
+	));
 }
 
-function login_post() {
-	$loggedin = check_login();
+function login_post($url) {
+	list($username, $password) = get_login_credentials();
 
-	if ($loggedin) {
-		if (isset($_GET['nexttask']))
-			redirect(get_script_name().'?task='.$_GET['nexttask']);
-		else
-			redirect(get_script_name().'?task=manage');
+	try {
+		// validate user/pw
+		$user = new User($username, $password);
 
-		return;
+		// this keeps us logged in
+		$_SESSION['login'] = serialize($user);
+
+		$loggedin = true;
+	} catch (UserException $e) {
+		$loggedin = false;
+
+		// store the error message we display after the redirect
+		$_SESSION['login_error'] = $e->getMessage();
 	}
 
-	$_SESSION['login_error'] = 'Incorrect login.';
+	if ($loggedin) {
+		$goto = param('goto');
+		redirect_after_login($goto);
 
-	redirect(get_script_name().'?task=login');
+		exit;
+	}
+
+	diverge('/login');
 }

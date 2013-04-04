@@ -30,6 +30,8 @@ defined('TINYIB') or exit;
  */
 
 class User {
+	protected $hashed = false;
+
 	protected $id = false;
 	protected $username = false;
 	protected $password = false;
@@ -40,10 +42,27 @@ class User {
 	protected $capcode = '';
 
 	public function __construct($username, $password) {
-		$this->loadByUsername($username);
+		try {
+			$this->loadByUsername($username);
+		} catch (UserException $e) {
+			throw new UserException('Invalid login.');
+		}
 
 		if (!$this->checkPassword($password))
-			throw new Exception('Invalid password.');
+			throw new UserException('Invalid login.');
+	}
+
+	public function __wakeup() {
+		// Things might change between requests. Reload everything.
+		$this->loadByID($this->id);
+
+		// Just in case...
+		if ($this->hashed === false || $this->password === false)
+			throw new UserException('Cannot restore user session.');
+
+		// Validate password
+		if ($this->hashed !== $this->password)
+			throw new UserException('Invalid password.');
 	}
 
 	public function create() {
@@ -56,7 +75,7 @@ class User {
 
 	public function delete($id) {
 		if ($this->id === $id)
-			throw new Exception('You cannot delete yourself.');
+			throw new UserException('You cannot delete yourself.');
 
 		return deleteUserByID($id);
 	}
@@ -73,7 +92,7 @@ class User {
 			return $this->email;
 
 		if (filter_var($email, FILTER_VALIDATE_EMAIL) === false)
-			throw new Exception('Invalid email address.');
+			throw new UserException('Invalid email address.');
 
 		$this->email = $email;
 		$this->changes[] = 'email';
@@ -126,7 +145,7 @@ class User {
 		if ($this->level >= $level)
 			return;
 
-		throw new Exception("You don't have sufficient permissions.");
+		throw new UserException("You don't have sufficient permissions.");
 	}
 
 
@@ -137,7 +156,7 @@ class User {
 		$user = getUserByID($id);
 
 		if ($user === false)
-			throw new Exception("No such user exists.");
+			throw new UserException("No such user exists.");
 
 		$this->setVariables($user);
 	}
@@ -151,7 +170,7 @@ class User {
 		$user = getUserByName($username);
 
 		if ($user === false)
-			throw new Exception("No such user exists.");
+			throw new UserException("No such user exists.");
 
 		$this->setVariables($user);
 	}
@@ -170,13 +189,22 @@ class User {
 		$this->capcode = $row['capcode'];
 	}
 
-	protected function checkPassword($key) {
+	protected function checkPassword($key = false) {
 		if ($this->password === false || $this->hashtype === false) {
 			// shitty wording lol - this shouldn't happen anyway
-			throw new Exception('Password not loaded.');
+			throw new UserException('Password not loaded.');
 		}
 
-		return $this->password === $this->hash($this->hashtype, $key);
+		$hashed = $this->hash($this->hashtype, $key);
+
+		if ($this->password === $hashed) {
+			// store the hash so we can validate it in __wakeup
+			$this->hashed = $hashed;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -188,7 +216,7 @@ class User {
 		foreach ($values as $var) {
 			if ($this->$var === false) {
 				// false variables means something is missing
-				throw new Exception("{$var} isn't set.");
+				throw new UserException("{$var} isn't set.");
 			}
 
 			$user[$var] = $this->$var;
@@ -241,7 +269,7 @@ class User {
 		}
 
 		// should never, ever happen
-		throw new Exception("Couldn't generate password.");
+		throw new UserException("Couldn't generate password.");
 	}
 
 	protected static function hash_plaintext($key) {
@@ -320,3 +348,5 @@ class UserEdit extends User {
 		modifyUser($user);
 	}
 }
+
+class UserException extends Exception {}

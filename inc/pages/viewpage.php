@@ -2,12 +2,7 @@
 defined('TINYIB') or exit;
 
 function viewpage_get($url, $boardname, $page = 0) {
-	$loggedin = check_login();
-
-	if (!$loggedin) {
-		redirect(get_script_name().'?task=login&nexttask=manage');
-		return;
-	}
+	$user = do_login($url);
 
 	$board = new Board($boardname);
 

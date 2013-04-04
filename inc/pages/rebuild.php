@@ -1,13 +1,8 @@
 <?php
 defined('TINYIB') or exit;
 
-function rebuild_get() {
-	$loggedin = check_login();
-
-	if (!$loggedin) {
-		redirect(get_script_name().'?task=login&nexttask=rebuild');
-		return;
-	}
+function rebuild_get($url) {
+	$user = do_login($url);
 
 	$boardname = param('board');
 	$board = new Board($boardname);

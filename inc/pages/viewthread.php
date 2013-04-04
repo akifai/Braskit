@@ -2,12 +2,7 @@
 defined('TINYIB') or exit;
 
 function viewthread_get($url, $boardname, $id) {
-	$loggedin = check_login();
-
-	if (!$loggedin) {
-		redirect(get_script_name().'?task=login&nexttask=manage');
-		return;
-	}
+	$user = do_login($url);
 
 	$board = new Board($boardname);
 
@@ -15,7 +10,7 @@ function viewthread_get($url, $boardname, $id) {
 
 	if (!$posts) {
 		// thread doesn't exist
-		redirect(get_script_name().'?task=manage&board='.$board);
+		diverge("/{$board}/index.html");
 		return;
 	}
 

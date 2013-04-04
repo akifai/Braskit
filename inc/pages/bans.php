@@ -1,13 +1,8 @@
 <?php
 defined('TINYIB') or exit;
 
-function bans_get() {
-	$loggedin = check_login();
-
-	if (!$loggedin) {
-		redirect(get_script_name().'?task=login&nexttask=bans');
-		return;
-	}
+function bans_get($url) {
+	$user = do_login($url);
 
 	// TODO: Pagination
 	$bans = allBans();

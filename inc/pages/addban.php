@@ -1,13 +1,8 @@
 <?php
 defined('TINYIB') or exit;
 
-function addban_post() {
-	$loggedin = check_login();
-
-	if (!$loggedin) {
-		redirect(get_script_name().'?task=login&nexttask=bans');
-		return;
-	}
+function addban_post($url) {
+	$user = do_login($url);
 
 	$flags = PARAM_DEFAULT ^ PARAM_GET; // no gets
 
@@ -41,5 +36,5 @@ function addban_post() {
 	);
 	insertBan($ban);
 
-	redirect(get_script_name().'?task=bans');
+	diverge('/bans');
 }

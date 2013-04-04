@@ -13,6 +13,7 @@ class AutoLoader {
 		'TinyIB_Twig_Loader' => 'class.template.php',
 		'User' => 'class.user.php',
 		'UserEdit' => 'class.user.php',
+		'UserException' => 'class.user.php',
 		'UserCreate' => 'class.user.php',
 		'UserNologin' => 'class.user.php',
 	);

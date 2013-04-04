@@ -1,26 +1,25 @@
 <?php
 defined('TINYIB') or exit;
 
-function delete_any() {
-	$loggedin = check_login();
-
+function delete_any($url) {
 	$boardname = param('board');
 	$password = param('password', PARAM_STRING | PARAM_COOKIE);
 	$posts = param('delete', PARAM_DEFAULT | PARAM_ARRAY);
 
+	// check login
+	$user = do_login();
+
 	// Where to redirect after deleting
-	$nexttask = $loggedin
-		? param('nexttask')
-		: false;
+	$nexttask = $user ? param('goto') : false;
 
 	$board = new Board($boardname);
 
 	// Nothing to do
 	if (!$posts && $nexttask) {
-		redirect(get_script_name().'?task='.$nexttask);
+		diverge($nexttask);
 		return;
 	} elseif (!$posts) {
-		redirect(expand_path('index.html'));
+		redirect($board->path('index.html'));
 		return;
 	}
 
@@ -34,7 +33,7 @@ function delete_any() {
 	}
 
 	// check for blank password, which is always invalid
-	if (!$loggedin && $password === '')
+	if (!$user && $password === '')
 		throw new Exception('Incorrect password for deletion.');
 
 	$rebuild_queue = array();
@@ -54,7 +53,7 @@ function delete_any() {
 			continue;
 
 		// Check password
-		if (!$loggedin && $post['password'] !== $password) {
+		if (!$user && $post['password'] !== $password) {
 			$error = true;
 			continue;
 		}
@@ -80,10 +79,7 @@ function delete_any() {
 		throw new Exception('Incorrect password for deletion.');
 
 	if ($nexttask)
-		redirect(get_script_name().'?task='.$nexttask);
+		diverge($nexttask);
 	else
 		redirect($board->path('index.html'));
 }
-
-function delete_get() { delete_any(); }
-function delete_post() { delete_any(); }

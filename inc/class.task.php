@@ -127,14 +127,19 @@ class TaskLoader {
 }
 
 interface TaskInterface {
-	public static function create($task);
+	public static function create($task, $args = array());
 	public static function get();
 }
 
 class TaskQueryString implements TaskInterface {
 	// still unsure about how this should work
-	public static function create($task) {
-		return '?/'.$task;
+	public static function create($task, $args = array()) {
+		$arg_string = '';
+
+		foreach ($args as $name => $value)
+			$arg_string .= "&{$name}={$value}";
+
+		return '?'.$task.$arg_string;
 	}
 
 	public static function get() {
@@ -162,8 +167,8 @@ class TaskQueryString implements TaskInterface {
 }
 
 class TaskPathInfo implements TaskInterface {
-	public static function create($task) {
-		return get_script_name().'/'.$task;
+	public static function create($task, $args = array()) {
+		return get_script_name().$task;
 	}
 
 	public static function get() {
