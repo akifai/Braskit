@@ -282,9 +282,16 @@ function deleteBanByID($id) {
 // Board functions
 //
 
-function createBoardTables($board) {
+function createBoard($board, $longname) {
+	global $dbh;
+
+	$dbh->beginTransaction();
+
 	createBoardTable($board);
 	createBoardConfigTable($board);
+	createBoardEntry($board, $longname);
+
+	$dbh->commit();
 }
 
 function createBoardEntry($name, $longname) {

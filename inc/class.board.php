@@ -41,12 +41,18 @@ class Board {
 	/**
 	 * Creates a board.
 	 */
-	public function create($longname) {
+	public function create($longname, $check_folder = true) {
+		if (!is_string($longname))
+			throw new Exception("Missing board name.");
+
 		if ($this->exists())
 			throw new Exception('A board with that name already exists.');
 
-		if (file_exists($this->board))
+		if ($check_folder && file_exists($this->board))
 			throw new Exception('Folder name collision - refusing to create board.');
+
+		// create tables/entries for board
+		createBoard($this->board, $longname);
 
 		// create folders
 		foreach (array('', '/res', '/src', '/thumb') as $folder) {
@@ -55,10 +61,6 @@ class Board {
 			if (!@mkdir(TINYIB_ROOT."/$folder"))
 				throw new Exception("Couldn't create folder: {$folder}");
 		}
-
-		// create table for board
-		createBoardTables($this->board);
-		createBoardEntry($this->board, $longname);
 
 		$this->exists = true;
 	}
