@@ -164,7 +164,7 @@ function get_page_count($count) {
 	return floor(($count + $threads_per_page - 1)/$threads_per_page);
 }
 
-function format_post($comment, Callable $cb, $raw = false) {
+function format_post($comment, $cb, $raw = false) {
 	// Simple formatting
 
 	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
