@@ -4,6 +4,7 @@ defined('TINYIB') or exit;
 class AutoLoader {
 	protected static $classes = array(
 		'Board' => 'class.board.php',
+		'Config' => 'class.config.php',
 		'Database' => 'class.db.php',
 		'DBStatement' => 'class.db.php',
 		'IP' => 'class.IP.php',

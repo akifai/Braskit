@@ -47,7 +47,7 @@
 
   <div id="logo">
     {%- block header -%}
-      <h1 id="header">{{ constant("TINYIB_BOARDDESC") }}</h1>
+      <h1 id="header">{{ config.site_name }}</h1>
       {%- if subheader -%}
         <div id="subheader">{{ subheader }}</div>
       {%- endif -%}

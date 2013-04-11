@@ -173,8 +173,8 @@
 			<div class="rules">
 				<ul>
 					<li>Supported file types are: GIF, JPG, PNG</li>
-					<li>Maximum file size allowed is {{ constant("TINYIB_MAXKBDESC") }}.</li>
-					<li>Images greater than {{ constant("TINYIB_MAXW") }}x{{ constant("TINYIB_MAXH") }} pixels will be thumbnailed.</li>
+					<li>Maximum file size allowed is {{ config.max_kb }} KB.</li>
+					<li>Images greater than {{ config.max_thumb_w }}x{{ config.max_thumb_h }} pixels will be thumbnailed.</li>
 				</ul>
 			</div>
 		</form>
@@ -268,5 +268,3 @@
 		[<a href="{{ path(context.board ~ "/index.html") }}">Return</a>]
 	{% endif %}
 {%- endmacro %}
-
-{# vim: set ts=4 sw=4 ft=htmldjango : #}

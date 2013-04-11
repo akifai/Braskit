@@ -56,12 +56,15 @@ function ob_callback($buffer) {
 // Caching
 //
 
+// TODO
+define('TINYIB_CACHE', extension_loaded('apc') ? 'apc' : 'php');
+
 function get_cache($key) {
 	global $debug;
 
 	// debug mode - don't get cache
 	if ($debug)
-		return false;
+		return true;
 
 	// APC
 	if (TINYIB_CACHE === 'apc')
@@ -69,16 +72,13 @@ function get_cache($key) {
 
 	// Plain PHP cache
 	if (TINYIB_CACHE === 'php') {
-		$filename = sprintf('cache/cache-%s.php', $key);
-		include $filename;
+		$filename = TINYIB_ROOT."/cache/cache-{$key}.php";
+
+		@include($filename);
 
 		// we couldn't load the cache
-		if (!isset($cache))
-			return false;
-
-		// the cache expired, remove it
-		if ($expired) {
-			unlink($filename);
+		if (!isset($cache) || $expired) {
+			@unlink($filename);
 			return false;
 		}
 
@@ -94,7 +94,7 @@ function set_cache($key, $data, $ttl = 0) {
 
 	// debug mode - don't save cache
 	if ($debug)
-		return false;
+		return true;
 
 	// APC
 	if (TINYIB_CACHE === 'apc')
@@ -124,6 +124,25 @@ function set_cache($key, $data, $ttl = 0) {
 
 	// unknown cache type
 	return false;
+}
+
+function delete_cache($key) {
+	global $debug;
+
+	// debug mode - don't delete cache
+	if ($debug)
+		return false;
+
+	// APC
+	if (TINYIB_CACHE === 'apc')
+		return apc_delete($key);
+
+	// Plain PHP cache
+	if (TINYIB_CACHE === 'php')
+		return @unlink(sprintf('cache/cache-%s.php', $key));
+
+	// it's gone
+	return true;
 }
 
 function empty_cache() {
@@ -238,7 +257,7 @@ function redirect($url) {
 }
 
 function load_twig() {
-	global $debug;
+	global $config, $debug;
 
 	$loader = new TinyIB_Twig_Loader('inc/templates/');
 	$twig = new Twig_Environment($loader, array(
@@ -260,6 +279,9 @@ function load_twig() {
 
 	foreach ($functions as $name => $value)
 		$twig->addFunction($name, new Twig_Function_Function($value));
+
+	// config
+	$twig->addGlobal('config', $config);
 
 	return $twig;
 }
@@ -596,8 +618,6 @@ function validateFileUpload($file) {
 		// We're done.
 		return;
 	case UPLOAD_ERR_FORM_SIZE:
-		$msg = sprintf('That file is larger than %s.', TINYIB_MAXKBDESC);
-		break;
 	case UPLOAD_ERR_INI_SIZE:
 		$msg = 'The file is too large.';
 		break;

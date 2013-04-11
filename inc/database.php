@@ -307,6 +307,22 @@ function createBoardEntry($name, $longname) {
 // Config
 //
 
+function loadGlobalConfig() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->query("SELECT * FROM `{$db_prefix}_config`");
+
+	return $sth->fetchAll();
+}
+
+function deleteConfigValue($key) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}_config` WHERE key = ?");
+	$sth->execute(array($key));
+}
+
+
 //
 // Users
 //

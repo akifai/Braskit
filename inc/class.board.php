@@ -216,7 +216,7 @@ class Board {
 	}
 
 	public function handleUpload($name) {
-		global $temp_dir;
+		global $config, $temp_dir;
 
 		if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
 			return false; // no file uploaded - nothing to do
@@ -234,8 +234,8 @@ class Board {
 		require 'inc/image.php';
 
 		// Check file size
-		if ((TINYIB_MAXKB > 0) && ($size > (TINYIB_MAXKB * 1024)))
-			throw new Exception(sprintf('That file is larger than %s.', TINYIB_MAXKBDESC));
+		if (($config->max_kb > 0) && ($size > ($config->max_kb * 1024)))
+			throw new Exception(sprintf('That file is larger than %s KB.', $config->max_kb));
 
 		// set some values
 		$file['tmp'] = $tmp_name;
@@ -272,8 +272,8 @@ class Board {
 		$t_size = make_thumb_size(
 			$info['width'],
 			$info['height'],
-			TINYIB_MAXW,
-			TINYIB_MAXH
+			$config->max_w,
+			$config->max_h
 		);
 
 		if ($t_size === false) {

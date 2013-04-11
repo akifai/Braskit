@@ -73,8 +73,11 @@ if (file_exists($db_code)) {
 	require($db_code);
 	unset($db_code);
 } else {
-	throw new Exception('Unknown database type: '.TINYIB_DBMODE);
+	throw new Exception("Unknown database type: '$db_driver'.");
 }
 
 // Connect to database
 $dbh = new Database($db_driver, $db_name, $db_host, $db_username, $db_password);
+
+// Global configuration
+$config = new Config();

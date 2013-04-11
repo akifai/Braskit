@@ -43,7 +43,7 @@ EOSQL;
 // Board config table
 //
 
-function createBoardConfigTable($board) {
+function createConfigTable($board = "") {
 	global $dbh, $db_prefix;
 
 	$sql = <<<EOSQL
