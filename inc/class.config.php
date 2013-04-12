@@ -59,7 +59,7 @@ class Config {
 		$config = loadGlobalConfig();
 
 		if (is_array($config))
-			$this->config = array_merge($config, $this->config);
+			$this->config = array_merge($this->config, $config);
 	}
 
 	protected function loadFromCache() {

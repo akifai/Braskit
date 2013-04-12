@@ -312,7 +312,11 @@ function loadGlobalConfig() {
 
 	$sth = $dbh->query("SELECT * FROM `{$db_prefix}_config`");
 
-	return $sth->fetchAll();
+	$config = array();
+	while ($row = $sth->fetch()) 
+		$config[$row['name']] = $row['value'];
+
+	return $config;
 }
 
 function deleteConfigValue($key) {
