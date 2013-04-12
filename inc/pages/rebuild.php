@@ -1,10 +1,9 @@
 <?php
 defined('TINYIB') or exit;
 
-function rebuild_get($url) {
+function rebuild_get($url, $boardname) {
 	$user = do_login($url);
 
-	$boardname = param('board');
 	$board = new Board($boardname);
 
 	$redir_after = true;
