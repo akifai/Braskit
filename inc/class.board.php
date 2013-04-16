@@ -2,7 +2,8 @@
 defined('TINYIB') or exit;
 
 class Board {
-	private $board, $exists;
+	public $title, $minlevel = 0;
+	private $exists, $board;
 
 	public function __construct($board, $must_exist = true) {
 		// Check for blank board name
@@ -33,9 +34,19 @@ class Board {
 		if (is_bool($this->exists))
 			return $this->exists;
 
-		$this->exists = boardExists($this->board);
+		$vars = getBoard($this->board);
 
-		return $this->exists;
+		if ($vars) {
+			$this->exists = true;
+			$this->title = $vars['longname'];
+			$this->minlevel = $vars['minlevel'];
+
+			return true;
+		}
+
+		$this->exists = false;
+
+		return false;
 	}
 
 	/**
@@ -154,7 +165,7 @@ class Board {
 		do {
 			$file = !$num ? 'index.html' : $num.'.html';
 			$html = render('page.html', array(
-				'board' => $this->board,
+				'board' => $this,
 				'maxpage' => $maxpage,
 				'threads' => $page,
 				'pagenum' => $num,
@@ -182,7 +193,7 @@ class Board {
 		$posts = $this->postsInThread($id);
 
 		$html = render('thread.html', array(
-			'board' => $this->board,
+			'board' => $this,
 			'posts' => $posts,
 			'thread' => $id,
 		));
@@ -272,8 +283,8 @@ class Board {
 		$t_size = make_thumb_size(
 			$info['width'],
 			$info['height'],
-			$config->max_w,
-			$config->max_h
+			$config->max_thumb_w,
+			$config->max_thumb_h
 		);
 
 		if ($t_size === false) {

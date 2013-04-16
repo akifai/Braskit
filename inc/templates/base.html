@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{{ title }}</title>
-  
+  <title>
+    {% if title %}{{ title }} - {% endif %}
+    {% if board %}
+      {% if not title %}/{{ board }}/ - {% endif %}
+      {{ board.title }}
+    {% else %}
+      {{ config.site_name }}
+    {% endif %}
+  </title>
+
   <meta charset="utf-8">
   <link rel="stylesheet" id="sitestyle" href="{{ path("static/css/futaba.css") }}" title="Futaba">
-
   <script>
   {% autoescape "js" %}
-
     var styles = {
       "Burichan": "{{ path("static/css/burichan.css" ) }}",
       "Futaba": "{{ path("static/css/futaba.css") }}",
       "Tomorrow": "{{ path("static/css/tomorrow.css") }}"
     };
-
   {% endautoescape %}
   </script>
 
@@ -29,17 +34,17 @@
 
       {% block adminbar %}
         {% if admin %}
-          {% block adminbar_manage %}[<a href="{{ self() }}?task=manage">Manage</a>]{% endblock %}
-          {% block adminbar_bans %}[<a href="{{ self() }}?task=bans">Bans</a>]{% endblock %}
-          {% block adminbar_rebuild %}[<a href="{{ self() }}?task=rebuild">Rebuild caches</a>]{% endblock %}
-          {% block adminbar_logout %}[<a href="{{ self() }}?task=logout">Log out</a>]{% endblock %}
+          {% block adminbar_manage %}[<a href="{{ self }}?task=manage">Manage</a>]{% endblock %}
+          {% block adminbar_bans %}[<a href="{{ self }}?task=bans">Bans</a>]{% endblock %}
+          {% block adminbar_rebuild %}[<a href="{{ self }}?task=rebuild">Rebuild caches</a>]{% endblock %}
+          {% block adminbar_logout %}[<a href="{{ self }}?task=logout">Log out</a>]{% endblock %}
           -
         {% endif %}
 
         {% block adminbar_home %}[<a href="{{ path("index.html") }}" target="_top">Home</a>]{% endblock %}
 
         {% if not admin %}
-          {% block adminbar_login %}[<a href="{{ self() }}?task=manage">Manage</a>]{% endblock %}
+          {% block adminbar_login %}[<a href="{{ self }}?task=manage">Manage</a>]{% endblock %}
         {% endif %}
       {% endblock %}
     </div>
@@ -47,7 +52,7 @@
 
   <div id="logo">
     {%- block header -%}
-      <h1 id="header">{{ config.site_name }}</h1>
+      <h1 id="header">{% if board %}{{ board.title }}{% else %}{{ config.site_name }}{% endif %}</h1>
       {%- if subheader -%}
         <div id="subheader">{{ subheader }}</div>
       {%- endif -%}

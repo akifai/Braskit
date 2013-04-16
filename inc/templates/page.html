@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% import "post_macros.html" as m %}
 
-{% set title = config.site_name %}
-
 {% block adminbar_login %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
 {% block adminbar_manage %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
 {% block adminbar_rebuild %}[<a href="{{ self() }}?task=rebuild&board={{ board }}">Rebuild caches</a>]{% endblock %}

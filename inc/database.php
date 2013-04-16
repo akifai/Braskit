@@ -302,6 +302,15 @@ function createBoardEntry($name, $longname) {
 	$sth->execute(array($name, $longname));
 }
 
+function getBoard($board) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare('SELECT longname, minlevel FROM `_boards` WHERE name = ?');
+	$sth->execute(array($board));
+
+	return $sth->fetch();
+}
+
 
 //
 // Config
