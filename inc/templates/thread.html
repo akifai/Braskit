@@ -10,7 +10,7 @@
 	<div class="theader">Posting mode: Reply</div>
 	{{ m.postform(_context) }}
 	<hr>
-	<form action="{{ self() }}" method="post" name="delform">
+	<form action="{{ self }}{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
 		{% if admin %}
 			<input type="hidden" name="nexttask" value="manage">

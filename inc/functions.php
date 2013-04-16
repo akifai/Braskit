@@ -227,7 +227,10 @@ function plural($singular, $count, $plural = 's') {
 	return ($count == 1 ? $singular : $plural);
 }
 
-function expand_path($filename) {
+function expand_path($filename, $internal = false) {
+	if ($internal)
+		return get_script_name().TaskQueryString::create("/$filename");
+
 	$dirname = dirname(get_script_name());
 
 	// avoid double slashes

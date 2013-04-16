@@ -1,14 +1,10 @@
 {% extends "base.html" %}
 {% import "post_macros.html" as m %}
 
-{% block adminbar_login %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
-{% block adminbar_manage %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
-{% block adminbar_rebuild %}[<a href="{{ self() }}?task=rebuild&board={{ board }}">Rebuild caches</a>]{% endblock %}
-
 {% block content %}
 	{{ m.postform(_context) }}
 	<hr>
-	<form action="{{ self() }}?task=delete" method="post" name="delform">
+	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
 		{% if admin %}
 			<input type="hidden" name="nexttask" value="manage">
@@ -19,6 +15,7 @@
 		{% endfor %}
 		{{ m.delfile(_context) }}
 	</form>
+
 	<div class="pages">
 		<div class="previous">
 			{% if not pagenum %}
@@ -31,8 +28,10 @@
 			{% for i in range(0, maxpage) %}
 				{% if i == pagenum %}
 					[<strong>{{ i }}</strong>]
-				{% else %}
-					[<a href="{{ m.get_page_link(loop.parent, i) }}">{{ i }}</a>]
+        {% elseif i == 0 %}
+          [<a href="{{ board.path("index.html", admin) }}">{{ i }}</a>]
+        {% else %}
+          [<a href="{{ board.path(i~".html", admin) }}">{{ i }}</a>]
 				{% endif %}
 			{% endfor %}
 		</div>

@@ -32,21 +32,21 @@
       {# Style selector #}
       <span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
 
-      {% block adminbar %}
-        {% if admin %}
-          {% block adminbar_manage %}[<a href="{{ self }}?task=manage">Manage</a>]{% endblock %}
-          {% block adminbar_bans %}[<a href="{{ self }}?task=bans">Bans</a>]{% endblock %}
-          {% block adminbar_rebuild %}[<a href="{{ self }}?task=rebuild">Rebuild caches</a>]{% endblock %}
-          {% block adminbar_logout %}[<a href="{{ self }}?task=logout">Log out</a>]{% endblock %}
-          -
+      {% if admin %}
+        [<a href="{{ path("manage", true) }}">Manage</a>]
+        [<a href="{{ path("bans", true) }}">Bans</a>]
+        {% if board %}
+          [<a href="{{ board.path("rebuild", true) }}">Rebuild caches</a>]
         {% endif %}
+        [<a href="{{ path("logout", true) }}">Log out</a>]
+        -
+      {% endif %}
 
-        {% block adminbar_home %}[<a href="{{ path("index.html") }}" target="_top">Home</a>]{% endblock %}
+      [<a href="{{ path("index.html") }}" target="_top">Home</a>]
 
-        {% if not admin %}
-          {% block adminbar_login %}[<a href="{{ self }}?task=manage">Manage</a>]{% endblock %}
-        {% endif %}
-      {% endblock %}
+      {% if not admin %}
+        [<a href="{{ path("login", true) }}">Manage</a>]
+      {% endif %}
     </div>
   </div>
 

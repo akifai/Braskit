@@ -149,7 +149,9 @@ class Board {
 	 * Clear old threads
 	 */
 	public function trim() {
-		return trimThreads($this->board);
+		global $config;
+
+		return trimThreads($this->board, $config->max_threads);
 	}
 
 	/**
@@ -343,8 +345,10 @@ class Board {
 	/**
 	 * Returns a board-specific file path
 	 */
-	public function path($file) {
-		return expand_path($this->board.'/'.$file);
+	public function path($file, $internal = false) {
+		$path = $this->board.'/'.$file;
+
+		return expand_path($path, $internal);
 	}
 
 	/**

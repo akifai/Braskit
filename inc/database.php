@@ -192,18 +192,18 @@ function deletePostByID($board, $post) {
 	$sth->execute(array($post['id'], $post['id']));
 }
 
-function trimThreads($board) {
-	if (TINYIB_MAXTHREADS <= 0)
-		return;
-
+function trimThreads($board, $max_threads) {
 	global $dbh;
 
+	if ($max_threads <= 0)
+		return;
+
 	$sth = $dbh->prepare("SELECT id FROM `${board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
-	$sth->bindValue(1, TINYIB_MAXTHREADS, PDO::PARAM_INT);
+	$sth->bindParam(1, $max_threads, PDO::PARAM_INT);
 	$sth->execute();
 
 	while ($row = $sth->fetch()) {
-		deletePostByID($row['id']);
+		deletePostByID($board, $row['id']);
 	}
 }
 

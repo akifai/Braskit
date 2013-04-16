@@ -3,7 +3,7 @@
 
 {% block content %}
 	<div class="postarea">
-		<form action="{{ self() }}?task=addban" method="post">
+		<form action="{{ path("add_ban", true) }}" method="post">
 			<table><tbody>
 				<tr>
 					<th><label for="ip">IP address</label></th>
@@ -33,7 +33,7 @@
 	</div>
 	{% if bans %}
 		<hr>
-		<form action="{{ self() }}?task=liftban" method="post">
+		<form action="{{ path("liftban", true) }}" method="post">
 			<table class="modlist">
 				<thead>
 					<tr>
@@ -51,8 +51,9 @@
 							<td class="minimal"><label for="ban{{ ban.id }}">{{ ban.ip }}</label></td>
 							<td class="minimal">{{ ban.expire }}</td>
 							<td>{{ ban.reason }}</td>
-							<td class="minimal">[<a href="{{ self() }}?task=liftban&amp;ban={{ ban.id }}">Lift</a>]</td>
-							<td class="minimal">[<a href="{{ self() }}?task=editban&amp;ban={{ ban.id }}">Edit</a>]</td>
+              {# XXX #}
+							<td class="minimal">[<a href="{{ path("lift_ban/"~ban.id, true) }}">Lift</a>]</td>
+							<td class="minimal">[<a href="{{ path("edit_ban/"~ban.id, true) }}">Edit</a>]</td>
 						</tr>
 					{% endfor %}
 				</tbody>

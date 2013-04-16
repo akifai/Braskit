@@ -23,36 +23,33 @@ header('Content-Type: text/html; charset=UTF-8', true);
 // start buffering
 ob_start('ob_callback');
 
-// Array of valid tasks
-$tasks = array(
-	'/post' => 'post',
-	'/delete' => 'delete',
+$board_re = '([A-Za-z0-9]+)';
+$num_re = '([1-9]\d{0,9})';
 
-	'/addban' => 'addban',
+$tasks = array(
+	// User actions
+	"/$board_re/post" => 'post',
+	"/$board_re/delete" => 'delete',
+
+	// Mod view
+	"/$board_re/(?:$num_re(?:\\.html)?|index\\.html)?" => 'viewpage',
+	"/$board_re/res/$num_re(?:\\.html)?" => 'viewthread',
+
+	// Mod board actions
+	"/$board_re/rebuild" => 'rebuild',
+
+	// Mod global actions
+	'/manage' => 'manage',
 	'/bans' => 'bans',
-	'/liftban' => 'liftban',
-	'/delete' => 'delete',
+	'/add_ban' => 'addban',
+	"/lift_ban(?:/$num_re)?" => 'liftban',
+	"/edit_ban/$num_re" => 'editban',
+	"/view_IP/([a-f0-9.:/]+)" => 'viewip',
 	'/login' => 'login',
 	'/logout' => 'logout',
-	'/manage' => 'manage', // deprecated
-	'/rebuild' => 'rebuild', // deprecated
-
-	# /b/ | /b/index.html | /b/1 | /b/1.html
-	'/([A-Za-z0-9]+)/(?:(?:index\.html)?|/([1-9]\d{0,9})(?:\.html)?)'
-		=> 'viewpage',
-
-	# /b/res/1 | /b/res/1.html
-	'/([A-Za-z0-9]+)/res/([1-9]\d{0,9})(?:\.html)?' => 'viewthread',
-
-	# /b/rebuild
-	'/([A-Za-z0-9]+)/rebuild' => 'rebuild',
 );
 
-// Temp. fix for legacy URLs
-if (isset($_SERVER['QUERY_STRING'])
-&& substr($_SERVER['QUERY_STRING'], 0, 5) === 'task='
-&& strlen($_SERVER['QUERY_STRING']) > 5)
-	$_SERVER['QUERY_STRING'] = '/'.substr($_SERVER['QUERY_STRING'], 5);
+unset($board_re, $num_re);
 
 $loader = new TaskLoader($tasks, 'pages');
 $loader->run();

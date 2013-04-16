@@ -1,7 +1,7 @@
 <?php
 defined('TINYIB') or exit;
 
-function post_post($url) {
+function post_post($url, $boardname) {
 	global $dbh;
 
 	// get the ip
@@ -20,7 +20,6 @@ function post_post($url) {
 	$flags = PARAM_DEFAULT ^ PARAM_GET;
 
 	// POST values
-	$boardname = param('board', $flags);
 	$parent = param('parent', $flags);
 	$name = param('field1', $flags);
 	$email = param('field2', $flags);
