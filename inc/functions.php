@@ -259,29 +259,17 @@ function redirect($url) {
 function load_twig() {
 	global $config, $debug;
 
-	$loader = new TinyIB_Twig_Loader('inc/templates/');
+	$loader = new PlainIB_Twig_Loader('inc/templates/');
+
 	$twig = new Twig_Environment($loader, array(
 		'cache' => $debug ? false : 'cache/',
 		'debug' => $debug,
 	));
 
-	// Load debugging stuff
-	if ($debug) {
-		$twig->addExtension(new Twig_Extension_Debug());
-	}
+	$twig->addExtension(new PlainIB_Twig_Extension());
 
-	// Globals
-	$functions = array(
-		'self' => 'get_script_name',
-		'path' => 'expand_path',
-		'filename' => 'shorten_filename',
-	);
-
-	foreach ($functions as $name => $value)
-		$twig->addFunction($name, new Twig_Function_Function($value));
-
-	// config
-	$twig->addGlobal('config', $config);
+	// Load debugger
+	$debug and $twig->addExtension(new Twig_Extension_Debug());
 
 	return $twig;
 }

@@ -4,7 +4,34 @@ defined('TINYIB') or exit;
 require_once 'inc/lib/Twig/Autoloader.php';
 Twig_Autoloader::register();
 
-class TinyIB_Twig_Loader extends Twig_Loader_Filesystem {
+class PlainIB_Twig_Extension extends Twig_Extension {
+	public function getFunctions() {
+		$functions = array(
+			new Twig_SimpleFunction('path', 'expand_path'),
+			new Twig_SimpleFunction('self', 'get_script_name'), // deprecated
+			new Twig_SimpleFunction('filename', 'shorten_filename'),
+		);
+
+		return $functions;
+	}
+
+	public function getGlobals() {
+		global $config;
+
+		$globals = array('self' => get_script_name());
+
+		if (isset($config))
+			$globals['config'] = $config;
+
+		return $globals;
+	}
+
+	public function getName() {
+		return 'plainib';
+	}
+}
+
+class PlainIB_Twig_Loader extends Twig_Loader_Filesystem {
 	// https://developer.mozilla.org/en-US/docs/HTML/Block-level_elements
 	protected static $no_whitespace_elements = array(
 		// <head> elements
