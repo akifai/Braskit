@@ -52,7 +52,7 @@
 
   <div id="logo">
     {%- block header -%}
-      <h1 id="header">{% if board %}{{ board.title }}{% else %}{{ config.site_name }}{% endif %}</h1>
+      <h1 id="header">{% if board %}/{{ board }}/ - {{ board.title }}{% else %}{{ config.site_name }}{% endif %}</h1>
       {%- if subheader -%}
         <div id="subheader">{{ subheader }}</div>
       {%- endif -%}

@@ -58,7 +58,7 @@
 
 {% macro fileinfo(context, p) %}
 	<div class="imginfo">
-		File: <a href="{{ context.board.path("src/"~p.file, context.admin) }}" target="_blank">{{ p.file }}</a>
+		File: <a href="{{ context.board.path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
 		<em>(
 			{{- p.file_size_formatted }}, {{ p.image_width }}x{{ p.image_height -}}
 			{%- if context.thread and p.file_original %},
