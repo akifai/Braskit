@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2 class="heading">Boards</h2>
+  <ul>
+    {% for board in boards %}
+      <li><a href="{{ path(board.name~"/index.html", true) }}">/{{ board.name }}/</a> — {{ board.longname }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2 class="heading">Create board</h2>
+  <div class="postarea">
+    <form action="{{ path("create_board", true) }}" method="post">
+      <table>
+        <tbody>
+          <tr>
+            <th><label for="board_path">Path</label></th>
+            <td>
+              <input type="text" name="path" id="board_path" size="4">
+              <input type="submit" value="Create board">
+            </td>
+          </tr>
+          <tr>
+            <th><label for="board_title">Title</label></th>
+            <td><input type="text" name="title" id="board_title" size="24"></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+
+  <h2 class="heading">User account</h2>
+  <p>You are currently logged in as <strong>{{ user.username() }}</strong> and
+    have an e-penis length of <strong>{{ user.level() }}</strong>.</p>
+{% endblock %}

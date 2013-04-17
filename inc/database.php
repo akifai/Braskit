@@ -295,20 +295,27 @@ function createBoard($board, $longname) {
 }
 
 function createBoardEntry($name, $longname) {
-	global $dbh;
+	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare('INSERT INTO `_boards` (name, longname, minlevel)
-	VALUES (?, ?, 0)');
+	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}_boards` (name, longname, minlevel) VALUES (?, ?, 0)");
 	$sth->execute(array($name, $longname));
 }
 
 function getBoard($board) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare('SELECT longname, minlevel FROM `_boards` WHERE name = ?');
+	$sth = $dbh->prepare("SELECT longname, minlevel FROM `{$db_prefix}_boards` WHERE name = ?");
 	$sth->execute(array($board));
 
 	return $sth->fetch();
+}
+
+function getAllBoards() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->query("SELECT name, longname, minlevel FROM `{$db_prefix}_boards` ORDER BY name ASC");
+
+	return $sth->fetchAll();
 }
 
 
