@@ -197,11 +197,6 @@ body {
 }
 
 /* Moderator stuff */
-.loginform {
-	margin-top: 1em;
-	margin-bottom: 1em;
-}
-
 .important {
 	color: red;
 	font-weight: bold;
