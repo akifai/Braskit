@@ -11,13 +11,7 @@
 <head>
   <meta charset="utf-8">
   <title>{{ config.site_name }}</title>
-  {# TODO: compile to CSS #}
-  {% if debug %}
-    <link rel="stylesheet/less" href="{{ path("static/less/mod.less") }}">
-    <script src="{{ path("static/js/less-1.3.3.min.js") }}"></script>
-  {% else %}
-    <link rel="stylesheet" type="text/css" href="{{ less("mod.less") }}">
-  {% endif %}
+  <link rel="stylesheet" type="text/css" href="{{ less("mod.less") }}">
 </head>
 <body{% if body_classes %} class="{{ body_classes }}"{% endif %}>
   {% block wrapper %}

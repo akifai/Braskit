@@ -1,7 +1,41 @@
+// stuff which should be unchanged
+@serif: Times, 'Times New Roman', 'Nimbus Roman No9 L', 'FreeSerif', serif;
+@sansSerif: Helvetica, Arial, 'FreeSans', sans-serif;
+
+// global
+@background: #fff;
+@textFont: @serif;
+@textColour: #000;
+@textSize: 12pt;
+@linkColour: #00f;
+@linkHoverColour: @linkColour;
+
+// posts
+@postNameColour: @textColour;
+@postTripColour: @textColour;
+@postSubjectColour: @textColour;
+@postBoardLinkColour: @linkColour;
+@postQuoteColour: @textColour;
+@postSpoilerColour: #000;
+@postSpoilerHoverColour: #fff;
+@postOmitColour: @textColour;
+
+// mode bar
+@modeBackground: transparent;
+@modeTextColour: @textColour;
+
+// "postblocks"
+@blockBakground: transparent;
+@blockTextColour: @textColour;
+
+// other
+@headerColour: @textColour;
+
 body {
-	font-family: Times, 'Times New Roman', 'Nimbus Roman No9 L',
-		'Freeserif', serif;
-	font-size: 12pt;
+	background: @background;
+	color: @textColour;
+	font-family: @textFont;
+	font-size: @textSize;
 	margin: 0;
 	padding: 8px;
 }
@@ -25,25 +59,35 @@ body {
 }
 
 #header {
+	color: @headerColour;
 	font-weight: normal;
 	font-size: 24pt;
 	margin: 0;
 }
 
 .theader {
-	/* intentionally left blank */
+	background: @modeBackground;
+	color: @modeTextColour;
+	padding: 2px;
+	text-align: center;
 }
 
 /* Postform */
 
-.postarea {
-	display: table; /* why doesn't inline-block work? */
-	margin: 0px auto;
-}
-.postarea th {
+.postblock {
+	background: @blockBackground;
+	color: @blockTextColour;
 	font-weight: bold;
 	text-align: left;
 }
+
+.postarea {
+	display: table; /* why doesn't inline-block work? */
+	margin: 0px auto;
+
+	th { .postblock; }
+}
+
 .rules {
 	font-size: 0.7em;
 	padding: 1px 3px;
@@ -69,6 +113,7 @@ body {
 	padding: 1px;
 }
 .reply {
+	background: @replyBackground;
 	display: table-cell;
 	padding: 1px;
 }
@@ -94,16 +139,20 @@ body {
 	margin: 0;
 }
 .posttitle {
+	color: @postSubjectColour;
+	font-size: 1.2em;
 	font-style: normal;
 	font-weight: bold;
 }
 .postname {
+	color: @postNameColour;
 	font-weight: bold;
 }
 .posttrip {
+	color: @postTripColour;
 }
 .reflink a {
-	color: inherit;
+	color: @textColour;
 	text-decoration: none;
 }
 .replylink {
@@ -114,40 +163,30 @@ body {
 
 .posttext {
 	margin: 1em 40px;
+
+	a.boardlink {
+		color: @postBoardLinkColour;
+	}
+	.spoiler {
+		background: @postSpoilerColour;
+		color: @postSpoilerColour;
+	}
+	.spoiler:hover {
+		color: @postSpoilerHoverColour;
+	}
+
+	blockquote,
+	.unkfunc {
+		color: @postQuoteColour;
+	}
 }
+
 .reply .posttext {
 	margin-bottom: 0;
 }
-.posttext p {
-}
-.posttext em {
-}
-.posttext strong {
-}
-.posttext ol {
-}
-.posttext ul {
-}
-.posttext li {
-}
-.posttext ol li {
-}
-.posttext ul li {
-}
-.posttext blockquote,
-.posttext .unkfunc {
-}
-.posttext a.boardlink {
-}
-.posttext .spoiler {
-	background: #000;
-	color: #000;
-}
-.posttext .spoiler:hover {
-	color: #fff;
-}
 
 .omitted {
+	color: @postOmitColour;
 }
 .deletefile {
 	float: right;
@@ -169,20 +208,22 @@ body {
 	border-bottom-color: #2c2c2c;
 	border-spacing: 2px;
 	display: table;
-}
-.pages div {
-	display: table-cell;
-	border: solid 1px;
-	border-left-color: #2c2c2c;
-	border-top-color: #2c2c2c;
-	border-right-color: #808080;
-	border-bottom-color: #808080;
-	padding: 1px;
-}
-.pages form {
-	display: inline;
-	margin: 0;
-	padding: 0;
+
+	div {
+		display: table-cell;
+		border: solid 1px;
+		border-left-color: #2c2c2c;
+		border-top-color: #2c2c2c;
+		border-right-color: #808080;
+		border-bottom-color: #808080;
+		padding: 1px;
+	}
+
+	form {
+		display: inline;
+		margin: 0;
+		padding: 0;
+	}
 }
 
 #footer {
@@ -195,31 +236,12 @@ body {
 	font-weight: bold;
 	text-align: center;
 }
-
-/* Moderator stuff */
-.important {
-	color: red;
-	font-weight: bold;
-}
-p.center {
-	text-align: center;
-}
-div.center, table.center {
-	margin-left: auto;
-	margin-right: auto;
-}
-.modlist thead tr {
-}
-.modlist th {
-	font-weight: bold;
-	text-align: left;
-}
-.modlist tr {
-}
-.modlist .minimal {
-	width: 1%;
-}
-
 .noscreen {
 	display: none;
+}
+a {
+	color: @linkColour;
+}
+a:hover {
+	color: @linkHoverColour;
 }

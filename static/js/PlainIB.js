@@ -54,7 +54,7 @@ function Cookie(options) {
 
 function changeStyle(name) {
 	var link = $("#sitestyle");
-	link.attr("href", styles[name]);
+	link.attr("href", lessHandler + "?file=" +styles[name]);
 }
 
 function createStyleSwitcher() {

@@ -12,13 +12,14 @@
   </title>
 
   <meta charset="utf-8">
-  <link rel="stylesheet" id="sitestyle" href="{{ path("static/css/futaba.css") }}" title="Futaba">
+  <link rel="stylesheet" id="sitestyle" href="{{ less("futaba.less") }}" title="Futaba">
   <script>
   {% autoescape "js" %}
+    var lessHandler = "{{ path("less.php") }}";
     var styles = {
-      "Burichan": "{{ path("static/css/burichan.css" ) }}",
-      "Futaba": "{{ path("static/css/futaba.css") }}",
-      "Tomorrow": "{{ path("static/css/tomorrow.css") }}"
+      "Burichan": "burichan.less",
+      "Futaba": "futaba.less",
+      "Tomorrow": "tomorrow.less"
     };
   {% endautoescape %}
   </script>

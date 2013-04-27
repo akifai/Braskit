@@ -1,0 +1,83 @@
+@import "base.less";
+
+@background: #1d1f21;
+@blockBackground: @replyBackground;
+@replyBackground: #282a2e;
+@textColour: #c5c8c6;
+@textFont: @sansSerif;
+@textSize: 10pt;
+@linkColour: #81a2be;
+@linkHoverColour: #5f89ac;
+@postSubjectColour: #b294bb;
+@postNameColour: #c5c8c6;
+@postTripColour: @postNameColour;
+@postQuoteColour: #b5bd68;
+@modeBackground: @replyBackground;
+@modeTextColour: #fff;
+
+#header {
+	font-family: tahoma, @sansSerif;
+	font-weight: bold;
+	font-size: 28px;
+	letter-spacing: -2px;
+}
+.theader {
+	border: solid 1px #111;
+	font-size: larger;
+	font-weight: bold;
+	padding: 1px;
+}
+.postarea td {
+	padding: 0;
+}
+.postblock {
+	border: solid 1px #111;
+	padding: 0 5px;
+}
+input[type="text"],
+input[type="password"],
+textarea {
+	border: solid 1px #aaa;
+	background: #fff;
+	color: #000;
+	font-family: arial, helvetica, sans-serif;
+	font-size: 13px;
+	outline: none;
+	padding: 2px 4px 3px;
+}
+.reply {
+	border: 1px solid #282a2e;
+}
+.reflink a {
+	color: @linkColour;
+}
+.reflink a:hover {
+	color: @linkHoverColour;
+}
+.rules {
+	font-size: 10px;
+}
+.rules ul,
+.rules li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.rules li:before {
+	content: "\2022 \20";
+}
+hr {
+	border: solid @replyBackground;
+	border-width: 1px 0 0;
+}
+.pages {
+	background: @replyBackground;
+	border: solid 1px #111;
+	padding: 3px 7px;
+}
+.pages div {
+	border: none;
+}
+#footer {
+	font-size: x-small;
+}
