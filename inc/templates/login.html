@@ -4,7 +4,7 @@
 {% block container %}
 {% endblock %}
 
-{% block content %}
+{% block wrapper %}
   <form action="{{ path("login", true) }}" method="post" class="login-form">
     {% if goto %}
       <input type="hidden" name="goto" value="{{ goto }}">
