@@ -29,4 +29,33 @@
 	.return {
 		.btn;
 	}
+
+	.wrapper {
+		.container;
+	}
+}
+
+// sidebar
+.sidebar {
+	.makeColumn(3);
+	margin-top: 8px;
+}
+
+// main column
+.content {
+	.makeColumn(9);
+
+	section {
+		background: @white;
+		.border-radius(@borderRadiusLarge);
+		border: solid 1px (@gray * 2.5);
+		margin-top: 16px;
+		padding: 0 8px;
+	}
+}
+
+.top-menu {
+	.navbar;
+	.navbar-static-top;
+	.navbar-inverse;
 }

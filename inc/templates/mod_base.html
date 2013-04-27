@@ -8,30 +8,44 @@
 } %}
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>{{ config.site_name }}</title>
-  <link rel="stylesheet" type="text/css" href="{{ less("mod.less") }}">
-</head>
-<body{% if body_classes %} class="{{ body_classes }}"{% endif %}>
-  {% block wrapper %}
-    <div class="wrapper">
-      <div class="wrapper-inner">
-        {# Sidebar #}
-        {# FIXME: I can't figure out how to combine these classes in LESS #}
-        <ul class="main-menu nav nav-list">
-          {% for dest, label in menu_items %}
-            <li{% if dest == current_page %} class="active"{% endif %}><a href="{{ path(dest, true) }}">{{ label }}</a></li>
-          {% endfor %}
-        </ul>
-
-        <div class="wrapper-main">
-          {% block content %}{% endblock %}
+  <head>
+    <meta charset="utf-8">
+    <title>{{ config.site_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ less("mod.less") }}">
+  </head>
+  <body{% if body_classes %} class="{{ body_classes }}"{% endif %}>
+    {% block wrapper %}
+      <div class="top-nav navbar navbar-static-top navbar-inverse">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="#">{{ config.site_name }}</a>
+            <form action="{{ path("search", true) }}" method="" class="navbar-search pull-right">
+              <input type="text" class="search-query" placeholder="Search">
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-  {% endblock %}
-  <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
-  <script src="{{ path("static/js/bootstrap.min.js") }}"></script>
-</body>
+
+      <div class="container">
+        <div class="row">
+          {# Sidebar #}
+          {# FIXME: I can't figure out how to combine these classes in LESS #}
+          <div class="sidebar">
+            <ul class="main-menu nav nav-list">
+              {% for dest, label in menu_items %}
+                <li{% if dest == current_page %} class="active"{% endif %}><a href="{{ path(dest, true) }}">{{ label }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="content">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    {% endblock %}
+
+    <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
+    <script src="{{ path("static/js/bootstrap.min.js") }}"></script>
+  </body>
 </html>

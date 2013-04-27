@@ -48,10 +48,6 @@ if (!$cache || $cache['mtime'] !== $mtime) {
 
 	// compile the less
 	$less = new lessc_fixed;
-	$less->setImportDir(array(
-		TINYIB_ROOT.'/static/less',
-		TINYIB_ROOT.'/static/less/bootstrap',
-	));
 
 	if (!$debug)
 		$less->setFormatter('compressed');
