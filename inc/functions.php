@@ -64,7 +64,7 @@ function get_cache($key) {
 
 	// debug mode - don't get cache
 	if ($debug)
-		return true;
+		return false;
 
 	// APC
 	if (TINYIB_CACHE === 'apc')
@@ -131,7 +131,7 @@ function delete_cache($key) {
 
 	// debug mode - don't delete cache
 	if ($debug)
-		return false;
+		return true;
 
 	// APC
 	if (TINYIB_CACHE === 'apc')
@@ -242,6 +242,23 @@ function expand_path($filename, $internal = false) {
 
 function get_script_name() {
 	return $_SERVER['SCRIPT_NAME'];
+}
+
+function get_less_path($less) {
+	static $mtimes = array();
+
+	$path = expand_path('less.php?file='.$less);
+
+	$filename = TINYIB_ROOT.'/static/less/'.$less;
+
+	// for caching purposes
+	if (isset($mtimes[$less])) {
+		$path .= '&'.$mtimes[$less];
+	} elseif (file_exists($filename)) {
+		$path .= '&'.$mtimes[$less] = filemtime($filename);
+	}
+
+	return $path;
 }
 
 /// Internal redirect

@@ -12,9 +12,11 @@
 
 defined('TINYIB') or exit;
 
-// sesisons
-session_name('TINYIB');
-session_start();
+// sessions
+if (!defined('TINYIB_NO_SESSIONS') || TINYIB_NO_SESSIONS) {
+	session_name('TINYIB');
+	session_start();
+}
 
 // some constants
 define('TINYIB_ROOT', realpath(dirname(__FILE__).'/..'));
@@ -65,6 +67,10 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 	redirect('install.php');
 	exit;
 }
+
+// Don't connect to database or load config from database
+if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
+	return;
 
 // Load DB-specific query functions
 $db_code = TINYIB_ROOT."/inc/schema/{$db_driver}.php";
