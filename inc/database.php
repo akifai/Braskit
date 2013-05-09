@@ -288,8 +288,8 @@ function createBoard($board, $longname) {
 	$dbh->beginTransaction();
 
 	createBoardTable($board);
-	createBoardConfigTable($board);
 	createBoardEntry($board, $longname);
+	createConfigTable($board);
 
 	$dbh->commit();
 }
@@ -326,7 +326,12 @@ function getAllBoards() {
 function loadGlobalConfig() {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->query("SELECT * FROM `{$db_prefix}_config`");
+	try {
+		$sth = $dbh->query("SELECT * FROM `{$db_prefix}_config`");
+	} catch (PDOException $e) {
+		// nothing to load
+		return false;
+	}
 
 	$config = array();
 	while ($row = $sth->fetch()) 

@@ -47,6 +47,8 @@ $tasks = array(
 	"/view_IP/([a-f0-9.:/]+)" => 'viewip',
 	'/login' => 'login',
 	'/logout' => 'logout',
+
+	'/create_board' => 'create_board',
 );
 
 unset($board_re, $num_re);
