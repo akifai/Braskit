@@ -24,9 +24,6 @@ define('TINYIB_ROOT', realpath(dirname(__FILE__).'/..'));
 // Load classes automagically
 require(TINYIB_ROOT.'/inc/autoload.php');
 
-// Database code
-require(TINYIB_ROOT.'/inc/database.php');
-
 // Misc functions
 require(TINYIB_ROOT.'/inc/functions.php');
 
@@ -72,18 +69,8 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
 	return;
 
-// Load DB-specific query functions
-$db_code = TINYIB_ROOT."/inc/schema/{$db_driver}.php";
-
-if (file_exists($db_code)) {
-	require($db_code);
-	unset($db_code);
-} else {
-	throw new Exception("Unknown database type: '$db_driver'.");
-}
-
-// Connect to database
-$dbh = new Database($db_driver, $db_name, $db_host, $db_username, $db_password);
+// Database code
+require_once(TINYIB_ROOT.'/inc/database.php');
 
 // Global configuration
 $config = new Config();

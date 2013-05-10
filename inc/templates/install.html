@@ -1,4 +1,5 @@
 {% extends "install_base.html" %}
+{% set js_callback = "start_cb" %}
 
 {% block content %}
   <p><strong>Welcome to the PlainIB installer.</strong> You are seeing this
@@ -82,5 +83,4 @@
       <input type="submit" value="Install">
     </div>
   </form>
-  <script src="{{ path("static/js/install.js") }}"></script>
 {% endblock %}

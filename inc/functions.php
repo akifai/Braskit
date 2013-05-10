@@ -228,8 +228,10 @@ function plural($singular, $count, $plural = 's') {
 }
 
 function expand_path($filename, $internal = false) {
-	if ($internal)
-		return get_script_name().TaskQueryString::create("/$filename");
+	if ($internal) {
+		return get_script_name().
+			TaskQueryString::create("/$filename", $internal);
+	}
 
 	$dirname = dirname(get_script_name());
 
@@ -259,6 +261,57 @@ function get_less_path($less) {
 	}
 
 	return $path;
+}
+
+/*
+ * this is like some sort of reverse parse_url() for the current request.
+ * of course, it all depends on a correct server setup, which might not be the
+ * case with a sloppy reverse proxy setups.
+ */
+function get_url($path = false) {
+	static $url;
+	if (isset($url))
+		return $url;
+
+	$https = getenv('HTTPS');
+	$user = getenv('PHP_AUTH_USER');
+	$pass = getenv('PHP_AUTH_PW');
+	$host = (getenv('HTTP_HOST') ?: getenv('SERVER_NAME')) ?: 'localhost';
+	$port = getenv('SERVER_PORT');
+	if ($path === false)
+		$path = getenv('REQUEST_URI');
+
+	$url = 'http';
+
+	// https
+	if ($https)
+		$url .= 's';
+
+	$url .= '://';
+
+	// authentication
+	if ($user !== false && $user !== '') {
+		$url .= $user;
+
+		if ($pass !== false && $pass !== '')
+			$url .= ':'.$pass;
+
+		$url .= '@';
+	}
+
+	// hostname, might include port number
+	$url .= $host;
+
+	// port number
+	// SERVER_NAME might include one, so we have to check the host variable
+	if (!preg_match('/:\d+$/', $host)
+	&& ($https && $port != 443 || !$https && $port != 80))
+		$url .= ":$port";
+
+	// path
+	$url .= $path;
+
+	return $url;
 }
 
 /// Internal redirect

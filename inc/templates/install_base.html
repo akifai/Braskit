@@ -60,8 +60,9 @@
   }
   </style>
 </head>
-<body>
+<body{% if js_callback %} data-callback="{{ js_callback }}"{% endif %}>
   <h1>PlainIB Installation</h1>
   {% block content %}{% endblock %}
+  <script src="{{ path("static/js/install.js") }}"></script>
 </body>
 </html>

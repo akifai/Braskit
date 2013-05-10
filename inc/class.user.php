@@ -27,6 +27,7 @@ defined('TINYIB') or exit;
  * TODO:
  *   - Check permissions for actions
  *   - Test everything properly
+ *   - Disallow blank usernames/passwords (lol)
  */
 
 class User {

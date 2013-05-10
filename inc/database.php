@@ -1,6 +1,20 @@
 <?php
 defined('TINYIB') or exit;
 
+$db_code = TINYIB_ROOT."/inc/schema/{$db_driver}.php";
+
+if (file_exists($db_code)) {
+	require($db_code);
+	unset($db_code);
+} else {
+	throw new Exception("Unknown database type: '$db_driver'.");
+}
+
+// Connect to database
+$dbh = new Database($db_driver, $db_name, $db_host, $db_username, $db_password);
+
+
+
 // TODO: table prefixes
 
 //
