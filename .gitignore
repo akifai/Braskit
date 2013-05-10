@@ -12,7 +12,7 @@ thumbs.db
 /cache
 /index.html
 .htaccess
-config.php
+/config.php
 #*/src/
 #*/thumb/
 #*/res/
