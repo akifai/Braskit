@@ -6,16 +6,7 @@ function rebuild_get($url, $boardname) {
 
 	$board = new Board($boardname);
 
-	$redir_after = true;
-
-	if (function_exists('fastcgi_finish_request')) {
-		$redir_after = false;
-
-		redirect(expand_path('index.html'));
-		fastcgi_finish_request();
-	} else {
-		ignore_user_abort(true);
-	}
+	ignore_user_abort(true);
 
 	// Rebuild all threads
 	$threads = $board->getAllThreads();
@@ -25,6 +16,5 @@ function rebuild_get($url, $boardname) {
 	// Rebuild all indexes
 	$board->rebuildIndexes();
 
-	if ($redir_after)
-		redirect($board->path('index.html'));
+	redirect($board->path('index.html'));
 }
