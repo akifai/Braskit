@@ -9,6 +9,8 @@ defined('TINYIB') or exit;
 
 $site_name = 'PlainIB Imageboard';
 
+$home_url = '/';
+
 $allow_thread_textonly = false;
 $allow_thread_images = true;
 $allow_reply_textonly = true;

@@ -43,7 +43,7 @@
         -
       {% endif %}
 
-      [<a href="{{ path("index.html") }}" target="_top">Home</a>]
+      [<a href="{{ config.home_url }}" target="_top">Home</a>]
 
       {% if not admin %}
         [<a href="{{ path("login", true) }}">Manage</a>]

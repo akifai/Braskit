@@ -27,6 +27,8 @@ $board_re = '([A-Za-z0-9]+)';
 $num_re = '([1-9]\d{0,9})';
 
 $tasks = array(
+	'/' => 'home',
+
 	// User actions
 	"/$board_re/post" => 'post',
 	"/$board_re/delete" => 'delete',
