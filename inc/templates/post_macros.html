@@ -226,15 +226,9 @@
 {% macro returnlink(context, dest="") -%}
 	{% if dest %}
 		[<a href="{{ dest }}">Return</a>]
-	{% elseif context.admin %}
-		{% if context.board %}
-			[<a href="{{ self }}?task=manage&board={{ context.board }}">Return</a>]
-		{% else %}
-			[<a href="{{ self }}?task=login">Return</a>]
-		{% endif %}
 	{% elseif context.board %}
-		[<a href="{{ context.board.path("index.html") }}">Return</a>]
+		[<a href="{{ context.board.path("index.html", context.admin) }}">Return</a>]
   {% else %}
-    [<a href="{{ path("") }}">Return</a>]
+    [<a href="{{ path("index.html") }}">Return</a>]
 	{% endif %}
 {%- endmacro %}

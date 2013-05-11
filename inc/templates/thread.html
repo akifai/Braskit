@@ -3,8 +3,6 @@
 
 {% set title = posts[0]["subject"] ?: "Thread No."~thread %}
 
-{% block adminbar_manage %}[<a href="{{ self() }}?task=manage&board={{ board }}">Manage</a>]{% endblock %}
-
 {% block content %}
 	{{ m.returnlink(_context) }}
 	<div class="theader">Posting mode: Reply</div>

@@ -15,7 +15,7 @@ function viewpage_get($url, $boardname, $page = 0) {
 
 	if ($page && !count($threads)) {
 		// no threads on this page, redirect to page 0
-		redirect(get_script_name().'?task=manage');
+		redirect($board->path('', true));
 		return;
 	}
 
