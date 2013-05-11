@@ -22,8 +22,10 @@ function finish_get() {
 		throw new Exception('Fuck off.');
 
 	// connect to database
-	global $dbh;
 	require_once(TINYIB_ROOT.'/inc/database.php');
+
+	// lazy hack: globalise the variables which are supposed to be global
+	$GLOBALS += get_defined_vars();
 
 	$dbh->beginTransaction();
 
