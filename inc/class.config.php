@@ -1,6 +1,9 @@
 <?php
 defined('TINYIB') or exit;
 
+/**
+  * @todo: __unset()/toggling the default value and the SQL-stored one
+  */
 class Config {
 	protected $config = array();
 	protected $types = array();
@@ -29,19 +32,47 @@ class Config {
 	}
 
 	public function __get($key) {
-		if (isset($this->config[$key]))
-			return $this->config[$key];
+		$this->checkKey($key);
 
-		throw new Exception("Unknown configuration key '$key'.");
+		return $this->config[$key];
 	}
 
 	public function __set($key, $value) {
+		$this->checkKey($key);
+
+		// convert value to the correct type
+		settype($value, $this->types[$key]);
+
 		$this->config[$key] = $value;
-		$this->changes[] = $key;
+
+		if (!in_array($key, $this->changes))
+			$this->changes[] = $key;
 	}
 
-	public function __unset($key) {
-		deleteConfigValue($key);
+	// we don't use __destruct() because it can't handle thrown exceptions
+	public function save() {
+		// no changes made
+		if (!$this->changes)
+			return;
+
+		// cache will be regenerated on next instance
+		delete_cache(self::CACHE_KEY);
+
+		// make an assoc array with the updated values
+		$values = array();
+		foreach ($this->changes as $key)
+			$values[$key] = $this->config[$key];
+
+		saveGlobalConfig($values);
+
+		$this->changes = array();
+	}
+
+	protected function checkKey($key) {
+		if (isset($this->config[$key]))
+			return;
+
+		throw new Exception("Unknown configuration key '$key'.");
 	}
 
 	protected function loadStandardConfig() {

@@ -354,6 +354,18 @@ function loadGlobalConfig() {
 	return $config;
 }
 
+function saveGlobalConfig($values) {
+	global $dbh, $db_prefix;
+
+	$sql = "REPLACE INTO `{$db_prefix}_config` (name, value) VALUES (?, ?)";
+
+	// We have to do one query per key for db cross-compatability
+	foreach ($values as $key => $value) {
+		$sth = $dbh->prepare($sql);
+		$sth->execute(array($key, $value));
+	}
+}
+
 function deleteConfigValue($key) {
 	global $dbh, $db_prefix;
 
