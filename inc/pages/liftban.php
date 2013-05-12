@@ -5,20 +5,24 @@ function liftban_get($url) {
 	do_csrf($url);
 }
 
-function liftban_post($url) {
+function liftban_post($url, $num = false) {
 	$user = do_login('/bans');
 
 	do_csrf();
 
-	if (!isset($_POST['ban'])) {
-		diverge('/bans');
-		return;
+	if ($num) {
+		$bans = array($num);
+	} else {
+		$flags = PARAM_DEFAULT | PARAM_ARRAY | PARAM_STRICT;
+		$bans = param('ban', $flags);
+
+		if (!is_array($bans))
+			$bans = array($bans);
 	}
 
-	$bans = is_array($_POST['ban']) ? $_POST['ban'] : array($_POST['ban']);
-
 	foreach ($bans as $ban)
-		deleteBanByID($ban);
+		if (ctype_digit($ban))
+			deleteBanByID($ban);
 
 	diverge('/bans');
 }
