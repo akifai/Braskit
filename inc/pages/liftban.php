@@ -1,11 +1,14 @@
 <?php
 defined('TINYIB') or exit;
 
-//function liftban_get() {
-//}
+function liftban_get($url) {
+	do_csrf($url);
+}
 
 function liftban_post($url) {
-	$user = do_login($url);
+	$user = do_login('/bans');
+
+	do_csrf();
 
 	if (!isset($_POST['ban'])) {
 		diverge('/bans');

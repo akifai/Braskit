@@ -1,7 +1,13 @@
 <?php
 defined('TINYIB') or exit;
 
-function delete_any($url) {
+function delete_get($url) {
+	do_csrf($url);
+}
+
+function delete_post($url) {
+	do_csrf($url);
+
 	$boardname = param('board');
 	$password = param('password', PARAM_STRING | PARAM_COOKIE);
 	$posts = param('delete', PARAM_DEFAULT | PARAM_ARRAY);

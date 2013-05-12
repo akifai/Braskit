@@ -6,6 +6,7 @@
 	<div class="postarea">
     <section id="add-ban">
       <form action="{{ path("add_ban", true) }}" method="post" class="">
+        <input type="hidden" name="csrf" value="{{ csrf() }}">
         <fieldset>
           <legend>Add ban</legend>
             <div class="control-group">

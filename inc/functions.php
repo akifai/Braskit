@@ -422,6 +422,53 @@ function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
 
 
 //
+// CSRF
+//
+
+function do_csrf($url = false) {
+	// Only POST requests can validate our CSRF token
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		if (check_csrf())
+			return; // success
+
+		throw new Exception('Invalid CSRF token.');
+	}
+
+	// this is a GET request - display a confirmation
+	echo render('csrf.html', array(
+		'display_url' => $url ?: $_SERVER['REQUEST_URI'],
+		'token' => get_csrf_token(),
+		'url' => $_SERVER['REQUEST_URI'],
+	));
+
+	exit;
+}
+
+function check_csrf() {
+	$sent = param('csrf', PARAM_STRING | PARAM_POST);
+
+	if ($sent === get_csrf_token()) {
+		unset_csrf_token();
+		return true; // success
+	}
+
+	return false;
+}
+
+function get_csrf_token() {
+	if (isset($_SESSION['csrf_token']))
+		return $_SESSION['csrf_token'];
+
+	// no token set
+	return $_SESSION['csrf_token'] = random_string(48);
+}
+
+function unset_csrf_token() {
+	unset($_SESSION['csrf_token']);
+}
+
+
+//
 // Unsorted
 //
 

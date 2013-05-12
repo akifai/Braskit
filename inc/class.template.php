@@ -7,6 +7,7 @@ Twig_Autoloader::register();
 class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {
 		$functions = array(
+			new Twig_SimpleFunction('csrf', 'get_csrf_token'),
 			new Twig_SimpleFunction('less', 'get_less_path'),
 			new Twig_SimpleFunction('path', 'expand_path'),
 			new Twig_SimpleFunction('self', 'get_script_name'), // deprecated

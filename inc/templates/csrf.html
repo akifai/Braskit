@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="csrf-notice">
+    <form action="{{ url }}" method="POST">
+      <input type="hidden" name="csrf" value="{{ token }}">
+      <p>You are being taken to: <kbd>{{ display_url }}</kbd>.</p>
+      <p><input type="submit" value="Continue"></p>
+      <noscript><p>To avoid seeing these messages, enable JavaScript!</p></noscript>
+    </form>
+  </div>
+  
+  <hr>
+{% endblock %}
