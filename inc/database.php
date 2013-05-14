@@ -329,6 +329,24 @@ function getAllBoards() {
 
 
 //
+// Flood
+//
+
+function insertFloodEntry($entry) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("INSERT INTO {$db_prefix}_flood (ip, time, imagehash, posthash, isreply) VALUES (?, ?, ?, ?, ?)");
+	$sth->execute(array(
+		$entry['ip'],
+		$entry['time'],
+		$entry['imagehash'],
+		$entry['posthash'],
+		$entry['isreply'],
+	));
+}
+
+
+//
 // Config
 //
 

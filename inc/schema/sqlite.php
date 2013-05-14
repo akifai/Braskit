@@ -101,17 +101,20 @@ EOSQL;
 // Flood table
 //
 
+/**
+ * @todo: Index keys
+ */
 function createFloodTable() {
 	global $dbh, $db_prefix;
 
 	$sql = <<<EOSQL
 CREATE TABLE {$db_prefix}_flood (
 	id INTEGER PRIMARY KEY,
+	ip TEXT NOT NULL,
 	time INTEGER NOT NULL,
 	imagehash TEXT NOT NULL,
 	posthash TEXT NOT NULL,
-	isreply INTEGER NOT NULL,
-	image INTEGER NOT NULL
+	isreply INTEGER NOT NULL
 );
 EOSQL;
 

@@ -220,13 +220,6 @@ function cleanString($str) {
 	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
-function plural($singular, $count, $plural = 's') {
-	if ($plural == 's') {
-		$plural = $singular . $plural;
-	}
-	return ($count == 1 ? $singular : $plural);
-}
-
 function expand_path($filename, $internal = false) {
 	if ($internal) {
 		return get_script_name().
@@ -469,6 +462,61 @@ function unset_csrf_token() {
 
 
 //
+// Flood stuff
+//
+
+function add_flood_entry($ip, $time, $comment_hex, $parent, $md5) {
+	$iplib = new IP($ip);
+
+	$entry = array(
+		// IP address, in decimal form
+		'ip' => (string)$iplib->toInteger(),
+
+		// Post hash
+		'posthash' => $comment_hex,
+
+		// image checksum
+		'imagehash' => $md5,
+
+		// Time
+		'time' => $time,
+
+		// Is this a reply?
+		'isreply' => (int)(bool)$parent,
+	);
+
+	insertFloodEntry($entry);
+}
+
+function check_flood() {
+	// TODO
+	return false;
+}
+
+function make_comment_hex($str) {
+	// remove cross-board citations
+	// the numbers don't matter
+	$str = preg_replace('!>>>/[A-Za-z0-9]+/!', '', $str);
+
+	if (function_exists('iconv')) {
+		// remove diacritics and other noise
+		// FIXME: this removes cyrillic entirely
+		$str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
+	}
+
+	$str = strtolower($str);
+
+	// strip all non-alphabet characters
+	$str = preg_replace('/[^a-z]/', '', $str);
+
+	if ($str === '')
+		return '';
+
+	return sha1($str);
+}
+
+
+//
 // Unsorted
 //
 
@@ -643,17 +691,6 @@ function checkBanned() {
 			throw new Exception('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
 		} else {
 			clearExpiredBans();
-		}
-	}
-}
-
-function checkFlood() {
-	if (TINYIB_DELAY > 0) {
-		$lastpost = lastPostByIP();
-		if ($lastpost) {
-			if ((time() - $lastpost['timestamp']) < TINYIB_DELAY) {
-				throw new Exception("Please wait a moment before posting again.  You will be able to make another post in " . (TINYIB_DELAY - (time() - $lastpost['timestamp'])) . " " . plural("second", (TINYIB_DELAY - (time() - $lastpost['timestamp']))) . ".");
-			}
 		}
 	}
 }

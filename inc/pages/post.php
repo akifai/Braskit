@@ -2,7 +2,7 @@
 defined('TINYIB') or exit;
 
 function post_post($url, $boardname) {
-	global $dbh;
+	global $config, $dbh;
 
 	// get the ip
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -60,9 +60,9 @@ function post_post($url, $boardname) {
 
 	if (!$user) {
 		checkBanned();
-		$comment = format_post($comment, $format_cb);
+		$formatted_comment = format_post($comment, $format_cb);
 	} else {
-		$comment = format_post($comment, $format_cb, $raw);
+		$formatted_comment = format_post($comment, $format_cb, $raw);
 	}
 
 	// make name/tripcode
@@ -86,6 +86,10 @@ function post_post($url, $boardname) {
 	if ($parent && !$file && !length($comment))
 		throw new Exception('Please enter a message and/or upload an image to make a reply.');
 
+	// check flood - TODO
+	if (check_flood())
+		throw new Exception('Flood detected.');
+
 	// Set up database values
 	$post = newPost($parent);
 
@@ -93,7 +97,7 @@ function post_post($url, $boardname) {
 	$post['tripcode'] = $tripcode;
 	$post['email'] = $email;
 	$post['subject'] = $subject;
-	$post['comment'] = $comment;
+	$post['comment'] = $formatted_comment;
 	$post['password'] = $password;
 	$post['date'] = $date;
 	$post['time'] = $time;
@@ -117,6 +121,12 @@ function post_post($url, $boardname) {
 
 	// Insert the post
 	$id = $board->insert($post);
+
+	// Add flood entry
+	$comment_hex = make_comment_hex($comment);
+	$file_hex = isset($file['md5']) ? $file['md5'] : '';
+
+	add_flood_entry($ip, $time, $comment_hex, $parent, $file_hex);
 
 	// commit changes to database
 	$dbh->commit();
