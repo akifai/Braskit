@@ -198,7 +198,7 @@
 	{% spaceless %}
 		{% if not context.admin %}
       <form action="{{ context.board.path((context.pagenum + 1)~".html") }}" method="get">
-        <input type="submit" value="Previous">
+        <input type="submit" value="Next">
       </form>
 		{% else %}
       <a href="{{ context.board.path((context.pagenum + 1)~".html", true) }}">Next</a>

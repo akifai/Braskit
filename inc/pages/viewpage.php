@@ -11,7 +11,7 @@ function viewpage_get($url, $boardname, $page = 0) {
 	$threads = $board->getIndexThreads($offset);
 
 	// get number of pages for the page nav
-	$maxpage = get_page_count($board->countThreads()) - 1;
+	$maxpage = $board->getMaxPage($board->countThreads());
 
 	if ($page && !count($threads)) {
 		// no threads on this page, redirect to page 0

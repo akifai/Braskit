@@ -146,6 +146,21 @@ class Board {
 	}
 
 	/**
+	 * Get the highest page number, starting from 0
+	 */
+	public function getMaxPage($arg) {
+		global $config;
+
+		$count = is_array($arg) ? count($arg) : (int)$arg;
+		$total = $config->threads_per_page;
+
+		if (!$count || !$total)
+			return 0;
+
+		return floor(($count + $total - 1) / $total) - 1;
+	}
+
+	/**
 	 * Clear old threads
 	 */
 	public function trim() {
@@ -159,7 +174,7 @@ class Board {
 	 */
 	public function rebuildIndexes() {
 		$threads = $this->getIndexThreads();
-		$maxpage = get_page_count(count($threads)) - 1;
+		$maxpage = $this->getMaxPage($threads);
 
 		$num = 0;
 

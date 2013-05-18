@@ -173,20 +173,6 @@ function empty_cache() {
 
 
 
-//
-// Rebuild stuff
-//
-
-function get_page_count($count) {
-	$threads_per_page = 10; // TODO
-
-	// avoid division by zero
-	if (!$threads_per_page)
-		return 0;
-
-	return floor(($count + $threads_per_page - 1)/$threads_per_page);
-}
-
 // Simple formatting
 function format_post($comment, $cb, $raw = false) {
 	global $config;

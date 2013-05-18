@@ -7,6 +7,7 @@
 	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
 		{% if admin %}
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
 			<input type="hidden" name="nexttask" value="manage">
 		{% endif %}
 		{% for thread in threads %}
