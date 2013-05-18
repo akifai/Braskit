@@ -9,52 +9,14 @@
  */
 
 //
-// Cookie crap
-//
-
-function Cookie(options) {
-	var expires = 86400 * 365;
-
-	if (typeof options === "object" && expires in options) {
-		var date = new Date();
-		expires = date.setTime(date.getTime() + options.expires);
-	}
-
-	this.get = function(name) {
-		name = escape(name);
-
-		var regex = new RegExp("(?:^|;\\s+)" + name + "=(.*?)(?:;|$)");
-		var match = regex.exec(document.cookie);
-
-		if (!match || match.length < 2)
-			return false;
-
-		var value = unescape(match[1]);
-
-		return value;
-	};
-
-	this.set = function(name, value) {
-		name = escape(name);
-		value = escape(value);
-
-		var cookie = name + "=" + value + "; path=/";
-
-		if (expires)
-			cookie += "; expires=" + expires;
-
-		document.cookie = cookie;
-	};
-}
-
-
-//
 // Style crap
 //
 
-function changeStyle(name) {
-	var link = $("#sitestyle");
-	link.attr("href", lessHandler + "?file=" +styles[name]);
+if (typeof changeStyle !== "function") {
+	window.changeStyle = function (name) {
+		var link = $("#sitestyle");
+		link.attr("href", lessHandler + "?file=" + styles[name]);
+	};
 }
 
 function createStyleSwitcher() {
@@ -124,13 +86,6 @@ function doStyleSwitchers() {
 //
 
 $(document).ready(function() {
-	var cookie = new Cookie();
-
-	// Load style
-	var style = cookie.get("style");
-	if (typeof styles === "object" && style in styles)
-		changeStyle(style);
-
 	// Create style switchers
 	doStyleSwitchers();
 

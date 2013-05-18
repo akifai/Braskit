@@ -1,5 +1,5 @@
 @import "bootstrap/bootstrap.less";
-@bodyBackground: #eef2ff !important;
+@bodyBackground: #eef2ff;
 
 .login-page {
 	margin: 40px;
@@ -58,4 +58,11 @@
 	.navbar;
 	.navbar-static-top;
 	.navbar-inverse;
+}
+
+.footer {
+	color: desaturate(darken(@bodyBackground, 20%), 50%);
+	font-size: 12px;
+	margin: 1em 0;
+	text-align: center;
 }

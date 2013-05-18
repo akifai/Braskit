@@ -32,8 +32,8 @@ function ob_callback($buffer) {
 	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
 		return $buffer;
 
-	// the part of the buffer before the footer closes
-	$ins = strrpos($buffer, "</p></body>");
+	// the part of the buffer to insert before
+	$ins = strrpos($buffer, "</body>");
 	if ($ins === false)
 		return $buffer;
 
@@ -44,8 +44,8 @@ function ob_callback($buffer) {
 	$query_time = round(100 / $total_time * Database::$time);
 
 	// Append debug text
-	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
-	' of which %d%% was spent running %d database queries.',
+	$newbuf .= sprintf('<p class="footer">Page generated in %0.4f seconds,'.
+	' of which %d%% was spent running %d database queries.</p>',
 		$total_time, $query_time, Database::$queries);
 
 	// the rest of the buffer
