@@ -332,10 +332,37 @@ function getAllBoards() {
 // Flood
 //
 
+function checkDuplicateText($comment_hex, $max) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT 1 FROM `{$db_prefix}_flood` WHERE posthash = ? AND time > ?");
+	$sth->execute(array($comment_hex, $max));
+
+	return (bool)$sth->fetchColumn();
+}
+
+function checkFlood($ip, $max) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT 1 FROM `{$db_prefix}_flood` WHERE ip = ? AND time > ?");
+	$sth->execute(array($ip, $max));
+
+	return (bool)$sth->fetchColumn();
+}
+
+function checkImageFlood($ip, $max) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT 1 FROM `{$db_prefix}_flood` WHERE imagehash AND ip = ? AND time > ?");
+	$sth->execute(array($ip, $max));
+
+	return (bool)$sth->fetchColumn();
+}
+
 function insertFloodEntry($entry) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("INSERT INTO {$db_prefix}_flood (ip, time, imagehash, posthash, isreply) VALUES (?, ?, ?, ?, ?)");
+	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}_flood` (ip, time, imagehash, posthash, isreply) VALUES (?, ?, ?, ?, ?)");
 	$sth->execute(array(
 		$entry['ip'],
 		$entry['time'],

@@ -86,9 +86,9 @@ function post_post($url, $boardname) {
 	if ($parent && !$file && !length($comment))
 		throw new Exception('Please enter a message and/or upload an image to make a reply.');
 
-	// check flood - TODO
-	if (check_flood())
-		throw new Exception('Flood detected.');
+	// check flood
+	$comment_hex = make_comment_hex($comment);
+	check_flood($time, $ip, $comment_hex, (bool)$file);
 
 	// Set up database values
 	$post = newPost($parent);
@@ -123,9 +123,7 @@ function post_post($url, $boardname) {
 	$id = $board->insert($post);
 
 	// Add flood entry
-	$comment_hex = make_comment_hex($comment);
 	$file_hex = isset($file['md5']) ? $file['md5'] : '';
-
 	add_flood_entry($ip, $time, $comment_hex, $parent, $file_hex);
 
 	// commit changes to database
