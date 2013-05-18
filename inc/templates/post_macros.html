@@ -12,7 +12,7 @@
 			{% if not p.parent %}
 				{{ post.op(context, p) }}
 				{% if p.omitted %}
-					<div class="omitted">{{ p.omitted }} posts omitted. Click Reply to view.</div>
+					<div class="omitted">{{ p.omitted|raw }} posts omitted. Click Reply to view.</div>
 				{% endif %}
 			{% else %}
 				{{ post.reply(context, p) }}
@@ -26,27 +26,27 @@
 
 	<h2 class="posthead">
 		<label>
-			<input type="checkbox" name="delete[]" value="{{ p.id }}">
+			<input type="checkbox" name="delete[]" value="{{ p.id|raw }}">
 			{% if p.subject %}
-				<em class="posttitle">{{ p.subject }}</em>
+				<em class="posttitle">{{ p.subject|raw }}</em>
 			{% endif %}
-			<span class="postname">{{ p.name }}</span>
+			<span class="postname">{{ p.name|raw }}</span>
 			{% if p.tripcode %}
-				<span class="posttrip">{{ p.tripcode }}</span>
+				<span class="posttrip">{{ p.tripcode|raw }}</span>
 			{% endif %}
 			{% if context.admin %}
-				<span class="postip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip }}</a>)</span>
+				<span class="postip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip|raw }}</a>)</span>
 			{% endif %}
-			<span class="postdate">{{ p.date }}</span>
+			<span class="postdate">{{ p.date|raw }}</span>
 		</label>
 		{%- spaceless %}
 			<span class="reflink">
 				{% if not context.thread %}
 					<a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="no">No.</a>
-					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val">{{ p.id }}</a>
+					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val">{{ p.id|raw }}</a>
 				{% else %}
-					<a href="#{{ p.id }}" class="no">No.</a>
-					<a href="#i{{ p.id }}" class="val">{{ p.id }}</a>
+					<a href="#{{ p.id|raw }}" class="no">No.</a>
+					<a href="#i{{ p.id|raw }}" class="val">{{ p.id }}</a>
 				{% endif %}
 			</span>
 		{% endspaceless -%}
@@ -60,9 +60,9 @@
 	<div class="imginfo">
 		File: <a href="{{ context.board.path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
 		<em>(
-			{{- p.file_size_formatted }}, {{ p.image_width }}x{{ p.image_height -}}
+			{{- p.file_size_formatted|raw }}, {{ p.image_width|raw }}x{{ p.image_height|raw -}}
 			{%- if context.thread and p.file_original %},
-				<span title="{{ p.file_original }}">{{- filename(p.file_original) -}}</span>
+				<span title="{{ p.file_original }}">{{ filename(p.file_original) }}</span>
 			{%- endif -%}
 		)</em>
 	</div>
@@ -73,7 +73,7 @@
 
 	{% if p.thumb_width and p.thumb_height %}
 		<a href="{{ context.board.path("src/"~p.file) }}" class="thumblink" target="_blank">
-			<img src="{{ context.board.path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.thumb_width }}" height="{{ p.thumb_height }}">
+			<img src="{{ context.board.path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.thumb_width|raw }}" height="{{ p.thumb_height|raw }}">
 		</a>
 	{% else %}
 		<a href="{{ context.board.path("src/"~p.file) }}" class="nothumb">(No thumbnail)</a>
@@ -108,7 +108,7 @@
 
 	<div class="replywrap">
 		<div class="doubledash">&gt;&gt;</div>
-		<div class="reply" id="{{ p.id }}">
+		<div class="reply" id="{{ p.id|raw }}">
 			{{ m.head(context, p) }}
 			{% if p.file %}
 				{{ m.fileinfo(context, p) }}
@@ -127,7 +127,7 @@
 {% macro postform(context) %}
 	<div class="postarea">
 		<form action="{{ context.board.path("post", true) }}" method="post" enctype="multipart/form-data" name="postform" id="postform">
-			<input type="hidden" name="parent" value="{{ context.thread ? context.thread : 0 }}">
+			<input type="hidden" name="parent" value="{{ context.thread ? context.thread|raw : 0 }}">
 			<table><tbody>
 				<tr>
 					<th>Name</th>
@@ -168,8 +168,8 @@
 			<div class="rules">
 				<ul>
 					<li>Supported file types are: GIF, JPG, PNG</li>
-					<li>Maximum file size allowed is {{ config.max_kb }} KB.</li>
-					<li>Images greater than {{ config.max_thumb_w }}x{{ config.max_thumb_h }} pixels will be thumbnailed.</li>
+					<li>Maximum file size allowed is {{ config.max_kb|raw }} KB.</li>
+					<li>Images greater than {{ config.max_thumb_w|raw }}x{{ config.max_thumb_h|raw }} pixels will be thumbnailed.</li>
 				</ul>
 			</div>
 		</form>

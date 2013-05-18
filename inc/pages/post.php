@@ -70,10 +70,14 @@ function post_post($url, $boardname) {
 
 	if ($name === false)
 		$name = $config->default_name;
+	else
+		$name = cleanString($name);
 
 	// default subject
 	if (!length($subject))
 		$subject = $config->default_subject;
+	else
+		$subject = cleanString($subject);
 
 	// set password if none is defined
 	if ($password === '') {
