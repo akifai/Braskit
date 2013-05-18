@@ -357,10 +357,14 @@ class Board {
 	/**
 	 * Returns a link to a specific post
 	 */
-	public function linkToPost($row) {
-		$l = 'res/'.($row['parent'] ?: $row['id']).'.html#'.$row['id'];
+	public function linkToPost($row, $quote = false, $admin = false) {
+		$link = sprintf('res/%d.html#%s%d',
+			$row['parent'] ?: $row['id'],
+			$quote ? 'i' : '',
+			$row['id']
+		);
 
-		return $this->path($l);
+		return $this->path($link, $admin);
 	}
 
 	/**

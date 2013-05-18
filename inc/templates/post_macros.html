@@ -42,8 +42,8 @@
 		{%- spaceless %}
 			<span class="reflink">
 				{% if not context.thread %}
-					<a href="{{ context.board.path("res/"~p.id~".html#"~p.id, context.admin) }}" class="no">No.</a>
-					<a href="{{ context.board.path("res/"~p.id~".html#i"~p.id, context.admin) }}" class="val">{{ p.id }}</a>
+					<a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="no">No.</a>
+					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val">{{ p.id }}</a>
 				{% else %}
 					<a href="#{{ p.id }}" class="no">No.</a>
 					<a href="#i{{ p.id }}" class="val">{{ p.id }}</a>
