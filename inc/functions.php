@@ -183,12 +183,20 @@ function get_page_count($count) {
 	return floor(($count + $threads_per_page - 1)/$threads_per_page);
 }
 
+// Simple formatting
 function format_post($comment, $cb, $raw = false) {
-	// Simple formatting
+	global $config;
 
 	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
 	$comment = trim($comment);
 
+	// set default comment
+	if ($comment === '') {
+		$comment = $config->default_comment;
+		$raw = true;
+	}
+
+	// raw HTML - nothing to do
 	if ($raw)
 		return $comment;
 
@@ -651,8 +659,8 @@ function make_name_tripcode($input, $tripkey = '!') {
 	list($name, $trip, $secure) = array_pad($bits, 3, false);
 
 	// Anonymous?
-	if ($name === false || preg_match('/^\s*$/', $name))
-		$name = 'Anonymous';
+	if (!is_string($name) || !length($name))
+		$name = false;
 
 	// Do regular tripcodes
 	if ($trip !== false && (strlen($trip) !== 0 || $secure === false)) {

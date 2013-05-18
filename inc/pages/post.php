@@ -68,6 +68,13 @@ function post_post($url, $boardname) {
 	// make name/tripcode
 	list($name, $tripcode) = make_name_tripcode($name);
 
+	if ($name === false)
+		$name = $config->default_name;
+
+	// default subject
+	if (!length($subject))
+		$subject = $config->default_subject;
+
 	// set password if none is defined
 	if ($password === '') {
 		$password = random_string();
