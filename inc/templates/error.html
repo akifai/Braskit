@@ -2,10 +2,7 @@
 {% import "post_macros.html" as m %}
 
 {% block content %}
-	<p class="error">{{ message }}</p>
+	<p class="error">{{ message|raw }}</p>
 	<p class="error">{{ m.returnlink(_context, referrer) }}</p>
-	{% if stack_trace %}
-		<pre class="stack_trace">{{ stack_trace }}</pre>
-	{% endif %}
 	<hr>
 {% endblock %}

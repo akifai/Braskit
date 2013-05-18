@@ -349,5 +349,3 @@ class UserEdit extends User {
 		modifyUser($user);
 	}
 }
-
-class UserException extends Exception {}

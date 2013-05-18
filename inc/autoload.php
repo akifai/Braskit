@@ -7,6 +7,7 @@ class AutoLoader {
 		'Config' => 'class.config.php',
 		'Database' => 'class.db.php',
 		'DBStatement' => 'class.db.php',
+		'HTMLException' => 'class.exception.php',
 		'IP' => 'class.IP.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',
 		'lessc_fixed' => 'class.less.php',
@@ -17,7 +18,7 @@ class AutoLoader {
 		'TaskQueryString' => 'class.task.php',
 		'User' => 'class.user.php',
 		'UserEdit' => 'class.user.php',
-		'UserException' => 'class.user.php',
+		'UserException' => 'class.exception.php',
 		'UserCreate' => 'class.user.php',
 		'UserNologin' => 'class.user.php',
 	);

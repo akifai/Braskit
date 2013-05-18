@@ -221,11 +221,14 @@ class Board {
 
 	public function checkDuplicateImage($hex) {
 		$row = postByHex($this->board, $hex);
+
 		if ($row === false)
 			return;
 
-		// TODO: link to file
-		throw new Exception('Duplicate file uploaded.');
+		$message = 'Error: The file <a href="%s">has been uploaded</a> previously.';
+		$link = $this->linkToPost($row);
+
+		throw new HTMLException(sprintf($message, $link));
 	}
 
 	public function handleUpload($name) {
@@ -349,6 +352,15 @@ class Board {
 		$path = $this->board.'/'.$file;
 
 		return expand_path($path, $internal);
+	}
+
+	/**
+	 * Returns a link to a specific post
+	 */
+	public function linkToPost($row) {
+		$l = 'res/'.($row['parent'] ?: $row['id']).'.html#'.$row['id'];
+
+		return $this->path($l);
 	}
 
 	/**

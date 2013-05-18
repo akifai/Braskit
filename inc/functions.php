@@ -8,15 +8,19 @@ defined('TINYIB') or exit;
 function make_error_page($e) {
 	$referrer = @$_SERVER['HTTP_REFERER'];
 
+	$message = $e->getMessage();
+
+	// escape HTML if applicable
+	if ($e->getCode() !== HTMLException::HTML_MESSAGE)
+		$message = cleanString($message);
+
 	try {
 		// Error messages using Twig
 		echo render('error.html', array(
-			'message' => $e->getMessage(),
+			'message' => $message,
 			'referrer' => $referrer,
 		));
-	} catch (Exception $yolo) {
-
-	}
+	} catch (Exception $e) {}
 
 	exit;
 }
@@ -724,7 +728,7 @@ function checkBanned() {
 		if ($ban['expire'] == 0 || $ban['expire'] > time()) {
 			$expire = ($ban['expire'] > 0) ? ('<br>This ban will expire ' . date('y/m/d(D)H:i:s', $ban['expire'])) : '<br>This ban is permanent and will not expire.';
 			$reason = ($ban['reason'] == '') ? '' : ('<br>Reason: ' . $ban['reason']);
-			throw new Exception('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
+			throw new HTMLException('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
 		} else {
 			clearExpiredBans();
 		}
