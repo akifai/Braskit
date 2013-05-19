@@ -203,19 +203,17 @@ function deletePostByID($board, $post) {
 	$sth->execute(array($post['id'], $post['id']));
 }
 
-function trimThreads($board, $max_threads) {
+function getOldThreads($board, $max_threads) {
 	global $dbh, $db_prefix;
 
 	if ($max_threads <= 0)
-		return;
+		return array();
 
-	$sth = $dbh->prepare("SELECT id FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
+	$sth = $dbh->prepare("SELECT id FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 1000");
 	$sth->bindParam(1, $max_threads, PDO::PARAM_INT);
 	$sth->execute();
 
-	while ($row = $sth->fetch()) {
-		deletePostByID($board, $row['id']);
-	}
+	return $sth->fetchAll(PDO::FETCH_COLUMN, 0);
 }
 
 function lastPostByIP($board) {
@@ -243,7 +241,7 @@ function banByID($id) {
 
 function banByIP($ip) {
 	global $dbh, $db_prefix;
-	
+
 	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}_bans` WHERE ip = ? LIMIT 1");
 	$sth->execute(array($ip));
 
@@ -281,7 +279,7 @@ function clearExpiredBans() {
 
 function deleteBanByID($id) {
 	global $dbh, $db_prefix;
-	
+
 	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}_bans` WHERE id = :id");
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->execute();

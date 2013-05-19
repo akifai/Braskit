@@ -166,7 +166,12 @@ class Board {
 	public function trim() {
 		global $config;
 
-		return trimThreads($this->board, $config->max_threads);
+		$threads = getOldThreads($this->board, $config->max_threads);
+
+		foreach ($threads as $thread)
+			$this->delete($thread);
+
+		return count($threads);
 	}
 
 	/**
