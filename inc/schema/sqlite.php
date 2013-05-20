@@ -36,6 +36,10 @@ CREATE TABLE {$db_prefix}{$board}_posts (
 EOSQL;
 
 	$dbh->query($sql);
+
+	// Indexes
+	foreach (array('parent', 'timestamp', 'bumped') as $column)
+		$dbh->query("CREATE INDEX {$db_prefix}{$board}_posts_{$column}_index ON {$db_prefix}{$board}_posts ($column)");
 }
 
 
