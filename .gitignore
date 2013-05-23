@@ -1,19 +1,16 @@
-# Global stuff
-
+## Environmental stuff
 .DS_Store
 thumbs.db
 *~
 *.swp
 *.bak
-
-
-# PlainIB-specific
-
-/cache
-/index.html
 .htaccess
+
+## PlainIB-specific
 /config.php
-#*/src/
-#*/thumb/
-#*/res/
 *.sql
+
+# ignore all top-level directories, except those we choose
+/*/
+!/inc/
+!/static/
