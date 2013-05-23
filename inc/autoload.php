@@ -4,9 +4,11 @@ defined('TINYIB') or exit;
 class AutoLoader {
 	protected static $classes = array(
 		'Board' => 'class.board.php',
+		'BoardConfig' => 'class.config.php',
 		'Config' => 'class.config.php',
 		'Database' => 'class.db.php',
 		'DBStatement' => 'class.db.php',
+		'GlobalConfig' => 'class.config.php',
 		'HTMLException' => 'class.exception.php',
 		'IP' => 'class.IP.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',

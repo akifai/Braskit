@@ -2,10 +2,10 @@
 defined('TINYIB') or exit;
 
 class Board {
-	public $title, $minlevel = 0;
+	public $title, $minlevel = 0, $config;
 	private $exists, $board;
 
-	public function __construct($board, $must_exist = true) {
+	public function __construct($board, $must_exist = true, $load_config = true) {
 		// Check for blank board name
 		if (!strlen($board))
 			throw new Exception('Board name cannot be blank.');
@@ -16,8 +16,13 @@ class Board {
 
 		$this->board = (string)$board;
 
-		if ($must_exist && !$this->exists())
-			throw new Exception("The board doesn't exist.");
+		if ($must_exist) {
+			if (!$this->exists())
+				throw new Exception("The board doesn't exist.");
+
+			if ($load_config)
+				$this->config = new BoardConfig($this);
+		}
 	}
 
 	public function __toString() {
@@ -149,10 +154,8 @@ class Board {
 	 * Get the highest page number, starting from 0
 	 */
 	public function getMaxPage($arg) {
-		global $config;
-
 		$count = is_array($arg) ? count($arg) : (int)$arg;
-		$total = $config->threads_per_page;
+		$total = $this->config->threads_per_page;
 
 		if (!$count || !$total)
 			return 0;
@@ -164,9 +167,7 @@ class Board {
 	 * Clear old threads
 	 */
 	public function trim() {
-		global $config;
-
-		$threads = getOldThreads($this->board, $config->max_threads);
+		$threads = getOldThreads($this->board, $this->config->max_threads);
 
 		foreach ($threads as $thread)
 			$this->delete($thread);
@@ -239,6 +240,37 @@ class Board {
 		return file_exists($this->board.'/'.$filename);
 	}
 
+	public function checkFlood($time, $ip, $comment_hex, $has_file) {
+		$iplib = new IP($ip);
+		$ip = (string)$iplib->toInteger();
+
+		// check if images are being posted too fast
+		if ($has_file && $this->config->seconds_between_images > 0) {
+			$max = $time - $this->config->seconds_between_images;
+
+			if (checkImageFlood($ip, $max))
+				throw new Exception('Flood detected.');
+
+			return;
+		}
+
+		// check if text posts are being posted too fast
+		if ($this->config->seconds_between_posts > 0) {
+			$max = $time - $this->config->seconds_between_posts;
+
+			if (checkFlood($ip, $max))
+				throw new Exception('Flood detected.');
+		}
+
+		// check for duplicate text
+		if ($comment_hex && !$this->config->allow_duplicate_text) {
+			$max = $time - $this->config->seconds_between_duplicate_text;
+
+			if (checkDuplicateText($comment_hex, $max))
+				throw new Exception('Duplicate comment detected.');
+		}
+	}
+
 	public function checkDuplicateImage($hex) {
 		$row = postByHex($this->board, $hex);
 
@@ -252,7 +284,7 @@ class Board {
 	}
 
 	public function handleUpload($name) {
-		global $config, $temp_dir;
+		global $temp_dir;
 
 		if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
 			return false; // no file uploaded - nothing to do
@@ -270,8 +302,8 @@ class Board {
 		require 'inc/image.php';
 
 		// Check file size
-		if (($config->max_kb > 0) && ($size > ($config->max_kb * 1024)))
-			throw new Exception(sprintf('That file is larger than %s KB.', $config->max_kb));
+		if (($this->config->max_kb > 0) && ($size > ($this->config->max_kb * 1024)))
+			throw new Exception(sprintf('That file is larger than %s KB.', $this->config->max_kb));
 
 		// set some values
 		$file['tmp'] = $tmp_name;
@@ -308,8 +340,8 @@ class Board {
 		$t_size = make_thumb_size(
 			$info['width'],
 			$info['height'],
-			$config->max_thumb_w,
-			$config->max_thumb_h
+			$this->config->max_thumb_w,
+			$this->config->max_thumb_h
 		);
 
 		if ($t_size === false) {

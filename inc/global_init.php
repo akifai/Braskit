@@ -72,5 +72,5 @@ if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
 // Database code
 require_once(TINYIB_ROOT.'/inc/database.php');
 
-// Global configuration
-$config = new Config();
+// Site configuration
+$config = new GlobalConfig();

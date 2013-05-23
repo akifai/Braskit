@@ -375,11 +375,11 @@ function insertFloodEntry($entry) {
 // Config
 //
 
-function loadGlobalConfig() {
+function loadConfig($prefix) {
 	global $dbh, $db_prefix;
 
 	try {
-		$sth = $dbh->query("SELECT * FROM `{$db_prefix}_config`");
+		$sth = $dbh->query("SELECT * FROM `{$db_prefix}{$prefix}_config`");
 	} catch (PDOException $e) {
 		// nothing to load
 		return false;
@@ -392,10 +392,10 @@ function loadGlobalConfig() {
 	return $config;
 }
 
-function saveGlobalConfig($values) {
+function saveGlobalConfig($prefix, $values) {
 	global $dbh, $db_prefix;
 
-	$sql = "REPLACE INTO `{$db_prefix}_config` (name, value) VALUES (?, ?)";
+	$sql = "REPLACE INTO `{$db_prefix}{$prefix}_config` (name, value) VALUES (?, ?)";
 
 	// We have to do one query per key for db cross-compatability
 	foreach ($values as $key => $value) {
@@ -404,10 +404,10 @@ function saveGlobalConfig($values) {
 	}
 }
 
-function deleteConfigValue($key) {
+function deleteConfigValue($prefix, $key) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}_config` WHERE key = ?");
+	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}{$prefix}_config` WHERE key = ?");
 	$sth->execute(array($key));
 }
 

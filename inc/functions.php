@@ -174,15 +174,13 @@ function empty_cache() {
 
 
 // Simple formatting
-function format_post($comment, $cb, $raw = false) {
-	global $config;
-
+function format_post($comment, $default_comment, $cb, $raw = false) {
 	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
 	$comment = trim($comment);
 
 	// set default comment
 	if ($comment === '') {
-		$comment = $config->default_comment;
+		$comment = $default_comment;
 		$raw = true;
 	}
 
@@ -321,7 +319,7 @@ function redirect($url) {
 }
 
 function load_twig() {
-	global $config, $debug;
+	global $debug;
 
 	$loader = new PlainIB_Twig_Loader('inc/templates/');
 
@@ -484,39 +482,6 @@ function add_flood_entry($ip, $time, $comment_hex, $parent, $md5) {
 	);
 
 	insertFloodEntry($entry);
-}
-
-function check_flood($time, $ip, $comment_hex, $has_file) {
-	global $config;
-
-	$iplib = new IP($ip);
-	$ip = (string)$iplib->toInteger();
-
-	// check if images are being posted too fast
-	if ($has_file && $config->seconds_between_images > 0) {
-		$max = $time - $config->seconds_between_images;
-
-		if (checkImageFlood($ip, $max))
-			throw new Exception('Flood detected.');
-
-		return;
-	}
-
-	// check if text posts are being posted too fast
-	if ($config->seconds_between_posts > 0) {
-		$max = $time - $config->seconds_between_posts;
-
-		if (checkFlood($ip, $max))
-			throw new Exception('Flood detected.');
-	}
-
-	// check for duplicate text
-	if ($comment_hex && !$config->allow_duplicate_text) {
-		$max = $time - $config->seconds_between_duplicate_text;
-
-		if (checkDuplicateText($comment_hex, $max))
-			throw new Exception('Duplicate comment detected.');
-	}
 }
 
 function make_comment_hex($str) {

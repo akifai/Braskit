@@ -4,12 +4,15 @@ defined('TINYIB') or exit;
 /**
   * @todo: __unset()/toggling the default value and the SQL-stored one
   */
-class Config {
+abstract class Config {
+	// these must be set in subclasses
+	protected $standard_config;
+	protected $cache_key;
+	protected $config_table_prefix;
+
 	protected $config = array();
 	protected $types = array();
 	protected $changes = array();
-
-	const CACHE_KEY = 'global_config';
 
 	public function __construct() {
 		// try loading from cache
@@ -56,14 +59,14 @@ class Config {
 			return;
 
 		// cache will be regenerated on next instance
-		delete_cache(self::CACHE_KEY);
+		delete_cache($this->cache_key);
 
 		// make an assoc array with the updated values
 		$values = array();
 		foreach ($this->changes as $key)
 			$values[$key] = $this->config[$key];
 
-		saveGlobalConfig($values);
+		saveConfig($this->config_table_prefix, $values);
 
 		$this->changes = array();
 	}
@@ -76,7 +79,7 @@ class Config {
 	}
 
 	protected function loadStandardConfig() {
-		require(TINYIB_ROOT.'/inc/global_config.php');
+		require(TINYIB_ROOT.'/inc/'.$this->standard_config);
 		$config = get_defined_vars();
 
 		foreach ($config as $key => $value) {
@@ -87,14 +90,14 @@ class Config {
 
 	protected function loadSQLConfig() {
 		// get config from sql
-		$config = loadGlobalConfig();
+		$config = loadConfig($this->config_table_prefix);
 
 		if (is_array($config))
 			$this->config = array_merge($this->config, $config);
 	}
 
 	protected function loadFromCache() {
-		$cache = get_cache(self::CACHE_KEY);
+		$cache = get_cache($this->cache_key);
 
 		if (is_array($cache)) {
 			$this->types = $cache['types'];
@@ -112,6 +115,23 @@ class Config {
 			'types' => $this->types,
 		);
 
-		set_cache(self::CACHE_KEY, $cache);
+		set_cache($this->cache_key, $cache);
+	}
+}
+
+class GlobalConfig extends Config {
+	protected $standard_config = 'global_config.php';
+	protected $cache_key = '_global_config';
+	protected $config_table_prefix = '';
+}
+
+class BoardConfig extends Config {
+	protected $standard_config = 'board_config.php';
+
+	public function __construct($board) {
+		$this->cache_key = $board.'_config';
+		$this->config_table_prefix = (string)$board;
+
+		parent::__construct();
 	}
 }

@@ -60,22 +60,22 @@ function post_post($url, $boardname) {
 
 	if (!$user) {
 		checkBanned();
-		$formatted_comment = format_post($comment, $format_cb);
+		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb);
 	} else {
-		$formatted_comment = format_post($comment, $format_cb, $raw);
+		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb, $raw);
 	}
 
 	// make name/tripcode
 	list($name, $tripcode) = make_name_tripcode($name);
 
 	if ($name === false)
-		$name = $config->default_name;
+		$name = $board->config->default_name;
 	else
 		$name = cleanString($name);
 
 	// default subject
 	if (!length($subject))
-		$subject = $config->default_subject;
+		$subject = $board->config->default_subject;
 	else
 		$subject = cleanString($subject);
 
@@ -99,7 +99,7 @@ function post_post($url, $boardname) {
 
 	// check flood
 	$comment_hex = make_comment_hex($comment);
-	check_flood($time, $ip, $comment_hex, (bool)$file);
+	$board->checkFlood($time, $ip, $comment_hex, (bool)$file);
 
 	// Set up database values
 	$post = newPost($parent);

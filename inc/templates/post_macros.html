@@ -168,8 +168,8 @@
 			<div class="rules">
 				<ul>
 					<li>Supported file types are: GIF, JPG, PNG</li>
-					<li>Maximum file size allowed is {{ config.max_kb|raw }} KB.</li>
-					<li>Images greater than {{ config.max_thumb_w|raw }}x{{ config.max_thumb_h|raw }} pixels will be thumbnailed.</li>
+					<li>Maximum file size allowed is {{ context.board.config.max_kb|raw }} KB.</li>
+					<li>Images greater than {{ context.board.config.max_thumb_w|raw }}x{{ context.board.config.max_thumb_h|raw }} pixels will be thumbnailed.</li>
 				</ul>
 			</div>
 		</form>
