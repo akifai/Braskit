@@ -6,7 +6,7 @@
 {% block content %}
 	{{ m.returnlink(_context) }}
 	<div class="theader">Posting mode: Reply</div>
-	{{ m.postform(_context) }}
+  {% include "postform.html" %}
 	<hr>
 	<form action="{{ self }}{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">

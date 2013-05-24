@@ -1,0 +1,46 @@
+{#
+ # Top menu
+ #}
+
+<div id="topmenu" class="boardmenu">
+  <div class="rightmenu">
+    {# Style selector #}
+    <span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
+
+    {# Admin links #}
+    {% if admin %}
+      [<a href="{{ path("manage", true) }}">Manage</a>]
+      [<a href="{{ path("bans", true) }}">Bans</a>]
+
+      {% if board %}
+        [<a href="{{ board.path("rebuild", true) }}">Rebuild caches</a>]
+      {% endif %}
+
+      [<a href="{{ path("logout", true) }}">Log out</a>]
+      -
+    {% endif %}
+
+    [<a href="{{ config.home_url }}" target="_top">Home</a>]
+
+    {# Login link #}
+    {% if not admin %}
+      [<a href="{{ path("login", true) }}">Manage</a>]
+    {% endif %}
+  </div>
+</div>
+
+
+{#
+ # Page header
+ #}
+
+<div id="logo">
+  {%- block header -%}
+    <h1 id="header">{% if board %}/{{ board }}/ - {{ board.title }}{% else %}{{ config.site_name }}{% endif %}</h1>
+    {%- if subheader -%}
+      <div id="subheader">{{ subheader }}</div>
+    {%- endif -%}
+  {%- endblock -%}
+</div>
+
+<hr>

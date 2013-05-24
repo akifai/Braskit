@@ -318,10 +318,12 @@ function redirect($url) {
 	echo '<html><body><a href="'.$url.'">'.$url.'</a></body></html>';
 }
 
-function load_twig() {
+function load_twig(array $dirs = array()) {
 	global $debug;
 
-	$loader = new PlainIB_Twig_Loader('inc/templates/');
+	$dirs[] = 'inc/templates';
+
+	$loader = new PlainIB_Twig_Loader($dirs);
 
 	$twig = new Twig_Environment($loader, array(
 		'cache' => $debug ? false : 'cache/',
@@ -336,12 +338,14 @@ function load_twig() {
 	return $twig;
 }
 
-function render($template, $args = array()) {
-	global $twig;
+function render($template, $args = array(), $twig = null) {
+	if ($twig === null) {
+		global $twig;
 
-	// Load Twig if necessary
-	if (!isset($twig))
-		$twig = load_twig();
+		// Load Twig if necessary
+		if (!isset($twig))
+			$twig = load_twig();
+	}
 
 	try {
 		$output = $twig->render($template, $args);

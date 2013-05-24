@@ -184,15 +184,18 @@ class Board {
 
 		$num = 0;
 
+		$twig = $this->getTwig();
+
 		$page = array_splice($threads, 0, 10);
 		do {
 			$file = !$num ? 'index.html' : $num.'.html';
+
 			$html = render('page.html', array(
 				'board' => $this,
 				'maxpage' => $maxpage,
 				'threads' => $page,
 				'pagenum' => $num,
-			));
+			), $twig);
 
 			$this->write($file, $html);
 			$num++;
@@ -381,6 +384,18 @@ class Board {
 		}
 
 		return $file;
+	}
+
+	/**
+	 * Board-specific Twig instance
+	 */
+	public function getTwig() {
+		$dir = $this->board.'/templates';
+
+		if (is_dir($dir))
+			return load_twig(array($dir));
+
+		return load_twig();
 	}
 
 	/**

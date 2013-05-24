@@ -14,10 +14,12 @@ function viewthread_get($url, $boardname, $id) {
 		return;
 	}
 
+	$twig = $board->getTwig();
+
 	echo render('thread.html', array(
 		'admin' => true,
 		'board' => $board,
 		'posts' => $posts,
 		'thread' => $id,
-	));
+	), $twig);
 }

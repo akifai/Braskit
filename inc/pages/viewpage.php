@@ -19,11 +19,13 @@ function viewpage_get($url, $boardname, $page = 0) {
 		return;
 	}
 
+	$twig = $board->getTwig();
+
 	echo render('page.html', array(
 		'admin' => true,
 		'board' => $board,
 		'maxpage' => $maxpage,
 		'pagenum' => $page,
 		'threads' => $threads,
-	));
+	), $twig);
 }

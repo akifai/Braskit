@@ -2,7 +2,7 @@
 {% import "post_macros.html" as m %}
 
 {% block content %}
-	{{ m.postform(_context) }}
+  {% include "postform.html" %}
 	<hr>
 	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">

@@ -121,62 +121,6 @@
 
 
 {#
- # Post form
- #}
-
-{% macro postform(context) %}
-	<div class="postarea">
-		<form action="{{ context.board.path("post", true) }}" method="post" enctype="multipart/form-data" name="postform" id="postform">
-			<input type="hidden" name="parent" value="{{ context.thread ? context.thread|raw : 0 }}">
-			<table><tbody>
-				<tr>
-					<th>Name</th>
-					<td><input type="text" name="field1" size="28"></td>
-				</tr>
-				<tr>
-					<th>Email</th>
-					<td><input type="text" name="field2" size="28"></td>
-				</tr>
-				<tr>
-					<th>Subject</th>
-					<td>
-						<input type="text" name="field3" size="35">
-						<input type="submit" value="Submit">
-					</td>
-				</tr>
-				<tr>
-					<th>Comment</th>
-					<td><textarea name="field4" rows="4" cols="48"></textarea></td>
-				</tr>
-				<tr>
-					<th>File</th>
-					{# We use javascript to change the size. The size attribute isn't
-					 # allowed on file inputs in HTML5 for some strange reason. #}
-					<td><input type="file" name="file" data-size="35"></td>
-				</tr>
-				{% if context.admin %}
-					<tr>
-						<th>Options</th>
-						<td>
-							<div><label><input type="checkbox" name="raw" value="on"> Post with raw HTML</label></div>
-							<div><label><input type="checkbox" name="capcode" value="on"> Post with capcode</label></div>
-						</td>
-					</tr>
-				{% endif %}
-			</tbody></table>
-
-			<div class="rules">
-				<ul>
-					<li>Supported file types are: GIF, JPG, PNG</li>
-					<li>Maximum file size allowed is {{ context.board.config.max_kb|raw }} KB.</li>
-					<li>Images greater than {{ context.board.config.max_thumb_w|raw }}x{{ context.board.config.max_thumb_h|raw }} pixels will be thumbnailed.</li>
-				</ul>
-			</div>
-		</form>
-	</div>
-{% endmacro %}
-
-{#
  # Links and stuff
  #}
 

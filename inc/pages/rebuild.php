@@ -6,6 +6,7 @@ function rebuild_get($url, $boardname) {
 
 	$board = new Board($boardname);
 
+	set_time_limit(0);
 	ignore_user_abort(true);
 
 	// Rebuild all threads

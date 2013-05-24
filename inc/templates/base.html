@@ -72,54 +72,17 @@
   </script>
 </head>
 <body>
-  <div id="topmenu" class="boardmenu">
-    <div class="rightmenu">
-      {# Style selector #}
-      <span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
-
-      {% if admin %}
-        [<a href="{{ path("manage", true) }}">Manage</a>]
-        [<a href="{{ path("bans", true) }}">Bans</a>]
-        {% if board %}
-          [<a href="{{ board.path("rebuild", true) }}">Rebuild caches</a>]
-        {% endif %}
-        [<a href="{{ path("logout", true) }}">Log out</a>]
-        -
-      {% endif %}
-
-      [<a href="{{ config.home_url }}" target="_top">Home</a>]
-
-      {% if not admin %}
-        [<a href="{{ path("login", true) }}">Manage</a>]
-      {% endif %}
-    </div>
-  </div>
-
-  <div id="logo">
-    {%- block header -%}
-      <h1 id="header">{% if board %}/{{ board }}/ - {{ board.title }}{% else %}{{ config.site_name }}{% endif %}</h1>
-      {%- if subheader -%}
-        <div id="subheader">{{ subheader }}</div>
-      {%- endif -%}
-    {%- endblock -%}
-  </div>
-
-  <hr>
+  {% include "header.html" %}
 
   {% block modeheader %}
     {% if admin %}
       <div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
     {% endif %}
   {% endblock %}
+
   {% block content %}{% endblock %}
 
-  <div id="bottommenu" class="boardmenu">{# TODO #}</div>
-
-  <p class="footer">
-    - <a href="https://github.com/frankusrs/PlainIB/" target="_top">PlainIB</a>
-    + <a href="http://www.2chan.net/script/" target="_top">futaba</a>
-    -
-  </p>
+  {% include "footer.html" %}
 
   <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
   <script src="{{ path("static/js/PlainIB.js") }}"></script>
