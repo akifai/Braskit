@@ -184,18 +184,16 @@ class Board {
 
 		$num = 0;
 
-		$twig = $this->getTwig();
-
 		$page = array_splice($threads, 0, 10);
 		do {
 			$file = !$num ? 'index.html' : $num.'.html';
 
-			$html = render('page.html', array(
+			$html = $this->render('page.html', array(
 				'board' => $this,
 				'maxpage' => $maxpage,
 				'threads' => $page,
 				'pagenum' => $num,
-			), $twig);
+			));
 
 			$this->write($file, $html);
 			$num++;
@@ -218,7 +216,7 @@ class Board {
 	public function rebuildThread($id) {
 		$posts = $this->postsInThread($id);
 
-		$html = render('thread.html', array(
+		$html = $this->render('thread.html', array(
 			'board' => $this,
 			'posts' => $posts,
 			'thread' => $id,
@@ -396,6 +394,13 @@ class Board {
 			return load_twig(array($dir));
 
 		return load_twig();
+	}
+
+	public function render($template, $args = array()) {
+		if (!isset($this->twig))
+			$this->twig = $this->getTwig();
+
+		return render($template, $args, $this->twig);
 	}
 
 	/**
