@@ -459,4 +459,33 @@ class Board {
 
 		return $html;
 	}
+
+	public function checkSpam($ip, $values) {
+		global $spam_files;
+
+		$spam = new Spam($spam_files);
+		$spam->do_autoban = $this->config->enable_autobans;
+
+		if (!$spam->arrayMatches($values))
+			return;
+
+		// this could be more elegant
+		if (!$spam->no_ban) {
+			$ban = array();
+			$ban['ip'] = $ip;
+
+			$ban['reason'] = sprintf(
+				$this->config->autoban_spam_message,
+				$spam->word
+			);
+
+			$ban['expire'] = ($s = $this->config->autoban_seconds)
+				? $_SERVER['REQUEST_TIME'] + $s
+				: 0;
+
+			insertBan($ban);
+		}
+
+		throw new Exception('Spam detected.');
+	}
 }

@@ -682,8 +682,7 @@ function checkBanned() {
 	if ($ban) {
 		if ($ban['expire'] == 0 || $ban['expire'] > time()) {
 			$expire = ($ban['expire'] > 0) ? ('<br>This ban will expire ' . date('y/m/d(D)H:i:s', $ban['expire'])) : '<br>This ban is permanent and will not expire.';
-			$reason = ($ban['reason'] == '') ? '' : ('<br>Reason: ' . $ban['reason']);
-			throw new HTMLException('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire . $reason);
+			throw new HTMLException('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire);
 		} else {
 			clearExpiredBans();
 		}

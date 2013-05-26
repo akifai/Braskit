@@ -38,11 +38,21 @@ $db_prefix = <?php var_export($vars['db_prefix']) ?>;
 
 
 #
-# Tweaks
+# Paths
 #
+
+# an array containing a list of files containing spam definitions. ideally,
+# these files should be well hidden or inaccessible from the web.
+$spam_files = array();
+#$spam_files[] = './spam.txt'; # uncomment to add spam.txt to the list
 
 # temporary directory - you should probably not change this
 $temp_dir = sys_get_temp_dir();
+
+
+#
+# Tweaks
+#
 
 # enable debug mode - this will slow the board down considerably, but help with
 # debugging and development

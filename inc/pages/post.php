@@ -2,7 +2,7 @@
 defined('TINYIB') or exit;
 
 function post_post($url, $boardname) {
-	global $config, $dbh;
+	global $dbh;
 
 	// get the ip
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -59,7 +59,15 @@ function post_post($url, $boardname) {
 	$format_cb = array($board, 'formatPostRef');
 
 	if (!$user) {
+		// check for bans
 		checkBanned();
+
+		// check spam
+		if ($board->config->check_spam) {
+			$values = array(&$name, &$email, &$subject, &$comment);
+			$board->checkSpam($ip, $values);
+		}
+
 		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb);
 	} else {
 		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb, $raw);

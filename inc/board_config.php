@@ -34,8 +34,14 @@ $auto_noko = true; // TODO
 
 $display_id = false; // TODO
 
+$enable_autobans = true;
+$autoban_seconds = 21600; // 6 hours
+
 $spam_trap = true; // TODO
-$check_spam = true; // TODO
+$autoban_trap_message = 'Triggered a spam trap (auto-banned)'; // TODO
+
+$check_spam = true;
+$autoban_spam_message = 'Auto-banned: "%s"';
 
 $check_referrer = true; // TODO
 $check_referrer_strict = false; // TODO
