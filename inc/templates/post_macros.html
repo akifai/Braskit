@@ -26,7 +26,7 @@
 
 	<h2 class="posthead">
 		<label>
-			<input type="checkbox" name="delete[]" value="{{ p.id|raw }}">
+			<input type="checkbox" name="id[]" value="{{ p.id|raw }}">
 			{% if p.subject %}
 				<em class="posttitle">{{ p.subject|raw }}</em>
 			{% endif %}
@@ -53,6 +53,13 @@
 		{% if not p.parent and not context.thread %}
 			<span class="replylink">[<a href="{{ context.board.path("res/"~p.id~".html", context.admin) }}">Reply</a>]</span>
 		{% endif %}
+    {% if context.admin %}
+      <span class="modcontrols">
+        <a href="{{ context.board.path("delete", {"id": p.id}) }}" class="mod-del-link action" title="Delete">D</a>
+        <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" class="mod-bandel-link action" title="Ban & Delete">&</a>
+        <a href="{{ context.board.path("ban", {"id": p.id}) }}" class="mod-ban-link action" title="Ban">B</a>
+      </span>
+    {% endif %}
 	</h2>
 {% endmacro %}
 

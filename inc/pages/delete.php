@@ -5,12 +5,11 @@ function delete_get($url) {
 	do_csrf($url);
 }
 
-function delete_post($url) {
+function delete_post($url, $boardname) {
 	do_csrf($url);
 
-	$boardname = param('board');
 	$password = param('password', PARAM_STRING | PARAM_COOKIE);
-	$posts = param('delete', PARAM_DEFAULT | PARAM_ARRAY);
+	$posts = param('id', PARAM_DEFAULT | PARAM_ARRAY);
 
 	// check login
 	$user = do_login();
@@ -30,7 +29,7 @@ function delete_post($url) {
 	}
 
 	// Most delete actions will take place from the user delete form, which
-	// sends post IDs as delete[].
+	// sends post IDs as id[].
 	if (!is_array($posts)) {
 		$posts = array($posts);
 	} else {

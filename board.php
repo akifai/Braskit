@@ -38,6 +38,7 @@ $tasks = array(
 	"/$board_re/res/$num_re(?:\\.html)?" => 'viewthread',
 
 	// Mod board actions
+	"/$board_re/ban" => 'postban',
 	"/$board_re/rebuild" => 'rebuild',
 
 	// Mod global actions

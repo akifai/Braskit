@@ -74,12 +74,6 @@
 <body>
   {% include "header.html" %}
 
-  {% block modeheader %}
-    {% if admin %}
-      <div class="theader">Manager Mode{% if manatitle %}: {{ manatitle }}{% endif %}</div>
-    {% endif %}
-  {% endblock %}
-
   {% block content %}{% endblock %}
 
   {% include "footer.html" %}
