@@ -87,14 +87,19 @@
 	{% endif %}
 {% endmacro %}
 
-{% macro body(p) %}
+{% macro body(context, p) %}
 	<div class="postbody">
 		<div class="posttext">
 			{{- p.message|raw -}}
-			{%- if p.abbrev -%}
+			{% if p.abbrev %}
 				<div class="abbrev">Comment too long. Click <a href="">here</a>
 				to view the full text.</div>
-			{%- endif -%}
+			{% endif %}
+      {% if context.showinfo %}
+        <div class="modinfo">
+          Board: <strong>/{{ context.board|raw }}/</strong>{% if p.parent %}, thread: <strong>{{ p.parent|raw }}</strong></li>{% endif %}
+        </div>
+      {% endif %}
 		</div>
 	</div>
 {% endmacro %}
@@ -107,7 +112,7 @@
 		{{ m.thumb(context, p) }}
 	{% endif %}
 	{{ m.head(context, p) }}
-	{{ m.body(p) }}
+	{{ m.body(context, p) }}
 {% endmacro %}
 
 {% macro reply(context, p) %}
@@ -121,7 +126,7 @@
 				{{ m.fileinfo(context, p) }}
 				{{ m.thumb(context, p) }}
 			{% endif %}
-			{{ m.body(p) }}
+			{{ m.body(context, p) }}
 		</div>
 	</div>
 {% endmacro %}

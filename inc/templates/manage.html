@@ -1,36 +1,20 @@
-{% extends "mod_base.html" %}
+{% extends "base.html" %}
+{% import "post_macros.html" as m %}
+
+{# Show info in post bodies #}
+{% set showinfo = true %}
 
 {% block content %}
-  <h2 class="heading">Boards</h2>
-  <ul>
-    {% for board in boards %}
-      <li><a href="{{ path(board.name~"/index.html", true) }}">/{{ board.name }}/</a> — {{ board.longname }}</li>
-    {% endfor %}
-  </ul>
+  <div class="theader">Latest posts across all boards</div>
 
-  <h2 class="heading">Create board</h2>
-  <div class="postarea">
-    <form action="{{ path("create_board", true) }}" method="post">
-      <input type="hidden" name="csrf" value="{{ csrf() }}">
-      <table>
-        <tbody>
-          <tr>
-            <th><label for="board_path">Path</label></th>
-            <td>
-              <input type="text" name="path" id="board_path" size="4">
-              <input type="submit" value="Create board">
-            </td>
-          </tr>
-          <tr>
-            <th><label for="board_title">Title</label></th>
-            <td><input type="text" name="title" id="board_title" size="24"></td>
-          </tr>
-        </tbody>
-      </table>
-    </form>
-  </div>
+  {% for p in posts %}
+    {% if board is defined and (board != p.board or not posts[loop.index - 1].parent or posts[loop.index - 1].parent != p.parent) %}
+      <hr>
+    {% endif %}
 
-  <h2 class="heading">User account</h2>
-  <p>You are currently logged in as <strong>{{ user.username() }}</strong> and
-    have an e-penis length of <strong>{{ user.level() }}</strong>.</p>
+    {% set board = p.board %}
+    {{ m.reply(_context, p, true) }}
+  {% endfor %}
+
+  <hr>
 {% endblock %}

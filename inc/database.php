@@ -227,6 +227,29 @@ function lastPostByIP($board) {
 
 
 //
+// Cross-board functions
+//
+
+function getLatestPosts($boards) {
+	global $dbh, $db_prefix;
+
+	if (!$boards)
+		return array();
+
+	$subqueries = array();
+	foreach ($boards as $board)
+		$subqueries[] = "SELECT '{$board}' AS board, {$db_prefix}{$board}_posts.* FROM `{$db_prefix}{$board}_posts`";
+
+	$sql = implode(' UNION ALL ', $subqueries).' ORDER BY timestamp DESC LIMIT 25';
+
+	$sth = $dbh->prepare($sql);
+	$sth->execute();
+
+	return $sth->fetchAll();
+}
+
+
+//
 // Ban functions
 //
 
