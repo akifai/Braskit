@@ -17,7 +17,7 @@ function post_post($url, $boardname) {
 		: false;
 
 	// set default param flags; don't accept GET values
-	$flags = PARAM_DEFAULT ^ PARAM_GET;
+	$flags = PARAM_DEFAULT & ~PARAM_GET;
 
 	// POST values
 	$parent = param('parent', $flags);
@@ -25,13 +25,14 @@ function post_post($url, $boardname) {
 	$email = param('field2', $flags);
 	$subject = param('field3', $flags);
 	$comment = param('field4', $flags);
+	$nofile = (bool)param('nofile', $flags);
 
 	// We get the password from cookies
 	$password = param('password', PARAM_COOKIE | PARAM_STRING);
 
 	// Moderator options
-	$raw = param('raw', $flags);
-	$capcode = param('capcode', $flags);
+	$raw = (bool)param('raw', $flags);
+	$capcode = (bool)param('capcode', $flags);
 
 	// Checks
 	if (!ctype_digit($parent)
@@ -95,15 +96,22 @@ function post_post($url, $boardname) {
 	}
 
 	// Do file uploads
+	// TODO: check if uploads are allowed
 	$file = $board->handleUpload('file');
 
-	// require a file for new threads
-	if (!$parent && !$file)
-		throw new Exception('An image is required to start a thread.');
-	
-	// make sure replies have either a comment or file
-	if ($parent && !$file && !length($comment))
+	if (!$parent) {
+		if ($board->config->allow_thread_textonly) {
+			// the nofile box must be checked to post without a file
+			if (!$file && !$nofile)
+				throw new Exception('No file selected.');
+		} elseif (!$file) {
+			// an image must be uploaded
+			throw new Exception('An image is required to start a thread.');
+		}
+	} elseif (!$file && !length($comment)) {
+		// make sure replies have either a comment or file
 		throw new Exception('Please enter a message and/or upload an image to make a reply.');
+	}
 
 	// check flood
 	$comment_hex = make_comment_hex($comment);

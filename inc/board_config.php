@@ -7,10 +7,10 @@ defined('TINYIB') or exit;
  * Don't edit this file - the settings can be changed from the moderator panel.
  */
 
-$allow_thread_textonly = false; // TODO
+$allow_thread_textonly = false;
 $allow_thread_images = true; // TODO
 $allow_reply_textonly = true; // TODO
-$allow_reply_image = true; // TODO
+$allow_reply_images = true; // TODO
 
 $max_thumb_w = 200;
 $max_thumb_h = 200;

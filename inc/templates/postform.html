@@ -26,12 +26,24 @@
         <th>Comment</th>
         <td><textarea name="field4" rows="4" cols="48"></textarea></td>
       </tr>
-      <tr>
-        <th>File</th>
-        {# We use javascript to change the size. The size attribute isn't
-         # allowed on file inputs in HTML5 for some strange reason. #}
-        <td><input type="file" name="file" data-size="35"></td>
-      </tr>
+
+      {% if thread and board.config.allow_reply_images or board.config.allow_thread_images %}
+        <tr>
+          <th>File</th>
+          <td>
+            {# We use javascript to change the size. The size attribute isn't
+             # allowed on file inputs in HTML5 for some strange reason. #}
+            <input type="file" name="file" data-size="35">
+
+            {% if not thread and board.config.allow_thread_textonly %}
+              {# Safeguard to prevent accidental thread creation (it's more
+               # annoying than accidental replies). #}
+              <label>[<input type="checkbox" name="nofile" value="on"> No File]</label>
+            {% endif %}
+          </td>
+        </tr>
+      {% endif %}
+
       {% if admin %}
         <tr>
           <th>Options</th>
