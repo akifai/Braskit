@@ -39,6 +39,7 @@ $tasks = array(
 
 	// Mod board actions
 	"/$board_re/ban" => 'postban',
+	"/$board_re/config" => 'config',
 	"/$board_re/rebuild" => 'rebuild',
 
 	// Mod global actions
@@ -47,6 +48,7 @@ $tasks = array(
 	'/add_ban' => 'addban',
 	"/lift_ban(?:/$num_re)?" => 'liftban',
 	"/edit_ban/$num_re" => 'editban',
+	'/config' => 'config',
 	"/view_IP/([a-f0-9.:/]+)" => 'viewip',
 	'/login' => 'login',
 	'/logout' => 'logout',

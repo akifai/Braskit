@@ -1,3 +1,9 @@
+// some bootstrap stuff
+@import "bootstrap/variables.less";
+@import "bootstrap/mixins.less";
+@import "bootstrap/component-animations.less";
+@import "bootstrap/tooltip.less";
+
 // stuff which should be unchanged
 @serif: Times, 'Times New Roman', 'Nimbus Roman No9 L', 'FreeSerif', serif;
 @sansSerif: Helvetica, Arial, 'FreeSans', sans-serif;
@@ -287,4 +293,37 @@ a:hover {
 .modinfo {
 	color: @postOmitColour;
 	margin: 1em 0 0;
+}
+
+.configform {
+	display: table;
+	margin: 0 auto;
+
+	.buttons {
+		margin: 1em 0;
+		text-align: center;
+	}
+	label {
+		cursor: pointer;
+	}
+	th {
+		background: @blockBackground;
+		text-align: left;
+	}
+	.alt {
+		@darkColour: saturate(lighten(@background, 2%), 5%);
+		@lightColour: desaturate(darken(@background, 2%), 50%);
+		background: contrast(@background, @lightColour, @darkColour);
+	}
+	.description {
+		font-family: sans-serif;
+		font-size: smaller;
+		max-width: 300px;
+	}
+}
+
+.tooltip {
+	font-family: @sansSerif;
+	font-size: 12px;
+	margin: 0 0 0 2em;
 }

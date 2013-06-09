@@ -68,6 +68,24 @@ function createStyleSwitcher() {
 	return switcher;
 }
 
+
+//
+// Callbacks
+//
+
+function runCallbacks() {
+	var callbacks = $(document.body).data("callback");
+
+	if (!callbacks)
+		return;
+
+	callbacks = callbacks.split(/ +/);
+
+	for (var i = 0, j = callbacks.length; i < j; i++)
+		if (window[callbacks[i]])
+			window[callbacks[i]]();
+}
+
 function doStyleSwitchers() {
 	var ss = createStyleSwitcher();
 
@@ -80,12 +98,52 @@ function doStyleSwitchers() {
 	$(".ss-unhide").removeClass("noscreen");
 }
 
+function doConfig() {
+	// use bootstrap's tooltips
+	$(".configform label[title]").tooltip({
+		placement: "top",
+		delay: { show: 0, hide: 0 }
+	});
+
+	// toggle default value
+	$(".toggle-reset").change(function() {
+		var key = "config_" + this.name.match(/\[(.*)\]/)[1];
+		var inputField = $("#" + key);
+
+		// enable/disable the input field as appropriate
+		inputField.prop("disabled", this.checked);
+
+		// handle boolean options
+		if (inputField.attr("type") == "checkbox") {
+			inputField.prop("checked", !inputField.prop("checked"));
+			return;
+		}
+
+		// set the SQL-stored input so we can retrieve it
+		// gets run the first time a checkbox is ticked
+		if (this.checked && !$(this).data("has-sql-stored")) {
+			$(this).data("sql-stored", inputField.attr("value"));
+
+			// fucking weak typing...
+			$(this).data("has-sql-stored", true);
+		}
+
+		// we're ticking the checkbox
+		var dataSource = this.checked ? "default" : "sql-stored";
+
+		inputField.attr("value", $(this).data(dataSource));
+	});
+}
+
 
 //
 // Global init
 //
 
 $(document).ready(function() {
+	// run page-specific callbacks
+	runCallbacks();
+
 	// Create style switchers
 	doStyleSwitchers();
 

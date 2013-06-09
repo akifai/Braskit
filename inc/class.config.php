@@ -4,15 +4,19 @@ defined('TINYIB') or exit;
 /**
   * @todo: __unset()/toggling the default value and the SQL-stored one
   */
-abstract class Config {
+abstract class Config implements Iterator {
 	// these must be set in subclasses
 	protected $standard_config;
 	protected $cache_key;
 	protected $config_table_prefix;
 
 	protected $config = array();
-	protected $types = array();
 	protected $changes = array();
+	protected $deletions = array();
+
+	// for iterator
+	protected $pos = 0;
+	protected $keys = array();
 
 	public function __construct() {
 		// try loading from cache
@@ -24,6 +28,9 @@ abstract class Config {
 
 		// load SQL config
 		$this->loadSQLConfig();
+
+		// num => string map for iterator
+		$this->keys = array_keys($this->config);
 
 		// save to cache
 		$this->saveToCache();
@@ -37,25 +44,44 @@ abstract class Config {
 	public function __get($key) {
 		$this->checkKey($key);
 
-		return $this->config[$key];
+		return $this->config[$key]['value'];
 	}
 
 	public function __set($key, $value) {
 		$this->checkKey($key);
 
 		// convert value to the correct type
-		settype($value, $this->types[$key]);
+		settype($value, $this->config[$key]['type']);
 
-		$this->config[$key] = $value;
+		// check if same as current value and return if so
+		if ($this->config[$key]['value'] === $value)
+			return;
+
+		$this->config[$key]['value'] = $value;
+
+		// check if same as default value and flag for deletion if so
+		if (isset($this->config[$key]['default'])
+		&& $this->config[$key]['default'] === $value) {
+			if (!in_array($key, $this->deletions))
+				$this->deletions[] = $key;
+
+			return;
+		}
 
 		if (!in_array($key, $this->changes))
 			$this->changes[] = $key;
 	}
 
+	public function __unset($key) {
+		$this->checkKey($key);
+
+		$this->deletions[] = $key;
+	}
+
 	// we don't use __destruct() because it can't handle thrown exceptions
 	public function save() {
 		// no changes made
-		if (!$this->changes)
+		if (!$this->changes && !$this->deletions)
 			return;
 
 		// cache will be regenerated on next instance
@@ -64,11 +90,16 @@ abstract class Config {
 		// make an assoc array with the updated values
 		$values = array();
 		foreach ($this->changes as $key)
-			$values[$key] = $this->config[$key];
+			$values[$key] = $this->config[$key]['value'];
 
 		saveConfig($this->config_table_prefix, $values);
 
 		$this->changes = array();
+
+		// do deletions
+		deleteConfigKeys($this->config_table_prefix, $this->deletions);
+
+		$this->deletions = array();
 	}
 
 	protected function checkKey($key) {
@@ -80,11 +111,12 @@ abstract class Config {
 
 	protected function loadStandardConfig() {
 		require(TINYIB_ROOT.'/inc/'.$this->standard_config);
-		$config = get_defined_vars();
 
-		foreach ($config as $key => $value) {
-			$this->types[$key] = gettype($value);
-			$this->config[$key] = $value;
+		foreach ($this->config as $key => $value) {
+			$this->config[$key]['modified'] = false;
+
+			// for templates/iterator
+			$this->config[$key]['name'] = $key;
 		}
 	}
 
@@ -92,16 +124,28 @@ abstract class Config {
 		// get config from sql
 		$config = loadConfig($this->config_table_prefix);
 
-		if (is_array($config))
-			$this->config = array_merge($this->config, $config);
+		if (!is_array($config))
+			return;
+
+		foreach ($config as $key => $value) {
+			if (!isset($this->config[$key]))
+				continue; // unknown setting
+
+			// save default value
+			$this->config[$key]['default'] = $this->config[$key]['value'];
+			$this->config[$key]['modified'] = true;
+			$this->config[$key]['value'] = $value;
+
+			settype($this->config[$key]['value'], $this->config[$key]['type']);
+		}
 	}
 
 	protected function loadFromCache() {
 		$cache = get_cache($this->cache_key);
 
 		if (is_array($cache)) {
-			$this->types = $cache['types'];
 			$this->config = $cache['config'];
+			$this->keys = $cache['keys'];
 
 			return true;
 		}
@@ -110,12 +154,34 @@ abstract class Config {
 	}
 
 	protected function saveToCache() {
-		$cache = array(
-			'config' => $this->config,
-			'types' => $this->types,
-		);
+		$cache = array('keys' => $this->keys, 'config' => $this->config);
 
 		set_cache($this->cache_key, $cache);
+	}
+
+
+	//
+	// Iterator
+	//
+
+	public function current() {
+		return $this->config[$this->keys[$this->pos]];
+	}
+
+	public function valid() {
+		return isset($this->keys[$this->pos]);
+	}
+
+	public function key() {
+		return $this->pos;
+	}
+
+	public function next() {
+		$this->pos++;
+	}
+
+	public function rewind() {
+		$this->pos = 0;
 	}
 }
 

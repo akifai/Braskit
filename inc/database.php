@@ -415,7 +415,7 @@ function loadConfig($prefix) {
 	return $config;
 }
 
-function saveGlobalConfig($prefix, $values) {
+function saveConfig($prefix, $values) {
 	global $dbh, $db_prefix;
 
 	$sql = "REPLACE INTO `{$db_prefix}{$prefix}_config` (name, value) VALUES (?, ?)";
@@ -427,11 +427,19 @@ function saveGlobalConfig($prefix, $values) {
 	}
 }
 
-function deleteConfigValue($prefix, $key) {
+function deleteConfigKeys($prefix, $keys) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}{$prefix}_config` WHERE key = ?");
-	$sth->execute(array($key));
+	if (!$keys)
+		return;
+
+	$sql = "DELETE FROM `{$db_prefix}{$prefix}_config` WHERE name = ?";
+
+	for ($i = count($keys) - 1; $i--;)
+		$sql .= " OR name = ?";
+
+	$sth = $dbh->prepare($sql);
+	$sth->execute($keys);
 }
 
 

@@ -71,7 +71,7 @@
   {% endautoescape %}
   </script>
 </head>
-<body>
+<body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}>
   {% include "header.html" %}
 
   {% block content %}{% endblock %}
@@ -80,5 +80,8 @@
 
   <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
   <script src="{{ path("static/js/PlainIB.js") }}"></script>
+  {% for js in js_additional %}
+    <script src="{{ js }}"></script>
+  {% endfor %}
 </body>
 </html>
