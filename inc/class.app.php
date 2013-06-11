@@ -1,18 +1,15 @@
 <?php
 defined('TINYIB') or exit;
 
-class TaskLoader {
+abstract class App {
 	// callbacks for errors
 	public $cb_404 = null;
 	public $cb_405 = null;
 
-	// url source options and their corresponding classes
-	public static $url_classes = array(
-		'query_string' => 'TaskQueryString',
-		'path_info' => 'TaskPathInfo',
-	);
-
-	protected $dir, $tasks, $method, $url, $url_src;
+	protected $dir;
+	protected $tasks;
+	protected $method;
+	protected $url;
 
 	// the value of the match, i.e. which php file and function to run
 	protected $match;
@@ -23,25 +20,13 @@ class TaskLoader {
 	// url arguments
 	protected $matches = array();
 
-	public function __construct($tasks, $dir, $url_src = 'query_string') {
+	public function __construct($tasks, $dir) {
 		$this->tasks = $tasks;
 		$this->dir = $dir;
-		$this->url_src = $url_src;
-	}
-
-	public function getURL() {
-		if (isset(self::$url_classes[$this->url_src])) {
-			$class = self::$url_classes[$this->url_src];
-			$this->url = $class::get();
-
-			return;
-		}
-
-		throw new Exception("Unknown URL source: {$this->url_src}");
 	}
 
 	public function run() {
-		$this->getURL();
+		$this->url = $this->get();
 		$this->matchRoute();
 
 		if ($this->matched) {
@@ -126,12 +111,7 @@ class TaskLoader {
 	}
 }
 
-interface TaskInterface {
-	public static function create($task, $args);
-	public static function get();
-}
-
-class TaskQueryString implements TaskInterface {
+class RouteQueryString extends App {
 	// still unsure about how this should work
 	public static function create($task, $args) {
 		$path = '?'.$task;
@@ -171,7 +151,8 @@ class TaskQueryString implements TaskInterface {
 	}
 }
 
-class TaskPathInfo implements TaskInterface {
+// FIXME: it's broken
+class RoutePathInfo extends App {
 	public static function create($task, $args) {
 		return get_script_name().$task;
 	}

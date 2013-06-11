@@ -52,6 +52,8 @@ if (get_magic_quotes_gpc()) {
 }
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
+	$request_handler = 'RouteQueryString';
+
 	// we can't use a config or database for this entry point
 	return;
 }

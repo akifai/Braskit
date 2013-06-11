@@ -58,7 +58,7 @@ $tasks = array(
 
 unset($board_re, $num_re);
 
-$loader = new TaskLoader($tasks, 'pages');
+$loader = new $request_handler($tasks, 'pages');
 $loader->run();
 
 // print buffer

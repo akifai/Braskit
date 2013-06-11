@@ -41,13 +41,18 @@ $db_prefix = <?php var_export($vars['db_prefix']) ?>;
 # Paths
 #
 
-# an array containing a list of files containing spam definitions. ideally,
-# these files should be well hidden or inaccessible from the web.
-$spam_files = array();
-#$spam_files[] = './spam.txt'; # uncomment to add spam.txt to the list
+# cache directory
+$cache_dir = 'cache/';
 
 # temporary directory - you should probably not change this
 $temp_dir = sys_get_temp_dir();
+
+# an array containing a list of files containing spam definitions. ideally,
+# these files should be well hidden or inaccessible from the web.
+$spam_files = array();
+
+# uncomment to add spam.txt to the list
+#$spam_files[] = 'spam.txt'; 
 
 
 #
@@ -57,6 +62,10 @@ $temp_dir = sys_get_temp_dir();
 # enable debug mode - this will slow the board down considerably, but help with
 # debugging and development
 $debug = false;
+
+# Class to use for handling requests. ("RouteQueryString" / "RoutePathInfo")
+# This will affect how dynamic URLs look like.
+$request_handler = 'RouteQueryString';
 <?php
 	$output = ob_get_contents();
 	ob_end_clean();

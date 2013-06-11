@@ -64,7 +64,7 @@ function ob_callback($buffer) {
 define('TINYIB_CACHE', extension_loaded('apc') ? 'apc' : 'php');
 
 function get_cache($key) {
-	global $debug;
+	global $cache_dir, $debug;
 
 	// debug mode - don't get cache
 	if ($debug)
@@ -76,7 +76,7 @@ function get_cache($key) {
 
 	// Plain PHP cache
 	if (TINYIB_CACHE === 'php') {
-		$filename = TINYIB_ROOT."/cache/cache-{$key}.php";
+		$filename = "$cache_dir/cache-{$key}.php";
 
 		@include($filename);
 
@@ -94,7 +94,7 @@ function get_cache($key) {
 }
 
 function set_cache($key, $data, $ttl = 0) {
-	global $debug;
+	global $cache_dir, $debug;
 
 	// debug mode - don't save cache
 	if ($debug)
@@ -122,7 +122,7 @@ function set_cache($key, $data, $ttl = 0) {
 		$dumped_data = var_export($data, true);
 		$content .= sprintf('$cache = %s;', $dumped_data);
 
-		writePage(sprintf('cache/cache-%s.php', $key), $content);
+		writePage("$cache_dir/cache-$key.php", $content);
 		return true;
 	}
 
@@ -131,7 +131,7 @@ function set_cache($key, $data, $ttl = 0) {
 }
 
 function delete_cache($key) {
-	global $debug;
+	global $cache_dir, $debug;
 
 	// debug mode - don't delete cache
 	if ($debug)
@@ -143,13 +143,15 @@ function delete_cache($key) {
 
 	// Plain PHP cache
 	if (TINYIB_CACHE === 'php')
-		return @unlink(sprintf('cache/cache-%s.php', $key));
+		return @unlink("$cache_dir/cache-$key.php");
 
 	// it's gone
 	return true;
 }
 
 function empty_cache() {
+	global $cache_dir;
+
 	// APC
 	if (TINYIB_CACHE === 'apc')
 		return apc_clear_cache('user');
@@ -157,7 +159,7 @@ function empty_cache() {
 	// Plain PHP cache
 	if (TINYIB_CACHE === 'php') {
 		// get list of cache files
-		$files = glob('cache/cache-*.php');
+		$files = glob("$cache_dir/cache-*.php");
 
 		// that didn't work for some reason
 		if (!is_array($files))
@@ -217,9 +219,11 @@ function cleanString($str) {
 }
 
 function expand_path($filename, $internal = false) {
+	global $request_handler;
+
 	if ($internal) {
 		return get_script_name().
-			TaskQueryString::create("/$filename", $internal);
+			$request_handler::create("/$filename", $internal);
 	}
 
 	$dirname = dirname(get_script_name());
@@ -305,11 +309,13 @@ function get_url($path = false) {
 
 /// Internal redirect
 function diverge($dest, $args = array()) {
+	global $request_handler;
+
 	// missing slash
 	if (substr($dest, 0, 1) !== '/')
 		$dest = "/$goto";
 
-	redirect(TaskQueryString::create($dest, $args));
+	redirect($request_handler::create($dest, $args));
 }
 
 function redirect($url) {

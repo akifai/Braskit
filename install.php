@@ -34,5 +34,5 @@ $tasks = array(
 	'/finish' => 'finish',
 );
 
-$loader = new TaskLoader($tasks, 'installer');
+$loader = new RouteQueryString($tasks, 'installer');
 $loader->run();
