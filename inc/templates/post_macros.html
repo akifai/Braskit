@@ -42,11 +42,11 @@
 		{%- spaceless %}
 			<span class="reflink">
 				{% if not context.thread %}
-					<a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="no">No.</a>
-					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val">{{ p.id|raw }}</a>
+					<a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="no" data-num="{{ p.id|raw }}">No.</a>
+					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val" data-num="{{ p.id|raw }}">{{ p.id|raw }}</a>
 				{% else %}
-					<a href="#{{ p.id|raw }}" class="no">No.</a>
-					<a href="#i{{ p.id|raw }}" class="val">{{ p.id }}</a>
+					<a href="#{{ p.id|raw }}" class="no" data-num="{{ p.id|raw }}">No.</a>
+					<a href="#i{{ p.id|raw }}" class="val" data-num="{{ p.id|raw }}">{{ p.id }}</a>
 				{% endif %}
 			</span>
 		{% endspaceless -%}

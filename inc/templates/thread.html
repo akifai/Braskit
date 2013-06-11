@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "post_macros.html" as m %}
 
+{% set js_callbacks = ["doReplyPage"] %}
 {% set title = posts[0]["subject"] ?: "Thread No."~thread %}
 
 {% block content %}

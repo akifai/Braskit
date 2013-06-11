@@ -8,6 +8,55 @@
  * http://www.wtfpl.net/ for more details.
  */
 
+
+//
+// jQuery helper functions
+//
+
+(function($) {
+	jQuery.fn.addToTextarea = function(text) {
+		return this.each(function() {
+			var length = this.value.length + text.length;
+
+			if (this.createTextRange) {
+				var pos = this.caretPos;
+				pos.text = text;
+			} else if (this.setSelectionRange) {
+				var start = this.selectionStart;
+				var end = this.selectionEnd;
+
+				this.value = this.value.substr(0, start)
+					+ text + this.value.substr(end);
+
+				this.setSelectionRange(length, length);
+			} else {
+				this.value += text;
+			}
+		});
+	};
+
+	jQuery.fn.focusWithCursorAtEnd = function() {
+		return this.each(function() {
+			var length = this.value.length;
+
+			if (this.createTextRange) {
+				var range = this.createTextRange();
+				range.moveStart('character', length);
+				range.moveEnd('character', length);
+				range.select();
+			} else if (this.setSelectionRange) {
+				this.setSelectionRange(length, length);
+			}
+
+			$(this).focus();
+
+			/* chrome needs this because it sucks. */
+			$(this).scrollTop(9999999);
+		});
+	};
+})(jQuery);
+
+
 //
 // Style crap
 //
@@ -133,6 +182,45 @@ function doConfig() {
 
 		inputField.attr("value", $(this).data(dataSource));
 	});
+}
+
+function highlightPost(num) {
+	$(".highlighted").removeClass("highlighted");
+	$("#" + num).addClass("highlighted");
+}
+
+function doReplyPage() {
+	var textarea = $("#postform textarea[name=field4]");
+
+	$(".reflink .no").click(function() {
+		var num = $(this).data("num");
+		highlightPost(num);
+	});
+
+	$(".reflink .val").click(function() {
+		var num = $(this).data("num");
+		textarea.addToTextarea(">>" + num + "\n");
+		textarea.focus();
+	});
+
+	var matches = window.location.hash.match(/^#(i)?(\d+)$/);
+
+	if (!matches)
+		return;
+
+	var doInsert = typeof matches[1] != "undefined";
+	var num = matches[2];
+
+	// Add stuff to textarea
+	if (doInsert && !textarea.val()) {
+		textarea.addToTextarea(">>" + num + "\n");
+		textarea.focus();
+
+		return;
+	}
+
+	// Highlight post
+	highlightPost(num);
 }
 
 
