@@ -115,7 +115,7 @@ $this->config['auto_noko'] = array(
 	'value' => true,
 	'type' => 'boolean',
 	'description' => 'Return to the thread after posting.',
-); // TODO
+);
 
 $this->config['display_id'] = array(
 	'value' => false,

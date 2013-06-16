@@ -190,6 +190,11 @@ function post_post($url, $boardname) {
 
 	$board->rebuildIndexes();
 
-	// redirect to thread
-	redirect($board->path($dest));
+	if ($board->config->auto_noko) {
+		// redirect to thread
+		redirect($board->path($dest));
+	} else {
+		// redirect to board index
+		redirect($board->path(""));
+	}
 }
