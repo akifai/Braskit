@@ -170,8 +170,10 @@ class Spam {
 		$this->re_parts = array_unique($this->re_parts);
 		$this->word_parts = array_unique($this->word_parts);
 
-		if (!$this->re_parts && !$this->word_parts)
+		if (!$this->re_parts && !$this->word_parts) {
 			$this->regex = null;
+			return;
+		}
 
 		$this->regex = '/(';
 		$this->regex .= implode('|', $this->re_parts);
