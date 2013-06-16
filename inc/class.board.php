@@ -138,7 +138,10 @@ class Board {
 		return allThreads($this->board);
 	}
 
+	// FIXME: This shit works by accident, not by design
+	// A huge cleanup is needed.
 	public function getIndexThreads($offset = false) {
+		// get all threads
 		if ($offset !== false) {
 			$all_threads = getThreads(
 				$this->board,
@@ -151,17 +154,35 @@ class Board {
 
 		$threads = array();
 
-		// TODO: This is ugly trevor code. Replace it.
+		// to avoid having to write $this->config... every time (plus
+		// there's a slight overhead when fetching dynamic properties)
+		$replies_shown = $this->config->replies_shown;
+
 		foreach ($all_threads as $thread) {
+			// every thread is an array where the first element
+			// is the OP
 			$thread = array($thread);
-			$replies = latestRepliesInThreadByID($this->board, $thread[0]['id']);
 
-			foreach ($replies as $reply)
-				$thread[] = $reply;
+			// fetch the latest posts and append them to the thread
+			if ($replies_shown) {
+				$replies = latestRepliesInThreadByID(
+					$this->board,
+					$thread[0]['id'],
+					$replies_shown
+				);
 
-			$thread[0]['omitted'] = (count($replies) == 3)
-				? (count($this->postsInThread($thread[0]['id'])) - 4)
-				: 0;
+				foreach ($replies as $reply)
+					$thread[] = $reply;
+			} else {
+				// nothing to fetch
+				$replies = array();
+			}
+
+			// set the omission flag for the OP
+			$thread[0]['omitted'] = ($replies_shown === count($replies))
+				? $this->countPostsInThread($thread[0]['id'])
+					- ($replies_shown + 1)
+				: $thread[0]['omitted'] = 0;
 
 			$threads[] = $thread;
 		}
@@ -171,6 +192,10 @@ class Board {
 
 	public function countThreads() {
 		return countThreads($this->board);
+	}
+
+	public function countPostsInThread($id) {
+		return countPostsInThread($this->board, $id);
 	}
 
 	/**

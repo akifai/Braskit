@@ -169,14 +169,27 @@ function postsInThreadByID($board, $id) {
 	return $sth->fetchAll();
 }
 
-function latestRepliesInThreadByID($board, $id) {
+function countPostsInThread($board, $id) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE parent = ? ORDER BY id DESC LIMIT 3");
-	$sth->execute(array($id));
+	$sth = $dbh->prepare("SELECT COUNT(*) FROM `{$db_prefix}{$board}_posts` WHERE id = ? OR parent = ?");
+	$sth->execute(array($id, $id));
 
-	if ($posts = $sth->fetchAll())
+	return $sth->fetchColumn();
+}
+
+function latestRepliesInThreadByID($board, $id, $limit) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE parent = ? ORDER BY id DESC LIMIT ?");
+	$sth->bindParam(1, $id, PDO::PARAM_INT);
+	$sth->bindParam(2, $limit, PDO::PARAM_INT);
+	$sth->execute();
+
+	if ($posts = $sth->fetchAll()) {
+		// get the replies in the right order
 		$posts = array_reverse($posts);
+	}
 
 	return $posts;
 }
