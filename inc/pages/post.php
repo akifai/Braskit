@@ -90,6 +90,8 @@ function post_post($url, $boardname) {
 
 		if (!$board->config->allow_sage)
 			$sage = false;
+		elseif ($sage)
+			$email = 'mailto:sage';
 	} else {
 		// make name/tripcode
 		list($name, $tripcode) = make_name_tripcode($name);
@@ -112,6 +114,8 @@ function post_post($url, $boardname) {
 				$sage = stripos($email, 'sage') !== false;
 		} elseif (!$board->config->allow_sage) {
 			$sage = false;
+		} elseif ($sage) {
+			$email = 'mailto:sage';
 		}
 	}
 

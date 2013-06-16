@@ -33,8 +33,7 @@
 
       {% if p.email %}
         <span class="postname"><a href="{{ p.email|raw }}">{{ p.name|raw }}</a></span>
-        {%- if p.tripcode %}<span class="posttrip"><a href="{{ p.email|raw }}"> {{ p.tripcode|raw }}</a></span>
-        {% endif %}
+        {%- if p.tripcode %}<span class="posttrip"><a href="{{ p.email|raw }}"> {{ p.tripcode|raw }}</a></span>{% endif %}
       {% else %}
         <span class="postname">{{ p.name|raw }}</span>
         {% if p.tripcode %}
