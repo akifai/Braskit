@@ -348,6 +348,13 @@ function getAllBoards() {
 	return $sth->fetchAll();
 }
 
+function updateBoard($board, $new_title, $new_level) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("UPDATE `{$db_prefix}_boards` SET longname = ?, minlevel = ? WHERE name = ?");
+	$sth->execute(array($new_title, $new_level, $board));
+}
+
 
 //
 // Flood

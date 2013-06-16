@@ -1,14 +1,17 @@
 {% extends "base.html" %}
+{% import "post_macros.html" as m %}
+
+{% set title = board
+  ? "Editing config for /%s/"|format(board)
+  : "Editing global config"
+%}
 
 {% set js_callbacks = ["doConfig"] %}
 {% set js_additional = [path("static/js/bootstrap.min.js")] %}
 
 {% block content %}
-  {% if board %}
-    <div class="theader">Editing config for /{{ board }}/</div>
-  {% else %}
-    <div class="theader">Editing global config</div>
-  {% endif %}
+  {{ m.returnlink(_context) }}
+  <div class="theader">{{ title }}</div>
 
   <form action="{{ board ? board.path("config", true) : path("config", true) }}" method="post" class="configform">
     <input type="hidden" name="csrf" value="{{ csrf() }}">

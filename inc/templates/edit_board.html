@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "post_macros.html" as m %}
+{% set title = "Editing board: /%s/"|format(board) %}
+
+{% block content %}
+  {{ m.returnlink(_context) }}
+  <div class="theader">{{ title }}</div>
+
+  <div class="modpage">
+    <h2>Board information</h2>
+
+    {# note to self: this form will be shared with create_board #}
+    <form action="{{ board.path("edit", true) }}" method="post" class="rowform">
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+      <div class="row">
+        <label for="name">Short name</label>
+        <input type="text" name="name" id="name" value="{{ board }}" size="8" disabled>
+
+        <p>Directory name for board. Must be unique and can only contain
+          letters, numbers and hyphens.</p>
+      </div>
+
+      <div class="row">
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" value="{{ board.title }}" size="35">
+
+        <p>The title/"long name" of the board.</p>
+      </div>
+
+      <div class="row">
+        <label for="minlevel">Minimum view level</label>
+        <input type="text" name="minlevel" id="minlevel" value="{{ board.minlevel }}" size="4">
+
+        <p>Defines the minimum user level needed to view the board. If this
+          level isn't set to zero, board caches will be deleted and one must log
+          in with a sufficiently privileged user account in order to view the
+          board.</p>
+      </div>
+
+      <div class="row">
+        <input type="submit" value="Edit Board">
+      </div>
+    </form>
+
+    <h2>Configuration</h2>
+
+    <p>[<a href="{{ board.path("config", true) }}">Edit configuration</a>]</p>
+
+    <h2>Delete board</h2>
+
+    <form action="{{ board.path("delete_board", true) }}" method="post" class="rowform">
+      <p><strong>Warning:</strong> This will irrecoverably delete all data
+        associated with the board. If you want to remove public access to the
+        board, you can change the user level above instead.</p>
+
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+      <div class="row">
+        <label for="delete">Delete files</label>
+        <input type="checkbox" name="delete" id="delete" value="on" checked>
+
+        <p>Deletes the <kbd>src/</kbd> and <kbd>thumb/</kbd> directories
+          associated with the board. Board caches will be removed either way.
+        </p>
+      </div>
+
+      <div class="row">
+        <input type="submit" value="Delete Board">
+      </div>
+    </form>
+  </div>
+
+  <hr>
+{% endblock %}

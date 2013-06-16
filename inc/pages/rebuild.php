@@ -9,13 +9,7 @@ function rebuild_get($url, $boardname) {
 	set_time_limit(0);
 	ignore_user_abort(true);
 
-	// Rebuild all threads
-	$threads = $board->getAllThreads();
-	foreach ($threads as $thread)
-		$board->rebuildThread($thread['id']);
-
-	// Rebuild all indexes
-	$board->rebuildIndexes();
+	$board->rebuildAll();
 
 	redirect($board->path('index.html'));
 }

@@ -40,6 +40,7 @@ $tasks = array(
 	// Mod board actions
 	"/$board_re/ban" => 'postban',
 	"/$board_re/config" => 'config',
+	"/$board_re/edit" => 'edit_board',
 	"/$board_re/rebuild" => 'rebuild',
 
 	// Mod global actions

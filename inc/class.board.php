@@ -94,6 +94,24 @@ class Board {
 	}
 
 	/**
+	 * Changes the title and level
+	 */
+	public function editSettings($title, $minlevel) {
+		if (!length($title))
+			throw new Exception("Invalid board title.");
+
+		$min_level = abs($minlevel);
+
+		if ($min_level > 0xffff)
+			throw new Exception("Invalid user level.");
+
+		$this->title = $title;
+		$this->minlevel = $minlevel;
+
+		return updateBoard($this->board, $title, $minlevel);
+	}
+
+	/**
 	 * Inserts a post
 	 */
 	public function insert($post) {
@@ -176,6 +194,14 @@ class Board {
 	}
 
 	/**
+	 * Rebuild all indexes and threads
+	 */
+	public function rebuildAll() {
+		$this->rebuildIndexes();
+		$this->rebuildThreads();
+	}
+
+	/**
 	 * Rebuild index caches
 	 */
 	public function rebuildIndexes() {
@@ -223,6 +249,16 @@ class Board {
 		));
 
 		$this->write(sprintf('res/%d.html', $id), $html);
+	}
+
+	/**
+	 * Rebuild all threads
+	 */
+	public function rebuildThreads() {
+		$threads = $this->getAllThreads();
+
+		foreach ($threads as $thread)
+			$this->rebuildThread($thread['id']);
 	}
 
 	/**
