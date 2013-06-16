@@ -30,10 +30,18 @@
 			{% if p.subject %}
 				<em class="posttitle">{{ p.subject|raw }}</em>
 			{% endif %}
-			<span class="postname">{{ p.name|raw }}</span>
-			{% if p.tripcode %}
-				<span class="posttrip">{{ p.tripcode|raw }}</span>
-			{% endif %}
+
+      {% if p.email %}
+        <span class="postname"><a href="{{ p.email|raw }}">{{ p.name|raw }}</a></span>
+        {%- if p.tripcode %}<span class="posttrip"><a href="{{ p.email|raw }}"> {{ p.tripcode|raw }}</a></span>
+        {% endif %}
+      {% else %}
+        <span class="postname">{{ p.name|raw }}</span>
+        {% if p.tripcode %}
+          <span class="posttrip">{{ p.tripcode|raw }}</span>
+        {% endif %}
+      {% endif %}
+
 			{% if context.admin %}
 				<span class="postip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip|raw }}</a>)</span>
 			{% endif %}

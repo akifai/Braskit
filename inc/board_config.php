@@ -55,7 +55,7 @@ $this->config['replies_shown'] = array(
 	'value' => 5,
 	'type' => 'integer',
 	'description' => 'How many replies per thread to show on the board indexes.',
-); // TODO
+);
 
 $this->config['max_threads'] = array(
 	'value' => 100,
@@ -91,25 +91,25 @@ $this->config['forced_anon'] = array(
 	'value' => false,
 	'type' => 'boolean',
 	'description' => 'Disable the name and email fields.',
-); // TODO
+);
 
 $this->config['allow_tripcodes'] = array(
 	'value' => true,
 	'type' => 'boolean',
 	'description' => "Allows tripcodes to be used when posting. If disabled, tripkeys will be stripped away rather than being interpreted as part of the name. Requires 'forced_anon' to be turned off.",
-); // TODO
+);
 
 $this->config['allow_email'] = array(
 	'value' => false,
 	'type' => 'boolean',
 	'description' => "Show the email field in the postform. Requires 'forced_anon' to be turned off.",
-); // TODO
+);
 
 $this->config['allow_sage'] = array(
 	'value' => true,
 	'type' => 'boolean',
 	'description' => 'Allows replies with "sage" in the email field to let the thread remain unbumped. If \'allow_email\' is turned off or \'forced_anon\' is turned on, a "sage" checkbox will be shown to the user instead.',
-); // TODO
+);
 
 $this->config['auto_noko'] = array(
 	'value' => true,

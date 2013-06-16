@@ -25,7 +25,9 @@ function post_post($url, $boardname) {
 	$email = param('field2', $flags);
 	$subject = param('field3', $flags);
 	$comment = param('field4', $flags);
+
 	$nofile = (bool)param('nofile', $flags);
+	$sage = (bool)param('sage', $flags);
 
 	// We get the password from cookies
 	$password = param('password', PARAM_COOKIE | PARAM_STRING);
@@ -69,18 +71,49 @@ function post_post($url, $boardname) {
 			$board->checkSpam($ip, $values);
 		}
 
-		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb);
-	} else {
-		$formatted_comment = format_post($comment, $board->config->default_comment, $format_cb, $raw);
+		$raw = false;
 	}
 
-	// make name/tripcode
-	list($name, $tripcode) = make_name_tripcode($name);
+	// format the comment
+	$formatted_comment = format_post(
+		$comment,
+		$board->config->default_comment,
+		$format_cb,
+		$raw
+	);
 
-	if ($name === false)
+	if ($board->config->forced_anon) {
+		// nothing to do here
 		$name = $board->config->default_name;
-	else
-		$name = cleanString($name);
+		$email = '';
+		$tripcode = '';
+
+		if (!$board->config->allow_sage)
+			$sage = false;
+	} else {
+		// make name/tripcode
+		list($name, $tripcode) = make_name_tripcode($name);
+
+		if ($name === false)
+			$name = $board->config->default_name;
+		else
+			$name = cleanString($name);
+
+		// remove tripcodes unless they're allowed
+		if (!$board->config->allow_tripcodes)
+			$tripcode = '';
+
+		if ($board->config->allow_email && length($email)) {
+			// set email address
+			$email = 'mailto:'.cleanString($email);
+
+			// check for sage
+			if ($board->config->allow_sage)
+				$sage = stripos($email, 'sage') !== false;
+		} elseif (!$board->config->allow_sage) {
+			$sage = false;
+		}
+	}
 
 	// default subject
 	if (!length($subject))
@@ -174,7 +207,7 @@ function post_post($url, $boardname) {
 		$board->rebuildThread($post['parent']);
 
 		// bump the thread if we're not saging
-		if (!stristr($email, 'sage'))
+		if (!$sage)
 			$board->bump($post['parent']);
 
 		$dest = sprintf('res/%d.html#%d', $parent, $id);
