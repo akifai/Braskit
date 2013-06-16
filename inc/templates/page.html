@@ -17,31 +17,33 @@
 		{{ m.delfile(_context) }}
 	</form>
 
-	<div class="pages">
-		<div class="previous">
-			{% if not pagenum %}
-				Previous
-			{% else %}
-				{{ m.make_previous_page_button(_context) }}
-			{% endif %}
-		</div>
-		<div class="pagenums">
-			{% for i in range(0, maxpage) %}
-				{% if i == pagenum %}
-					[<strong>{{ i }}</strong>]
-        {% elseif i == 0 %}
-          [<a href="{{ board.path("index.html", admin) }}">{{ i }}</a>]
+  {% if board.config.threads_per_page %}
+    <div class="pages">
+      <div class="previous">
+        {% if not pagenum %}
+          Previous
         {% else %}
-          [<a href="{{ board.path(i~".html", admin) }}">{{ i }}</a>]
-				{% endif %}
-			{% endfor %}
-		</div>
-		<div class="next">
-			{% if pagenum == maxpage %}
-				Next
-			{% else %}
-				{{ m.make_next_page_button(_context) }}
-			{% endif %}
-		</div>
-	</div>
+          {{ m.make_previous_page_button(_context) }}
+        {% endif %}
+      </div>
+      <div class="pagenums">
+        {% for i in range(0, maxpage) %}
+          {% if i == pagenum %}
+            [<strong>{{ i }}</strong>]
+          {% elseif i == 0 %}
+            [<a href="{{ board.path("index.html", admin) }}">{{ i }}</a>]
+          {% else %}
+            [<a href="{{ board.path(i~".html", admin) }}">{{ i }}</a>]
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="next">
+        {% if pagenum == maxpage %}
+          Next
+        {% else %}
+          {{ m.make_next_page_button(_context) }}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

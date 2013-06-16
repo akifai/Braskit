@@ -139,10 +139,15 @@ class Board {
 	}
 
 	public function getIndexThreads($offset = false) {
-		if ($offset !== false)
-			$all_threads = getThreads($this->board, $offset);
-		else
-			$all_threads = $this->getAllThreads(); 
+		if ($offset !== false) {
+			$all_threads = getThreads(
+				$this->board,
+				$offset,
+				$this->config->threads_per_page
+			);
+		} else {
+			$all_threads = $this->getAllThreads();
+		}
 
 		$threads = array();
 
@@ -207,10 +212,11 @@ class Board {
 	public function rebuildIndexes() {
 		$threads = $this->getIndexThreads();
 		$maxpage = $this->getMaxPage($threads);
+		$threads_per_page = $this->config->threads_per_page;
 
 		$num = 0;
 
-		$page = array_splice($threads, 0, 10);
+		$page = array_splice($threads, 0, $threads_per_page);
 		do {
 			$file = !$num ? 'index.html' : $num.'.html';
 
@@ -223,7 +229,7 @@ class Board {
 
 			$this->write($file, $html);
 			$num++;
-		} while ($page = array_splice($threads, 0, 10));
+		} while ($page = array_splice($threads, 0, $threads_per_page));
 
 		// delete old caches
 		while ($this->fileExists($num.'.html')) {

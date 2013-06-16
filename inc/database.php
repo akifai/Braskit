@@ -136,11 +136,21 @@ function allThreads($board) {
 	return $sth->fetchAll();
 }
 
-function getThreads($board, $offset) {
+function getThreads($board, $offset, $limit) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 10");
-	$sth->bindParam(1, $offset, PDO::PARAM_INT);
+	$sql = "SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC";
+
+	if ($limit) {
+		$sql .= ' LIMIT ?, ?';
+		$sth = $dbh->prepare($sql);
+		$sth->bindParam(1, $offset, PDO::PARAM_INT);
+		$sth->bindParam(2, $limit, PDO::PARAM_INT);
+	} else {
+		// no thread limit
+		$sth = $dbh->prepare($sql);
+	}
+
 	$sth->execute();
 
 	return $sth->fetchAll();

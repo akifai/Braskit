@@ -49,7 +49,7 @@ $this->config['threads_per_page'] = array(
 	'value' => 10,
 	'type' => 'integer',
 	'description' => 'How many threads to show per page.',
-); // TODO
+);
 
 $this->config['replies_shown'] = array(
 	'value' => 5,

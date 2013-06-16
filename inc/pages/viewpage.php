@@ -6,7 +6,7 @@ function viewpage_get($url, $boardname, $page = 0) {
 
 	$board = new Board($boardname);
 
-	$offset = $page * 10;
+	$offset = $page * $board->config->threads_per_page;
 
 	$threads = $board->getIndexThreads($offset);
 
