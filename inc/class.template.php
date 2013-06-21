@@ -8,19 +8,21 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {
 		$functions = array(
 			new Twig_SimpleFunction('csrf', 'get_csrf_token'),
-			new Twig_SimpleFunction('less', 'get_less_path'),
-			new Twig_SimpleFunction('path', 'expand_path'),
-			new Twig_SimpleFunction('self', 'get_script_name'), // deprecated
 			new Twig_SimpleFunction('filename', 'shorten_filename'),
+			new Twig_SimpleFunction('path', 'expand_path'),
 		);
 
 		return $functions;
 	}
 
 	public function getGlobals() {
-		global $config, $debug;
+		global $config;
+		global $debug;
 
-		$globals = array('self' => get_script_name());
+		$globals = array(
+			'self' => get_script_name(),
+			'style' => Style::getObject(),
+		);
 
 		if (isset($config))
 			$globals['config'] = $config;

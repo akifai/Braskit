@@ -19,6 +19,7 @@ class AutoLoader {
 		'RoutePathInfo' => 'class.app.php',
 		'RouteQueryString' => 'class.app.php',
 		'Spam' => 'class.spam.php',
+		'Style' => 'class.less.php',
 		'User' => 'class.user.php',
 		'UserEdit' => 'class.user.php',
 		'UserException' => 'class.exception.php',

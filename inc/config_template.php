@@ -41,8 +41,18 @@ $db_prefix = <?php var_export($vars['db_prefix']) ?>;
 # Paths
 #
 
-# cache directory
-$cache_dir = 'cache/';
+# Available stylesheets as a name => path associative array.
+$stylesheets = array(
+	'Burichan' => 'burichan',
+	'Futaba' => 'futaba',
+	'Tomorrow' => 'tomorrow',
+);
+
+# Default stylesheet
+$default_stylesheet = 'Futaba';
+
+# cache directory - you should probably not change this
+$cache_dir = TINYIB_ROOT.'/cache';
 
 # temporary directory - you should probably not change this
 $temp_dir = sys_get_temp_dir();

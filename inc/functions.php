@@ -239,22 +239,6 @@ function get_script_name() {
 	return $_SERVER['SCRIPT_NAME'];
 }
 
-function get_less_path($less) {
-	static $mtimes = array();
-
-	$path = expand_path('less.php?file='.$less);
-
-	$filename = TINYIB_ROOT.'/static/less/'.$less;
-
-	// for caching purposes
-	if (isset($mtimes[$less])) {
-		$path .= '&'.$mtimes[$less];
-	} elseif (file_exists($filename)) {
-		$path .= '&'.$mtimes[$less] = filemtime($filename);
-	}
-
-	return $path;
-}
 
 /*
  * this is like some sort of reverse parse_url() for the current request.
@@ -325,6 +309,7 @@ function redirect($url) {
 }
 
 function load_twig(array $dirs = array()) {
+	global $cache_dir;
 	global $debug;
 
 	$dirs[] = 'inc/templates';
@@ -332,7 +317,7 @@ function load_twig(array $dirs = array()) {
 	$loader = new PlainIB_Twig_Loader($dirs);
 
 	$twig = new Twig_Environment($loader, array(
-		'cache' => $debug ? false : 'cache/',
+		'cache' => $debug ? false : $cache_dir,
 		'debug' => $debug,
 	));
 

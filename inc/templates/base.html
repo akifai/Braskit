@@ -12,20 +12,15 @@
   </title>
 
   <meta charset="utf-8">
-  <link rel="stylesheet" id="sitestyle" href="{{ less("futaba.less") }}" title="Futaba">
+  <link rel="stylesheet" id="sitestyle" href="{{ style.getDefault() }}">
   <script>
-  {% autoescape "js" %}
-    var lessHandler = "{{ path("less.php") }}";
-    var styles = {
-      "Burichan": "burichan.less",
-      "Futaba": "futaba.less",
-      "Tomorrow": "tomorrow.less"
-    };
+    var styles = {{ style.getJSON()|raw }};
 
     function changeStyle(name) {
-      var link = document.getElementById("sitestyle");
-      if (link)
-        link.href = lessHandler + "?file=" + styles[name];
+      var linkEl = document.getElementById("sitestyle");
+
+      if (linkEl)
+        linkEl.href = styles[name];
     }
 
     function Cookie(options) {
@@ -68,7 +63,6 @@
       if (style)
         changeStyle(style);
     }();
-  {% endautoescape %}
   </script>
 </head>
 <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}>
