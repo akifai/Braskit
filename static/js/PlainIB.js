@@ -76,8 +76,16 @@ function createStyleSwitcher() {
 	var cookie = new Cookie();
 	var selected = cookie.get("style");
 
-	if (!selected)
-		selected = $("#sitestyle").attr("title");
+	if (!selected) {
+		var currentPath = $("#sitestyle").attr("href");
+
+		// there used to be a title="" attribute with the default name
+		// on the <link> element, but I can't be bothered to readd it.
+		for (style in styles) {
+			if (styles[style] == currentPath)
+				selected = style;
+		}
+	}
 
 	// Create <select> for switcher
 	var switcher = $(document.createElement("select"));
