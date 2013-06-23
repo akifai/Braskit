@@ -1,0 +1,102 @@
+@import "../base.less";
+
+@background: #ffffee;
+@blockBackground: #ea8;
+@replyBackground: #f0e0d6;
+@textColour: #800000;
+@textFont: @sansSerif;
+@textSize: 10pt;
+@linkColour: #00e;
+@linkHoverColour: #d00;
+@postSubjectColour: #cc1105;
+@postNameColour: #117743;
+@postTripColour: #228854;
+@postQuoteColour: #789922;
+@postOmitColour: #707070;
+@modeBackground: #e04000;
+@modeTextColour: #fff;
+
+body {
+	background-image: linear-gradient(top, #fed6af, #ffe 200px);
+	background-image: -o-linear-gradient(top, #fed6af, #ffe 200px);
+	background-image: -ms-linear-gradient(top, #fed6af, #ffe 200px);
+	background-image: -moz-linear-gradient(top, #fed6af, #ffe 200px);
+	background-image: -webkit-linear-gradient(top, #fed6af, #ffe 200px);
+	background-repeat: repeat-x;
+}
+#header {
+	font-family: tahoma, @sansSerif;
+	font-weight: bold;
+	font-size: 28px;
+	letter-spacing: -2px;
+}
+.board-edit {
+	font-weight: normal;
+	letter-spacing: 0;
+}
+.theader {
+	font-size: larger;
+	font-weight: bold;
+	padding: 2px;
+}
+.postarea td {
+	padding: 0;
+}
+.postblock {
+	border: solid 1px #111;
+	padding: 0 5px;
+}
+input[type="text"],
+input[type="password"],
+textarea {
+	border: solid 1px #aaa;
+	background: #fff;
+	color: #000;
+	font-family: arial, helvetica, sans-serif;
+	font-size: 13px;
+	outline: none;
+	padding: 2px 4px 3px;
+}
+input[disabled] {
+	background: #ddd;
+	color: #808080;
+}
+.doubledash {
+	color: #e0bfb7;
+}
+.reply, .pages {
+	border: solid #d9bfb7;
+	border-width: 0 1px 1px 0;
+}
+.pages {
+	background: @replyBackground;
+	color: #b86;
+	padding: 3px 7px;
+
+	& div {
+		border: none;
+	}
+
+	strong {
+		color: @textColour;
+	}
+}
+.rules {
+	font-size: 10px;
+}
+.rules ul,
+.rules li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.rules li:before {
+	content: "\2022 \20";
+}
+hr {
+	border: solid @replyBackground;
+	border-width: 1px 0 0;
+}
+p.footer {
+	font-size: x-small;
+}

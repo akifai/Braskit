@@ -46,6 +46,8 @@ $stylesheets = array(
 	'Burichan' => 'burichan',
 	'Futaba' => 'futaba',
 	'Tomorrow' => 'tomorrow',
+	'Yotsuba' => 'yotsuba',
+	'Yotsuba B' => 'yotsuba-b',
 );
 
 # Default stylesheet
