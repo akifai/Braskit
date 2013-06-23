@@ -82,7 +82,7 @@ function post_post($url, $boardname) {
 		$raw
 	);
 
-	if ($board->config->forced_anon) {
+	if (!$user && $board->config->forced_anon) {
 		// nothing to do here
 		$name = $board->config->default_name;
 		$email = '';
@@ -102,8 +102,12 @@ function post_post($url, $boardname) {
 			$name = cleanString($name);
 
 		// remove tripcodes unless they're allowed
-		if (!$board->config->allow_tripcodes)
+		if (!$user && !$board->config->allow_tripcodes)
 			$tripcode = '';
+
+		// add capcode if applicable
+		if ($capcode && $user && strlen($user->capcode()))
+			$tripcode .= ' '.$user->capcode();
 
 		if ($board->config->allow_email && length($email)) {
 			// set email address
