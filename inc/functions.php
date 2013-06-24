@@ -349,7 +349,66 @@ function render($template, $args = array(), $twig = null) {
 	return $output;
 }
 
+/**
+ * Minifies and combines the JavaScript files specified in the configuration
+ * into one file and returns the path to it.
+ *
+ * @return string Path to combined JavaScript file
+ */
+function get_js() {
+	global $javascript_includes;
+	static $static_cache;
 
+	// load from static var cache
+	if (isset($web_path))
+		return $web_path;
+
+	// try loading from persistent cache
+	$cache = get_cache('js_cache');
+
+	if ($cache !== false)
+		return $cache;
+
+	// output path
+	$path = 'static/js/cache-'.time().'.js';
+
+	// start suppressing output - jsmin+ is dumb and echoes errors instead
+	// of throwing exceptions
+	ob_start();
+
+	$fh = fopen(TINYIB_ROOT."/$path", 'w');
+
+	if (!$fh) {
+		ob_end_clean();
+		throw new Exception("Cannot write to /static/js/.");
+	}
+
+	foreach ($javascript_includes as $filename) {
+		if (strpos($filename, '/') === false)
+			$filename = TINYIB_ROOT.'/static/js/'.$filename;
+
+		$js = file_get_contents($filename);
+
+		try {
+			$temp = JSMinPlus::minify($js);
+		} catch (Exception $e) {
+			continue;
+		}
+
+		// concatenate to the output file
+		// the newline acts a statement terminator
+		fwrite($fh, "$temp\n");
+	}
+
+	fclose($fh);
+	ob_end_clean();
+
+	$web_path = expand_path($path);
+
+	set_cache('js_cache', $web_path);
+
+	return $web_path;
+}
 
 
 //

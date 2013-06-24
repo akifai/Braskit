@@ -7,6 +7,7 @@ Twig_Autoloader::register();
 class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {
 		$functions = array(
+			new Twig_SimpleFunction('js', 'get_js'),
 			new Twig_SimpleFunction('csrf', 'get_csrf_token'),
 			new Twig_SimpleFunction('filename', 'shorten_filename'),
 			new Twig_SimpleFunction('path', 'expand_path'),
@@ -18,6 +19,7 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getGlobals() {
 		global $config;
 		global $debug;
+		global $javascript_includes;
 
 		$globals = array(
 			'self' => get_script_name(),
@@ -29,6 +31,9 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 
 		if (isset($debug))
 			$globals['debug'] = $debug;
+
+		if (isset($javascript_includes))
+			$globals['js'] = $javascript_includes;
 
 		return $globals;
 	}

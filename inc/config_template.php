@@ -53,6 +53,14 @@ $stylesheets = array(
 # Default stylesheet
 $default_stylesheet = 'Futaba';
 
+# JavaScript files to include - these will be minified, merged into one file and
+# included at the bottom of the page
+$javascript_includes = array(
+	'jquery-1.9.0.min.js',
+	'bootstrap.min.js',
+	'PlainIB.js',
+);
+
 # cache directory - you should probably not change this
 $cache_dir = TINYIB_ROOT.'/cache';
 

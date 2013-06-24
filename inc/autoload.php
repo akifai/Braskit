@@ -12,6 +12,7 @@ class AutoLoader {
 		'GlobalConfig' => 'class.config.php',
 		'HTMLException' => 'class.exception.php',
 		'IP' => 'class.IP.php',
+		'JSMinPlus' => 'lib/jsminplus/jsminplus.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',
 		'lessc_fixed' => 'class.less.php',
 		'PlainIB_Twig_Extension' => 'class.template.php',

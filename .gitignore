@@ -10,10 +10,25 @@ thumbs.db
 /config.php
 *.sql
 
-# compiled LESS
-/static/styles/*/*-*.css
-
 # ignore all top-level directories, except those we choose
 /*/
 !/inc/
 !/static/
+
+# ignore non-standard style directories
+/static/styles/*/
+
+!/static/styles/bootstrap/
+!/static/styles/img/
+
+!/static/styles/burichan/
+!/static/styles/futaba/
+!/static/styles/tomorrow/
+!/static/styles/yotsuba/
+!/static/styles/yotsuba-b/
+
+# compiled LESS
+/static/styles/*/*-*.css
+
+# minified JS
+/static/js/cache-*.js

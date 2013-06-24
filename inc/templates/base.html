@@ -72,10 +72,13 @@
 
   {% include "footer.html" %}
 
-  <script src="{{ path("static/js/jquery-1.9.0.min.js") }}"></script>
-  <script src="{{ path("static/js/PlainIB.js") }}"></script>
-  {% for js in js_additional %}
-    <script src="{{ js }}"></script>
-  {% endfor %}
+  {% if debug %}
+    {% for file in js %}
+      {# TODO: absolute paths #}
+      <script src="{{ path("static/js/"~file) }}"></script>
+    {% endfor %}
+  {% else %}
+    <script src="{{ js() }}"></script>
+  {% endif %}
 </body>
 </html>

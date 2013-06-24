@@ -28,5 +28,6 @@ Additionally, the software includes the following libraries:
 
 * [Bootstrap](http://twitter.github.io/bootstrap/)
 * [jQuery](http://jquery.com/); https://jquery.org/license/
+* [JSMin+](http://crisp.tweakblogs.net/blog/cat/716)
 * [lessphp](http://leafo.net/lessphp/)
 * [Twig](http://twig.sensiolabs.org/)
