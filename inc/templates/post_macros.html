@@ -62,9 +62,9 @@
 		{% endif %}
     {% if context.admin %}
       <span class="modcontrols">
-        <a href="{{ context.board.path("delete", {"id": p.id}) }}" class="mod-del-link action" title="Delete">D</a>
-        <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" class="mod-bandel-link action" title="Ban & Delete">&</a>
-        <a href="{{ context.board.path("ban", {"id": p.id}) }}" class="mod-ban-link action" title="Ban">B</a>
+        <a href="{{ context.board.path("delete", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id}) }}" title="Delete">D</a>
+        <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id, "ban": 1}) }}" title="Ban & Delete">&</a>
+        <a href="{{ context.board.path("ban", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("ban", {"id": p.id}) }}" title="Ban">B</a>
       </span>
     {% endif %}
 	</h2>

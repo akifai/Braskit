@@ -38,7 +38,7 @@ $tasks = array(
 	"/$board_re/res/$num_re(?:\\.html)?" => 'viewthread',
 
 	// Mod board actions
-	"/$board_re/ban" => 'postban',
+	"/$board_re/ban" => 'ban',
 	"/$board_re/config" => 'config',
 	"/$board_re/edit" => 'edit_board',
 	"/$board_re/rebuild" => 'rebuild',

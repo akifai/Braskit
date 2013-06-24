@@ -1,0 +1,4 @@
+{% block content %}{% endblock %}
+{% for callback in js_callbacks %}
+  <script>{{ callback|raw }}()</script>
+{% endfor %}

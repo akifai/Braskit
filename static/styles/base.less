@@ -366,3 +366,40 @@ p.notice {
 	font-weight: bold;
 	text-align: center;
 }
+
+
+//
+// AJAX dialogue boxes
+//
+
+.dl-screen {
+	background: rgba(0, 0, 0, 0.6);
+	display: none;
+	height: 100%;
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 100%;
+	z-index: 9000;
+}
+
+.dl-window {
+	@borderWidth: 2px;
+	@height: 300px;
+	@padding: 20px;
+	@width: 520px;
+
+	border: solid 2px @replyBackground;
+	background: @background;
+	box-shadow: 0 0 15px #000;
+	display: table;
+	height: @height;
+	left: 50%;
+	margin-left: -((@borderWidth * 2 + @padding * 2 + @width) / 2);
+	margin-top: -((@borderWidth * 2 + @padding * 2 + @height) / 2);
+	padding: @padding;
+	position: fixed;
+	top: 50%;
+	width: @width;
+	z-index: 9001;
+}

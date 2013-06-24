@@ -493,6 +493,12 @@ class Board {
 		return expand_path($path, $internal);
 	}
 
+	public function apiPath($dest, $vars) {
+		$path = $this->board.'/'.$dest;
+
+		return expand_script_path("ajax.php", $path, $vars);
+	}
+
 	/**
 	 * Returns a link to a specific post
 	 */

@@ -232,6 +232,92 @@ function doReplyPage() {
 }
 
 
+/*
+ * AJAX dialogue boxes
+ *
+ * We could have used the modals from bootstrap, but I don't really like them.
+ */
+
+function Dialogue(url, orig) {
+	this.url = url;
+
+	// where to redirect if things fail
+	this.defaultURL = orig;
+
+	this.createScreen();
+	this.createSpinner();
+
+	var self = this;
+
+	// loads the page using AJAX
+	$.getJSON(this.url, function(data) {
+		// success - display the page
+		self.createWindow(data)
+	}).fail(function() {
+		self.handleError()
+	});
+}
+
+Dialogue.prototype.handleError = function() {
+	console.log("Couldn't load the page for some reason.");
+
+	var href = this.defaultURL;
+	this.destroy();
+
+	// redirect to the original location of the href
+	window.location = href;
+}
+
+Dialogue.prototype.createScreen = function() {
+	this.container = document.createElement("div");
+	this.screen = document.createElement("div");
+
+	var self = this;
+
+	$(this.screen)
+		.addClass("dl-screen")
+		.click(function() { self.destroy() });
+
+	$(this.container)
+		.addClass("dl-container")
+		.append(this.screen);
+
+	$("#wrapper").after(this.container);
+	$(this.screen).fadeIn();
+}
+
+Dialogue.prototype.createWindow = function(data) {
+	this.spinner.stop();
+
+	var win = $(document.createElement("div")).addClass("dl-window");
+	win.html(data.page);
+	win.css("display", "none");
+
+	$(this.container).append(win);
+	win.fadeIn();
+}
+
+Dialogue.prototype.createSpinner = function() {
+	this.spinner = new Spinner({
+		lines: 9,
+		length: 6,
+		width: 3,
+		radius: 4,
+		hwaccel: true,
+		color: "#ccc",
+	}).spin(this.screen);
+}
+
+Dialogue.prototype.destroy = function() {
+	// Fades out, then removes the container and all its child nodes
+	$(this.container).fadeOut({
+		done: function() {
+			$(this).remove();
+		}
+	});
+}
+
+
 //
 // Global init
 //
@@ -252,8 +338,17 @@ $(document).ready(function() {
 	});
 });
 
+$("[data-ajax]").click(function(event) {
+	event.preventDefault();
+
+	var original = $(this).attr("href")
+	var loadUrl = $(this).data("ajax");
+
+	new Dialogue(loadUrl, original);
+});
+
 // Submit dummy form with CSRF token
-$(".quick_action").click(function(event) {
+$(".action").click(function(event) {
 	event.preventDefault();
 
 	// Set the URL for the dummy form and submit it.

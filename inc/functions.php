@@ -5,6 +5,19 @@ defined('TINYIB') or exit;
 // Script utilities
 //
 
+function ajax_exception_handler($e) {
+	ob_end_clean();
+
+	header('HTTP/1.1 403 Forbidden');
+
+	echo json_encode(array(
+		'error' => true,
+		'errorMsg' => $e->getMessage(),
+	));
+
+	exit;
+}
+
 function make_error_page($e) {
 	$referrer = @$_SERVER['HTTP_REFERER'];
 
@@ -23,6 +36,10 @@ function make_error_page($e) {
 	} catch (Exception $e) {}
 
 	exit;
+}
+
+function ob_ajax_callback($output) {
+	return json_encode(array('page' => $output));
 }
 
 function ob_callback($buffer) {
@@ -233,6 +250,21 @@ function expand_path($filename, $internal = false) {
 		return "/$filename";
 
 	return "$dirname/$filename";
+}
+
+function expand_script_path($script, $dest, $vars = array()) {
+	$dirname = dirname(get_script_name());
+
+	// avoid double slashes
+	if ($dirname === '/')
+		$dirname = '';
+
+	$url = "$dirname/$script?/$dest";
+
+	foreach ($vars as $key => $value)
+		$url .= '&'.urlencode($key).'='.urlencode($value);
+
+	return $url;
 }
 
 function get_script_name() {

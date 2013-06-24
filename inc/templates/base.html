@@ -66,11 +66,13 @@
   </script>
 </head>
 <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}>
-  {% include "header.html" %}
+  <div id="wrapper">
+    {% include "header.html" %}
 
-  {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
 
-  {% include "footer.html" %}
+    {% include "footer.html" %}
+  </div>
 
   {% if debug %}
     {% for file in js %}
