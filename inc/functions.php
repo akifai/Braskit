@@ -396,8 +396,7 @@ function get_js() {
 		}
 
 		// concatenate to the output file
-		// the newline acts a statement terminator
-		fwrite($fh, "$temp\n");
+		fwrite($fh, "$temp;");
 	}
 
 	fclose($fh);
