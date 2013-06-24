@@ -1,0 +1,77 @@
+{% extends ajax ? "ajax_base.html" : "base.html" %}
+{% set title = "Moderating %s No.%d"|format(post.parent ? "reply" : "thread", post.id) %}
+
+{% block content %}
+  {% if not ajax %}
+    {% import "post_macros.html" as m %}
+    {{ m.returnlink() }}
+    <div class="theader">{{ title }}</div>
+  {% endif %}
+
+  <div class="modpage">
+    <form action="{{ self }}" method="post" class="rowform">
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+      <div class="colsplit">
+        <div class="column">
+          <div class="row">
+            <label for="ban_ip">IP address</label>
+            <input type="text" name="ip" id="ban_ip" value="{{ post.ip }}" size="24">
+          </div>
+
+          <div class="row">
+            <label for="ban_reason">Ban reason</label>
+            <textarea name="reason" id="ban_reason" rows="4" cols="48" class="focus">{{ "\n"~reason }}</textarea>
+            <p>Only the first line will be shown to the user.</p>
+          </div>
+
+          <div class="row">
+            <label for="ban_banip" class="inline">Ban IP address</label>
+            <input type="checkbox" name="banip" id="ban_banip" value="on" checked>
+          </div>
+
+          <div class="row">
+            <label for="ban_delete" class="inline">Delete post</label>
+            <input type="checkbox" name="delete" value="on" id="ban_delete" checked>
+          </div>
+
+        </div>
+
+        <div class="column">
+          <div class="row">
+            <label for="ban_expires">Ban expiration time</label>
+            <select name="expires" id="ban_expires" tabindex="3">
+              <option value="0" selected>Never</option>
+              <option value="259200">3 days</option>
+              <option value="604800">1 week</option>
+              <option value="2592000">1 month</option>
+              <option value="31536000">1 year</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <label for="ban_spam">Spam list additive</label>
+            <textarea name="spam" id="ban_spam" rows="4" cols="48"></textarea>
+            <p>Any domains found in the post will automatically appear here—make
+              sure that you really want to block these domains!</p>
+          </div>
+
+          {% if not post.parent %}
+            <div class="row">
+              <label for="ban_banall" class="inline">Ban every IP in thread</label>
+              <input type="checkbox" name="banall" value="on" id="ban_banall">
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row">
+        <input type="submit" value="Moderate">
+      </div>
+    </form>
+  </div>
+
+  {% if not ajax %}
+    <hr>
+  {% endif %}
+{% endblock %}

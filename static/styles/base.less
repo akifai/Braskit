@@ -327,8 +327,10 @@ a:hover {
 }
 
 .modpage {
-	max-width: 800px;
-	margin: 1em auto;
+	#wrapper & {
+		max-width: 800px;
+		margin: 1em auto;
+	}
 
 	h2 {
 		.postblock;
@@ -336,21 +338,66 @@ a:hover {
 }
 
 .rowform {
-	label {
-		display: inline-block;
-		font-weight: bold;
-		margin: 0 1em 0 0;
-		min-width: 150px;
-		text-align: right;
+	#wrapper & {
+		label {
+			display: inline-block;
+			font-weight: bold;
+			margin: 0 1em 0 0;
+			min-width: 150px;
+			text-align: right;
+			vertical-align: top;
+		}
+
+		.row {
+			margin: 0 0 1em;
+
+			p {
+				font-family: @sansSerif;
+				font-size: small;
+				margin: 0.5em 0 0.5em 50px;
+			}
+		}
 	}
 
-	.row {
-		margin: 0 0 1em;
+	.dl-container & {
+		display: table;
 
-		p {
-			font-family: @sansSerif;
-			font-size: small;
-			margin: 0.5em 0 0.5em 50px;
+		label {
+			display: block;
+			font-weight: bold;
+
+			&.inline {
+				display: inline;
+			}
+		}
+
+		.column {
+			display: table-cell;
+			padding-right: 20px;
+			width: 1%;
+
+			&:last-child {
+				padding-right: 0;
+			}
+		}
+
+		.row {
+			margin: 0.5em 0 0.5em;
+
+			p {
+				margin-top: 0;
+				font-size: small;
+			}
+		}
+
+		input[type=text],
+		input[type=password],
+		input[type=number],
+		textarea {
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			width: 100%;
 		}
 	}
 }

@@ -295,6 +295,8 @@ Dialogue.prototype.createWindow = function(data) {
 
 	$(this.container).append(win);
 	win.fadeIn();
+
+	win.find(".focus").first().focus();
 }
 
 Dialogue.prototype.createSpinner = function() {
@@ -330,7 +332,7 @@ $(document).ready(function() {
 	doStyleSwitchers();
 
 	// Focus stuff
-	$(".focus_onload").first().focus();
+	$(".focus").first().focus();
 
 	// For W3C compliancy, since size="" isn't allowed on file inputs
 	$("input[data-size]").attr("size", function() {
