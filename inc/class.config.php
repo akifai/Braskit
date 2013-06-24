@@ -53,6 +53,10 @@ abstract class Config implements Iterator {
 		// convert value to the correct type
 		settype($value, $this->config[$key]['type']);
 
+		// make sure integers are non-negative
+		if ($this->config[$key]['type'] === 'integer')
+			$value = abs($value);
+
 		// check if same as current value and return if so
 		if ($this->config[$key]['value'] === $value)
 			return;

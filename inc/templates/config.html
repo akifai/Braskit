@@ -39,7 +39,7 @@
               {% if item.type == "boolean" %}
                 <input type="checkbox" name="config[{{ item.name|raw }}]" value="on" id="config_{{ item.name|raw }}"{% if item.value %} checked{% endif %}>
               {% elseif item.type == "integer" %}
-                <input type="number" name="config[{{ item.name|raw }}]" value="{{ item.value }}" id="config_{{ item.name|raw }}" size="8">
+                <input type="number" name="config[{{ item.name|raw }}]" value="{{ item.value }}" id="config_{{ item.name|raw }}" size="8" min="0">
               {% elseif item.type == "string" %}
                 <input type="text" name="config[{{ item.name|raw }}]" value="{{ item.value }}" id="config_{{ item.name|raw }}" size="35">
               {% endif %}
