@@ -5,19 +5,27 @@ class Database extends PDO {
 	public static $time = 0;
 	public static $queries = 0;
 
-	private $driver, $name, $host, $user, $pass;
+	protected $driver;
+	protected $name;
+	protected $host;
+	protected $user;
+	protected $pass;
 
-	const DSN_FORMAT = '%s:dbname=%s;host=%s';
-	public function __construct($driver, $name, $host, $user, $pass) {
+	protected $dsn;
+
+	public function __construct($driver, $name, $host, $user, $pass, $dsn = false) {
 		$this->driver = $driver;
 		$this->name = $name;
 		$this->host = $host;
 		$this->user = $user;
 		$this->pass = $pass;
 
-		$dsn = $this->create_dsn();
+		if ($this->dsn)
+			$this->dsn = $dsn;
+		else
+			$this->create_dsn();
 
-		$this->spawn($dsn);
+		$this->spawn();
 	}
 
 	public function query($query) {
@@ -31,23 +39,30 @@ class Database extends PDO {
 		return $sth;
 	}
 
-	private function create_dsn() {
+	protected function create_dsn() {
 		if ($this->driver === 'mysql')
-			return 'mysql:dbname='.$this->name.';host='.$this->host;
+			$this->dsn = 'mysql:dbname='.$this->name.';host='.$this->host;
 
 		if ($this->driver === 'sqlite')
-			return 'sqlite:'.$this->name;
+			$this->dsn = 'sqlite:'.$this->name;
 	}
 
 	/**
 	 * Call PDO's __construct() method and return the resulting PDO object
 	 */
-	private function spawn($dsn) {
-		return parent::__construct($dsn, $this->user, $this->pass, array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_STATEMENT_CLASS => array('DBStatement', array($this)),
-			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-		));
+	protected function spawn() {
+		$options = array();
+
+		// throw exceptions on error
+		$options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
+
+		// use our custom class when creating statement handles
+		$options[PDO::ATTR_STATEMENT_CLASS] = array('DBStatement', array($this));
+
+		// return associative arrays when fetch()ing
+		$options[PDO::ATTR_DEFAULT_FETCH_MODE] = PDO::FETCH_ASSOC;
+
+		return parent::__construct($this->dsn, $this->user, $this->pass, $options);
 	}
 
 	public static function addTime($time) {
@@ -57,6 +72,7 @@ class Database extends PDO {
 
 class DBStatement extends PDOStatement {
 	protected $dbh;
+
 	protected function __construct($dbh) {
 		$this->dbh = $dbh;
 	}
