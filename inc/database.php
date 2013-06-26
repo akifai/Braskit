@@ -68,25 +68,25 @@ function insertPost($board, $post) {
 		id,
 		parent,
 		timestamp,
-		bumped,
+		lastbump,
 		ip,
 		name,
 		tripcode,
 		email,
 		date,
 		subject,
-		message,
+		comment,
 		password,
 		file,
-		file_hex,
-		file_original,
-		file_size,
-		file_size_formatted,
-		image_width,
-		image_height,
+		md5,
+		origname,
+		filesize,
+		prettysize,
+		width,
+		height,
 		thumb,
-		thumb_width,
-		thumb_height
+		t_width,
+		t_height
 	) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 	$sth->execute(array(
 		$post['parent'],
@@ -118,7 +118,7 @@ function insertPost($board, $post) {
 function bumpThreadByID($board, $id) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("UPDATE `{$db_prefix}{$board}_posts` SET bumped = ? WHERE id = ?");
+	$sth = $dbh->prepare("UPDATE `{$db_prefix}{$board}_posts` SET lastbump = ? WHERE id = ?");
 	$sth->execute(array($_SERVER['REQUEST_TIME'], $id));
 }
 
@@ -132,14 +132,14 @@ function countThreads($board) {
 function allThreads($board) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->query("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC");
+	$sth = $dbh->query("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY lastbump DESC");
 	return $sth->fetchAll();
 }
 
 function getThreads($board, $offset, $limit) {
 	global $dbh, $db_prefix;
 
-	$sql = "SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC";
+	$sql = "SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY lastbump DESC";
 
 	if ($limit) {
 		$sql .= ' LIMIT ?, ?';
@@ -197,7 +197,7 @@ function latestRepliesInThreadByID($board, $id, $limit) {
 function postByHex($board, $hex) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT id, parent FROM `{$db_prefix}{$board}_posts` WHERE file_hex = ? LIMIT 1");
+	$sth = $dbh->prepare("SELECT id, parent FROM `{$db_prefix}{$board}_posts` WHERE md5 = ? LIMIT 1");
 	$sth->execute(array($hex));
 
 	return $sth->fetch();
@@ -232,7 +232,7 @@ function getOldThreads($board, $max_threads) {
 	if ($max_threads <= 0)
 		return array();
 
-	$sth = $dbh->prepare("SELECT id FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY bumped DESC LIMIT ?, 1000");
+	$sth = $dbh->prepare("SELECT id FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY lastbump DESC LIMIT ?, 1000");
 	$sth->bindParam(1, $max_threads, PDO::PARAM_INT);
 	$sth->execute();
 

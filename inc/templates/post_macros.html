@@ -74,9 +74,9 @@
 	<div class="imginfo">
 		File: <a href="{{ context.board.path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
 		<em>(
-			{{- p.file_size_formatted|raw }}, {{ p.image_width|raw }}x{{ p.image_height|raw -}}
-			{%- if context.thread and p.file_original %},
-				<span title="{{ p.file_original }}">{{ filename(p.file_original) }}</span>
+			{{- p.prettysize|raw }}, {{ p.width|raw }}x{{ p.height|raw -}}
+			{%- if context.thread and p.origname %},
+				<span title="{{ p.origname }}">{{ filename(p.origname) }}</span>
 			{%- endif -%}
 		)</em>
 	</div>
@@ -85,9 +85,9 @@
 {% macro thumb(context, p) %}
 	{% import _self as m %}
 
-	{% if p.thumb_width and p.thumb_height %}
+	{% if p.t_width and p.t_height %}
 		<a href="{{ context.board.path("src/"~p.file) }}" class="thumblink" target="_blank">
-			<img src="{{ context.board.path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.thumb_width|raw }}" height="{{ p.thumb_height|raw }}">
+			<img src="{{ context.board.path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.t_width|raw }}" height="{{ p.t_height|raw }}">
 		</a>
 	{% else %}
 		<a href="{{ context.board.path("src/"~p.file) }}" class="nothumb">(No thumbnail)</a>
@@ -97,7 +97,7 @@
 {% macro body(context, p) %}
 	<div class="postbody">
 		<div class="posttext">
-			{{- p.message|raw -}}
+			{{- p.comment|raw -}}
 			{% if p.abbrev %}
 				<div class="abbrev">Comment too long. Click <a href="">here</a>
 				to view the full text.</div>

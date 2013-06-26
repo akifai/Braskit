@@ -664,7 +664,7 @@ function newPost($parent = 0) {
 	return array(
 		'parent' => $parent,
 		'timestamp' => 0,
-		'bumped' => 0,
+		'lastbump' => 0,
 		'ip' => '',
 		'name' => '',
 		'tripcode' => '',
@@ -762,8 +762,8 @@ function create_ban_message($post) {
 	// comment goes at the top
 	$msg = "\n\n";
 
-	if ($post['file_hex'])
-		$msg .= 'MD5: '.$post['file_hex']."\n";
+	if ($post['md5'])
+		$msg .= 'MD5: '.$post['md5']."\n";
 
 	$msg .= 'Name: ';
 	$msg .= html_entity_decode($post['name'], ENT_QUOTES, 'UTF-8');
@@ -772,7 +772,7 @@ function create_ban_message($post) {
 	if ($post['tripcode'])
 		$reason .= ' '.strip_tags($post['tripcode']);
 
-	$comment = html_entity_decode($post['message'], ENT_QUOTES, 'UTF-8');
+	$comment = html_entity_decode($post['comment'], ENT_QUOTES, 'UTF-8');
 	$comment = strip_tags($comment);
 
 	$msg .= "Comment:\n$comment";

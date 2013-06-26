@@ -13,32 +13,32 @@ CREATE TABLE {$db_prefix}{$board}_posts (
 	id INTEGER PRIMARY KEY,
 	parent INTEGER NOT NULL,
 	timestamp INTEGER NOT NULL,
-	bumped INTEGER NOT NULL,
+	lastbump INTEGER NOT NULL,
 	ip TEXT NOT NULL,
 	name TEXT NOT NULL,
 	tripcode TEXT NOT NULL,
 	email TEXT NOT NULL,
 	date TEXT NOT NULL,
 	subject TEXT NOT NULL,
-	message TEXT NOT NULL,
+	comment TEXT NOT NULL,
 	password TEXT NOT NULL,
 	file TEXT NOT NULL,
-	file_hex TEXT NOT NULL,
-	file_original text NOT NULL,
-	file_size INTEGER NOT NULL DEFAULT "0",
-	file_size_formatted TEXT NOT NULL,
-	image_width INTEGER NOT NULL DEFAULT "0",
-	image_height INTEGER NOT NULL DEFAULT "0",
+	md5 TEXT NOT NULL,
+	origname text NOT NULL,
+	filesize INTEGER NOT NULL DEFAULT "0",
+	prettysize TEXT NOT NULL,
+	width INTEGER NOT NULL DEFAULT "0",
+	height INTEGER NOT NULL DEFAULT "0",
 	thumb TEXT NOT NULL,
-	thumb_width INTEGER NOT NULL DEFAULT "0",
-	thumb_height INTEGER NOT NULL DEFAULT "0"
+	t_width INTEGER NOT NULL DEFAULT "0",
+	t_height INTEGER NOT NULL DEFAULT "0"
 );
 EOSQL;
 
 	$dbh->query($sql);
 
 	// Indexes
-	foreach (array('parent', 'timestamp', 'bumped') as $column)
+	foreach (array('parent', 'timestamp', 'lastbump') as $column)
 		$dbh->query("CREATE INDEX {$db_prefix}{$board}_posts_{$column}_index ON {$db_prefix}{$board}_posts ($column)");
 }
 

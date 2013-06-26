@@ -191,8 +191,8 @@ function post_post($url, $boardname) {
 	$id = $board->insert($post);
 
 	// Add flood entry
-	$file_hex = isset($file['md5']) ? $file['md5'] : '';
-	add_flood_entry($ip, $time, $comment_hex, $parent, $file_hex);
+	$md5 = isset($file['md5']) ? $file['md5'] : '';
+	add_flood_entry($ip, $time, $comment_hex, $parent, $md5);
 
 	// commit changes to database
 	$dbh->commit();
