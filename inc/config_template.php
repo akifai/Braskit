@@ -58,6 +58,7 @@ $default_stylesheet = 'Futaba';
 $javascript_includes = array(
 	'jquery-1.9.0.min.js',
 	'bootstrap.min.js',
+	'spin.min.js',
 	'PlainIB.js',
 );
 
