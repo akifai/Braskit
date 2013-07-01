@@ -10,6 +10,9 @@
  * See LICENSE for terms and conditions of use.
  */
 
+if (PHP_SAPI === 'cli' && !defined('TINYIB'))
+	define('TINYIB', null);
+
 defined('TINYIB') or exit;
 
 // sessions
