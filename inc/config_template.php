@@ -38,6 +38,18 @@ $db_prefix = <?php var_export($vars['db_prefix']) ?>;
 
 
 #
+# File uploads
+#
+
+# What method is used to create thumbnails. Available methods are:
+#   - convert (recommended, but requires ImageMagick's command line utility)
+#   - gd (well-supported, but no transparency or animations)
+#   - imagick (not recommended, requires ImageMagick's PHP extension)
+#   - sips (OS X only, not recommended, sometimes fails whereas others don't)
+$thumb_method = 'gd';
+
+
+#
 # Paths
 #
 

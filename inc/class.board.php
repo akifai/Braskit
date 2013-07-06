@@ -352,101 +352,28 @@ class Board {
 	}
 
 	public function handleUpload($name) {
-		global $temp_dir;
+		$root = TINYIB_ROOT.'/'.$this->board;
+		$file = new File("file", "$root/src");
 
-		if (!isset($_FILES[$name]) || $_FILES[$name]['name'] === '')
-			return false; // no file uploaded - nothing to do
+		if (!$file->exists)
+			return $file;
 
-		// Check for file[] or variable tampering through register_globals
-		if (is_array($_FILES[$name]['name']))
-			throw new Exception('Abnormal post.');
-
-		// Check for uploading errors
-		validateFileUpload($_FILES[$name]);
-
-		extract($_FILES[$name], EXTR_REFS);
-
-		// load image functions
-		require 'inc/image.php';
+		// because the whole thing is too long to type, and because
+		// dynamic properties have a lot of overhead...
+		$max_kb = $this->config->max_kb;
 
 		// Check file size
-		if (($this->config->max_kb > 0) && ($size > ($this->config->max_kb * 1024)))
-			throw new Exception(sprintf('That file is larger than %s KB.', $this->config->max_kb));
-
-		// set some values
-		$file['tmp'] = $tmp_name;
-		$file['md5'] = md5_file($tmp_name);
-		$file['size'] = $size;
-		$file['origname'] = $name;
+		if ($max_kb > 0 && $file->size > $max_kb * 1024)
+			throw new Exception("The file cannot be larger than $max_kb KB.");
 
 		// check for duplicate upload
-		// TODO - Board shit
-		$this->checkDuplicateImage($file['md5']);
+		$this->checkDuplicateImage($file->md5);
 
-		// generate a number to use as our filename
-		$basename = time().substr(microtime(), 2, 3);
-
-		$info = analyse_image($tmp_name);
-
-		if ($info === false)
-			throw new Exception('Only GIF, JPG, and PNG files are allowed.'); 
-
-		$file['width'] = $info['width'];
-		$file['height'] = $info['height'];
-
-		// filename for main file
-		$file['file'] = sprintf('%s.%s', $basename, $info['ext']);
-
-		// filename for thumbnail
-		$file['thumb'] = sprintf('%ss.%s', $basename, $info['ext']);
-
-		// paths
-		$file['location'] = $this->board.'/src/'.$file['file'];
-		$file['t_location'] = $this->board.'/thumb/'.$file['thumb'];
-
-		// make thumbnail sizes
-		$t_size = make_thumb_size(
-			$info['width'],
-			$info['height'],
+		// create thumbnail
+		$file->thumb("$root/thumb",
 			$this->config->max_thumb_w,
 			$this->config->max_thumb_h
 		);
-
-		if ($t_size === false) {
-			// TODO: It may be desirable to thumbnail the image even if it's
-			// small enough already.
-			$file['t_tmp'] = true;
-
-			$file['t_width'] = $info['width'];
-			$file['t_height'] = $info['height'];
-		} else {
-			list($t_width, $t_height) = $t_size;
-
-			// create a temporary name for thumbnail
-			$file['t_tmp'] = tempnam($temp_dir, 'tinyib');
-
-			// tempnam sets the wrong file permissions
-			chmod($file['t_tmp'], 0664);
-
-			// create thumbnail
-			$created = createThumbnail($tmp_name, $file['t_tmp'],
-				$info['ext'], $info['width'], $info['height'],
-				$t_width, $t_height);
-
-			if ($created) {
-				// success
-				$file['t_width'] = $t_width;
-				$file['t_height'] = $t_height;
-			} else {
-				// we couldn't create the thumbnail for whatever reason
-				// 0x0 indicates failure
-				$file['t_width'] = 0;
-				$file['t_height'] = 0;
-
-				// indicate that we shouldn't bother with this further
-				$file['t_tmp'] = false;
-			}
-		}
 
 		return $file;
 	}

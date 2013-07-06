@@ -1,4 +1,5 @@
 <?php
+defined('TINYIB') or exit;
 
 function analyse_image($filename) {
 	// is this necessary? php docs say getimagesize() doesn't need GD
@@ -141,25 +142,4 @@ function analyse_png($fh) {
 		'width' => $width,
 		'height' => $height,
 	);
-}
-
-
-/*
- * Thumbnail stuff
- */
-
-function make_thumb_size($width, $height, $max_w = 200, $max_h = 200) {
-	// image is small enough to be used as the thumbnail
-	if ($width <= $max_w && $height <= $max_h)
-		return false;
-
-	$tn_width = $max_w;
-	$tn_height = intval($height * $max_w / $width);
-
-	if ($tn_height > $max_h) {
-		$tn_width = intval($width * $max_h / $height);
-		$tn_height = $max_h;
-	}
-
-	return array($tn_width, $tn_height);
 }

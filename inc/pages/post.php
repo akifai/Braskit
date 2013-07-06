@@ -143,13 +143,13 @@ function post_post($url, $boardname) {
 	if (!$parent) {
 		if ($board->config->allow_thread_textonly) {
 			// the nofile box must be checked to post without a file
-			if (!$file && !$nofile)
+			if (!$file->exists && !$nofile)
 				throw new Exception('No file selected.');
-		} elseif (!$file) {
+		} elseif (!$file->exists) {
 			// an image must be uploaded
 			throw new Exception('An image is required to start a thread.');
 		}
-	} elseif (!$file && !length($comment)) {
+	} elseif (!$file->exists && !length($comment)) {
 		// make sure replies have either a comment or file
 		throw new Exception('Please enter a message and/or upload an image to make a reply.');
 	}
@@ -170,19 +170,16 @@ function post_post($url, $boardname) {
 	$post['date'] = $date;
 	$post['time'] = $time;
 	$post['ip'] = $ip;
-
-	if ($file) {
-		$post['file'] = $file['file'];
-		$post['size'] = $file['size'];
-		$post['prettysize'] = make_size($file['size']);
-		$post['md5'] = $file['md5'];
-		$post['origname'] = $file['origname'];
-		$post['width'] = $file['width'];
-		$post['height'] = $file['height'];
-		$post['thumb'] = $file['thumb'];
-		$post['t_width'] = $file['t_width'];
-		$post['t_height'] = $file['t_height'];
-	}
+	$post['file'] = $file->filename;
+	$post['size'] = $file->size;
+	$post['prettysize'] = $file->exists ? make_size($file->size) : '';
+	$post['md5'] = $file->md5;
+	$post['origname'] = $file->origname;
+	$post['width'] = $file->width;
+	$post['height'] = $file->height;
+	$post['thumb'] = $file->t_filename;
+	$post['t_width'] = $file->t_width;
+	$post['t_height'] = $file->t_height;
 
 	// Don't commit anything to the database until we say so.
 	$dbh->beginTransaction();
@@ -191,24 +188,12 @@ function post_post($url, $boardname) {
 	$id = $board->insert($post);
 
 	// Add flood entry
-	$md5 = isset($file['md5']) ? $file['md5'] : '';
-	add_flood_entry($ip, $time, $comment_hex, $parent, $md5);
+	add_flood_entry($ip, $time, $comment_hex, $parent, $file->md5);
 
 	// commit changes to database
 	$dbh->commit();
 
-	if ($file) {
-		// Move full image
-		move_uploaded_file($file['tmp'], $file['location']);
-
-		if ($file['t_tmp'] === true) {
-			// copy full image
-			copy($file['location'], $file['t_location']);
-		} elseif ($file['t_tmp'] !== false) {
-			// move thumbnail
-			rename($file['t_tmp'], $file['t_location']);
-		}
-	}
+	$file->move();
 
 	if ($parent) {
 		// rebuild thread cache
