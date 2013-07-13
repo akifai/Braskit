@@ -39,9 +39,7 @@
         <tr>
           <th>File</th>
           <td>
-            {# We use javascript to change the size. The size attribute isn't
-             # allowed on file inputs in HTML5 for some strange reason. #}
-            <input type="file" name="file" data-size="35">
+            <input type="file" name="file">
 
             {% if not thread and board.config.allow_thread_textonly %}
               {# Safeguard to prevent accidental thread creation (it's more

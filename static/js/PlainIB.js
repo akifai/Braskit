@@ -333,11 +333,6 @@ $(document).ready(function() {
 
 	// Focus stuff
 	$(".focus").first().focus();
-
-	// For W3C compliancy, since size="" isn't allowed on file inputs
-	$("input[data-size]").attr("size", function() {
-		return $(this).data("size");
-	});
 });
 
 $("[data-ajax]").click(function(event) {
