@@ -48,7 +48,7 @@ class Style {
 		if (isset($default_stylesheet)) {
 			$this->default = $default_stylesheet;
 		} else {
-			rewind($this->styles);
+			reset($this->styles);
 			$this->default = current($this->styles);
 		}
 	}
