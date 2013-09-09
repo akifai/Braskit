@@ -55,7 +55,10 @@ if (get_magic_quotes_gpc()) {
 }
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
+	// temporary config variables needed for the installer
 	$request_handler = 'RouteQueryString';
+	$temp_dir = sys_get_temp_dir();
+	$cache_dir = $temp_dir.'/plainib-cache';
 
 	// we can't use a config or database for this entry point
 	return;
