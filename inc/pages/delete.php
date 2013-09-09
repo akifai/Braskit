@@ -54,11 +54,11 @@ function delete_post($url, $boardname) {
 			continue;
 
 		// Skip if parent is deleted
-		if (array_key_exists($post['parent'], $deleted_threads))
+		if (array_key_exists($post->parent, $deleted_threads))
 			continue;
 
 		// Check password
-		if (!$user && $post['password'] !== $password) {
+		if (!$user && $post->password !== $password) {
 			$error = true;
 			continue;
 		}
@@ -66,8 +66,8 @@ function delete_post($url, $boardname) {
 		$board->delete($id);
 
 		// Collect parents so we can rebuild or delete them
-		if ($post['parent'])
-			$rebuild_queue[$post['parent']] = true;
+		if ($post->parent)
+			$rebuild_queue[$post->parent] = true;
 		else
 			$deleted_threads[$id] = true;
 	}

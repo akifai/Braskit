@@ -167,7 +167,7 @@ class Board {
 			if ($replies_shown) {
 				$replies = latestRepliesInThreadByID(
 					$this->board,
-					$thread[0]['id'],
+					$thread[0]->id,
 					$replies_shown
 				);
 
@@ -179,10 +179,10 @@ class Board {
 			}
 
 			// set the omission flag for the OP
-			$thread[0]['omitted'] = ($replies_shown === count($replies))
-				? $this->countPostsInThread($thread[0]['id'])
+			$thread[0]->omitted = ($replies_shown === count($replies))
+				? $this->countPostsInThread($thread[0]->id)
 					- ($replies_shown + 1)
-				: $thread[0]['omitted'] = 0;
+				: $thread[0]->omitted = 0;
 
 			$threads[] = $thread;
 		}
@@ -289,7 +289,7 @@ class Board {
 		$threads = $this->getAllThreads();
 
 		foreach ($threads as $thread)
-			$this->rebuildThread($thread['id']);
+			$this->rebuildThread($thread->id);
 	}
 
 	/**
@@ -431,9 +431,9 @@ class Board {
 	 */
 	public function linkToPost($row, $quote = false, $admin = false) {
 		$link = sprintf('res/%d.html#%s%d',
-			$row['parent'] ?: $row['id'],
+			$row->parent ?: $row->id,
 			$quote ? 'i' : '',
-			$row['id']
+			$row->id
 		);
 
 		return $this->path($link, $admin);
@@ -449,13 +449,13 @@ class Board {
 		if ($row === false)
 			return $match[0]; // post does not exist
 
-		$thread = $row['parent'] ? $row['parent'] : $row['id'];
+		$thread = $row->parent ?: $row->id;
 
 		// this doesn't really belong in this class, but whatever
-		$url = $this->path(sprintf('res/%d.html#%d', $thread, $row['id']));
+		$url = $this->path(sprintf('res/%d.html#%d', $thread, $row->id));
 
 		$html = sprintf('<a href="%s" class="postref">&gt;&gt;%s</a>',
-			$url, $row['id']);
+			$url, $row->id);
 
 		return $html;
 	}

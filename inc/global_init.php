@@ -21,6 +21,8 @@ if (!defined('TINYIB_NO_SESSIONS') || TINYIB_NO_SESSIONS) {
 	session_start();
 }
 
+date_default_timezone_set('Europe/Berlin');
+
 // some constants
 define('TINYIB_ROOT', realpath(dirname(__FILE__).'/..'));
 

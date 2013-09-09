@@ -660,32 +660,6 @@ function shorten_filename($filename) {
 	return sprintf('%s(...).%s', $short, $info['extension']);
 }
 
-function newPost($parent = 0) {
-	return array(
-		'parent' => $parent,
-		'timestamp' => 0,
-		'lastbump' => 0,
-		'ip' => '',
-		'name' => '',
-		'tripcode' => '',
-		'email' => '',
-		'date' => '',
-		'subject' => '',
-		'comment' => '',
-		'password' => '',
-		'file' => '',
-		'md5' => '',
-		'origname' => '',
-		'size' => 0,
-		'prettysize' => '',
-		'width' => 0,
-		'height' => 0,
-		'thumb' => '',
-		't_width' => 0,
-		't_height' => 0,
-	);
-}
-
 function make_name_tripcode($input, $tripkey = '!') {
 	$tripcode = '';
 
@@ -747,12 +721,12 @@ function writePage($filename, $contents) {
 function deletePostImages($board, $post) {
 	$files = array();
 
-	if ($post['file'])
-		$files[] = "{$board}/src/{$post['file']}";
-	if ($post['thumb'])
-		$files[] = "{$board}/thumb/{$post['thumb']}";
-	if (!$post['parent'])
-		$files[] = "{$board}/res/{$post['id']}.html";
+	if ($post->file)
+		$files[] = "{$board}/src/{$post->file}";
+	if ($post->thumb)
+		$files[] = "{$board}/thumb/{$post->thumb}";
+	if (!$post->parent)
+		$files[] = "{$board}/res/{$post->id}.html";
 
 	foreach ($files as $file)
 		@unlink($file);
@@ -762,17 +736,17 @@ function create_ban_message($post) {
 	// comment goes at the top
 	$msg = "\n\n";
 
-	if ($post['md5'])
-		$msg .= 'MD5: '.$post['md5']."\n";
+	if ($post->md5)
+		$msg .= 'MD5: '.$post->md5."\n";
 
 	$msg .= 'Name: ';
-	$msg .= html_entity_decode($post['name'], ENT_QUOTES, 'UTF-8');
+	$msg .= html_entity_decode($post->name, ENT_QUOTES, 'UTF-8');
 	$msg .= "\n";
 
-	if ($post['tripcode'])
-		$reason .= ' '.strip_tags($post['tripcode']);
+	if ($post->tripcode)
+		$reason .= ' '.strip_tags($post->tripcode);
 
-	$comment = html_entity_decode($post['comment'], ENT_QUOTES, 'UTF-8');
+	$comment = html_entity_decode($post->comment, ENT_QUOTES, 'UTF-8');
 	$comment = strip_tags($comment);
 
 	$msg .= "Comment:\n$comment";

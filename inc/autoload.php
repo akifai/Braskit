@@ -24,6 +24,7 @@ class AutoLoader {
 		'lessc_fixed' => 'class.less.php',
 		'PlainIB_Twig_Extension' => 'class.template.php',
 		'PlainIB_Twig_Loader' => 'class.template.php',
+		'Post' => 'class.post.php',
 		'RoutePathInfo' => 'class.app.php',
 		'RouteQueryString' => 'class.app.php',
 		'Spam' => 'class.spam.php',

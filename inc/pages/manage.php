@@ -13,7 +13,7 @@ function manage_get($url) {
 
 	// give each post a board object
 	foreach ($posts as &$post)
-		$post['board'] = $boards[$post['board']];
+		$post->board = $boards[$post->board];
 
 	echo render('manage.html', array(
 		'admin' => true,

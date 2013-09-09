@@ -49,6 +49,8 @@ function postByID($board, $id) {
 	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE id = ?");
 	$sth->execute(array($id));
 
+	$sth->setFetchMode(PDO::FETCH_CLASS, 'Post');
+
 	return $sth->fetch();
 }
 
@@ -64,52 +66,33 @@ function threadExistsByID($board, $id) {
 function insertPost($board, $post) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}{$board}_posts` (
-		id,
-		parent,
-		timestamp,
-		lastbump,
-		ip,
-		name,
-		tripcode,
-		email,
-		date,
-		subject,
-		comment,
-		password,
-		file,
-		md5,
-		origname,
-		filesize,
-		prettysize,
-		width,
-		height,
-		thumb,
-		t_width,
-		t_height
-	) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+	$sth = $dbh->prepare(
+		"INSERT INTO `{$db_prefix}{$board}_posts` ".
+		"(id, parent, timestamp, lastbump, ip, name, tripcode, email, date, subject, comment, password, file, md5, origname, filesize, prettysize, width, height, thumb, t_width, t_height) ".
+		"VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	);
 	$sth->execute(array(
-		$post['parent'],
-		$post['time'],
-		$post['time'],
-		$post['ip'],
-		$post['name'],
-		$post['tripcode'],
-		$post['email'],
-		$post['date'],
-		$post['subject'],
-		$post['comment'],
-		$post['password'],
-		$post['file'],
-		$post['md5'],
-		$post['origname'],
-		$post['size'],
-		$post['prettysize'],
-		$post['width'],
-		$post['height'],
-		$post['thumb'],
-		$post['t_width'],
-		$post['t_height'],
+		$post->parent,
+		$post->time,
+		$post->time,
+		$post->ip,
+		$post->name,
+		$post->tripcode,
+		$post->email,
+		$post->date,
+		$post->subject,
+		$post->comment,
+		$post->password,
+		$post->file,
+		$post->md5,
+		$post->origname,
+		$post->size,
+		$post->prettysize,
+		$post->width,
+		$post->height,
+		$post->thumb,
+		$post->t_width,
+		$post->t_height,
 	));
 
 	return $dbh->lastInsertID();
@@ -133,7 +116,7 @@ function allThreads($board) {
 	global $dbh, $db_prefix;
 
 	$sth = $dbh->query("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE NOT parent ORDER BY lastbump DESC");
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
 }
 
 function getThreads($board, $offset, $limit) {
@@ -153,7 +136,7 @@ function getThreads($board, $offset, $limit) {
 
 	$sth->execute();
 
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
 }
 
 function postsInThreadByID($board, $id) {
@@ -166,7 +149,7 @@ function postsInThreadByID($board, $id) {
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->execute();
 
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
 }
 
 function countPostsInThread($board, $id) {
@@ -186,7 +169,9 @@ function latestRepliesInThreadByID($board, $id, $limit) {
 	$sth->bindParam(2, $limit, PDO::PARAM_INT);
 	$sth->execute();
 
-	if ($posts = $sth->fetchAll()) {
+	$posts = $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+
+	if ($posts) {
 		// get the replies in the right order
 		$posts = array_reverse($posts);
 	}
@@ -200,30 +185,30 @@ function postByHex($board, $hex) {
 	$sth = $dbh->prepare("SELECT id, parent FROM `{$db_prefix}{$board}_posts` WHERE md5 = ? LIMIT 1");
 	$sth->execute(array($hex));
 
-	return $sth->fetch();
+	return $sth->fetch(PDO::FETCH_OBJ);
 }
 
 function latestPosts($board) {
 	global $dbh, $db_prefix;
 
 	$sth = $dbh->query("SELECT * FROM `{$db_prefix}{$board}_posts` ORDER BY timestamp DESC LIMIT 10");
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
 }
 
 function deletePostByID($board, $post) {
 	global $dbh, $db_prefix;
 
-	if ($post['parent']) {
+	if ($post->parent) {
 		// delete reply
 		$sth = $dbh->prepare("DELETE FROM `{$db_prefix}{$board}_posts` WHERE id = ?");
-		$sth->execute(array($post['id']));
+		$sth->execute(array($post->id));
 
 		return;
 	}
 
 	// delete thread
 	$sth = $dbh->prepare("DELETE FROM `{$db_prefix}{$board}_posts` WHERE id = ? OR parent = ?");
-	$sth->execute(array($post['id'], $post['id']));
+	$sth->execute(array($post->id, $post->id));
 }
 
 function getOldThreads($board, $max_threads) {
@@ -244,6 +229,8 @@ function lastPostByIP($board) {
 
 	$sth = $dbh->prepare("SELECT * FROM `{$db_prefix}{$board}_posts` WHERE ip = ? ORDER BY id DESC LIMIT 1");
 	$sth->execute(array($_SERVER['REMOTE_ADDR']));
+
+	$sth->setFetchMode(PDO::FETCH_CLASS, 'Post');
 
 	return $sth->fetch();
 }
@@ -268,7 +255,7 @@ function getLatestPosts($boards) {
 	$sth = $dbh->prepare($sql);
 	$sth->execute();
 
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
 }
 
 
@@ -414,13 +401,7 @@ function insertFloodEntry($entry) {
 	global $dbh, $db_prefix;
 
 	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}_flood` (ip, time, imagehash, posthash, isreply) VALUES (?, ?, ?, ?, ?)");
-	$sth->execute(array(
-		$entry['ip'],
-		$entry['time'],
-		$entry['imagehash'],
-		$entry['posthash'],
-		$entry['isreply'],
-	));
+	$sth->execute(array($entry['ip'], $entry['time'], $entry['imagehash'], $entry['posthash'], $entry['isreply']));
 }
 
 
@@ -498,18 +479,12 @@ function getUserByName($username) {
 function insertUser($user) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("INSERT INTO `{$db_prefix}_users`
-	(id, username, password, hashtype, lastlogin, level, email, capcode)
-	VALUES (null, ?, ?, ?, ?, ?, ?, ?)");
-	$sth->execute(array(
-		$user['username'],
-		$user['password'],
-		$user['hashtype'],
-		$user['lastlogin'],
-		$user['level'],
-		$user['email'],
-		$user['capcode'],
-	));
+	$sth = $dbh->prepare(
+		"INSERT INTO `{$db_prefix}_users` ".
+		"(id, username, password, hashtype, lastlogin, level, email, capcode) ".
+		"VALUES (null, ?, ?, ?, ?, ?, ?, ?)"
+	);
+	$sth->execute(array($user['username'], $user['password'], $user['hashtype'], $user['lastlogin'], $user['level'], $user['email'], $user['capcode']));
 
 	return $dbh->lastInsertID();
 }

@@ -159,27 +159,28 @@ function post_post($url, $boardname) {
 	$board->checkFlood($time, $ip, $comment_hex, (bool)$file);
 
 	// Set up database values
-	$post = newPost($parent);
+	$post = new Post($parent);
 
-	$post['name'] = $name;
-	$post['tripcode'] = $tripcode;
-	$post['email'] = $email;
-	$post['subject'] = $subject;
-	$post['comment'] = $formatted_comment;
-	$post['password'] = $password;
-	$post['date'] = $date;
-	$post['time'] = $time;
-	$post['ip'] = $ip;
-	$post['file'] = $file->filename;
-	$post['size'] = $file->size;
-	$post['prettysize'] = $file->exists ? make_size($file->size) : '';
-	$post['md5'] = $file->md5;
-	$post['origname'] = $file->origname;
-	$post['width'] = $file->width;
-	$post['height'] = $file->height;
-	$post['thumb'] = $file->t_filename;
-	$post['t_width'] = $file->t_width;
-	$post['t_height'] = $file->t_height;
+	$post->parent = $parent;
+	$post->name = $name;
+	$post->tripcode = $tripcode;
+	$post->email = $email;
+	$post->subject = $subject;
+	$post->comment = $formatted_comment;
+	$post->password = $password;
+	$post->date = $date;
+	$post->time = $time;
+	$post->ip = $ip;
+	$post->file = $file->filename;
+	$post->size = $file->size;
+	$post->prettysize = $file->exists ? make_size($file->size) : '';
+	$post->md5 = $file->md5;
+	$post->origname = $file->origname;
+	$post->width = $file->width;
+	$post->height = $file->height;
+	$post->thumb = $file->t_filename;
+	$post->t_width = $file->t_width;
+	$post->t_height = $file->t_height;
 
 	// Don't commit anything to the database until we say so.
 	$dbh->beginTransaction();
@@ -197,11 +198,11 @@ function post_post($url, $boardname) {
 
 	if ($parent) {
 		// rebuild thread cache
-		$board->rebuildThread($post['parent']);
+		$board->rebuildThread($post->parent);
 
 		// bump the thread if we're not saging
 		if (!$sage)
-			$board->bump($post['parent']);
+			$board->bump($post->parent);
 
 		$dest = sprintf('res/%d.html#%d', $parent, $id);
 	} else {
