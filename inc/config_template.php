@@ -16,9 +16,6 @@ defined('TINYIB') or exit;
 # secure tripcodes will be different!
 $secret = <?php var_export($vars['secret']) ?>;
 
-# database driver - choose either mysql or sqlite
-$db_driver = <?php var_export($vars['db_driver']) ?>;
-
 # mysql: name of database
 # sqlite: path to database file - make sure it's not accessible from the web
 $db_name = <?php var_export($vars['db_name']) ?>;

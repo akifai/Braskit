@@ -16,8 +16,8 @@ function start_post($url) {
 	// set up config variables
 	$vars = array();
 
-	foreach (array('db_driver', 'db_name', 'db_username', 'db_password',
-	'db_host', 'db_prefix', 'username', 'password') as $name) {
+	foreach (array('db_name', 'db_username', 'db_password', 'db_host',
+	'db_prefix', 'username', 'password') as $name) {
 		$vars[$name] = param($name);
 
 		// fix undefined variable caused by tampering or bugs
