@@ -26,12 +26,7 @@ request with details about your changes.
 
 ## Licence/copyrights
 
-For simplicity's sake, all of PlainIB is licenced under the GNU GPL version 3.
-This was Trevor's choice, not mine. In practice, this won't prevent you from
-doing anything with the script except redistributing binaries of it without
-distributing the source code.
-
-Additionally, the software includes the following libraries:
+All of PlainIB is licenced under the GNU GPL version 3.
 
 * [Bootstrap](http://twitter.github.io/bootstrap/)
 * [jQuery](http://jquery.com/); https://jquery.org/license/

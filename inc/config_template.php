@@ -16,21 +16,20 @@ defined('TINYIB') or exit;
 # secure tripcodes will be different!
 $secret = <?php var_export($vars['secret']) ?>;
 
-# mysql: name of database
-# sqlite: path to database file - make sure it's not accessible from the web
+# name of database
 $db_name = <?php var_export($vars['db_name']) ?>;
 
-# database username - mysql only
+# database username
 $db_username = <?php var_export($vars['db_username']) ?>;
 
-# database password - mysql only
+# database password
 $db_password = <?php var_export($vars['db_password']) ?>;
 
 # database host - usually 'localhost', but may vary
 $db_host = <?php var_export($vars['db_host']) ?>;
 
 # table prefix - if you're sharing the database with another application (i.e.
-# wordpress or another PlainIB install), then set this to something unique.
+# mediawiki or another PlainIB install), then set this to something unique.
 $db_prefix = <?php var_export($vars['db_prefix']) ?>;
 
 
