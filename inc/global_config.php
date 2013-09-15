@@ -20,3 +20,9 @@ $this->config['home_url'] = array(
 	'type' => 'string',
 	'description' => 'URL of the home page',
 );
+
+$this->config['latest_posts_count'] = array(
+	'value' => 25,
+	'type' => 'integer',
+	'description' => 'Number of latest posts to show in the dashboard.',
+);

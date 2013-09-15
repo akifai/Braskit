@@ -2,6 +2,8 @@
 defined('TINYIB') or exit;
 
 function manage_get($url) {
+	global $config;
+
 	$user = do_login($url);
 
 	$boards = array();
@@ -9,7 +11,7 @@ function manage_get($url) {
 		$boards[$board['name']] = new Board($board['name']);
 
 	// gets the latest posts from all boards
-	$posts = getLatestPosts(array_keys($boards));
+	$posts = getLatestPosts($config->latest_posts_count);
 
 	// give each post a board object
 	foreach ($posts as &$post)

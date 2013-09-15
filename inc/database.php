@@ -236,10 +236,14 @@ function getOldThreads($board, $max_threads) {
 // Cross-board functions
 //
 
-function getLatestPosts($boards) {
+function getLatestPosts($limit) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts ORDER BY id DESC");
+	if ($limit < 1)
+		$limit = 1;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts ORDER BY id DESC LIMIT :limit");
+	$sth->bindParam(':limit', $limit, PDO::PARAM_INT);
 	$sth->execute();
 
 	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
