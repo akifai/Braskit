@@ -547,23 +547,12 @@ function unset_csrf_token() {
 //
 
 function add_flood_entry($ip, $time, $comment_hex, $parent, $md5) {
-	$iplib = new IP($ip);
-
 	$entry = array(
-		// IP address, in decimal form
-		'ip' => (string)$iplib->toInteger(),
-
-		// Post hash
+		'ip' => $ip,
 		'posthash' => $comment_hex,
-
-		// image checksum
 		'imagehash' => $md5,
-
-		// Time
 		'time' => $time,
-
-		// Is this a reply?
-		'isreply' => (int)(bool)$parent,
+		'isreply' => (bool)$parent,
 	);
 
 	insertFloodEntry($entry);

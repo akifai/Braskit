@@ -29,12 +29,7 @@ function finish_get() {
 
 	$dbh->beginTransaction();
 
-	// create all the tables we want
-	createConfigTable();
-	createBansTable();
-	createBoardsTable();
-	createFloodTable();
-	createUserTable();
+	initDatabase();
 
 	// create our user account
 	$user = new UserNologin();

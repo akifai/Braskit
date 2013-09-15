@@ -161,6 +161,7 @@ function post_post($url, $boardname) {
 	// Set up database values
 	$post = new Post($parent);
 
+	$post->board = (string)$board;
 	$post->parent = $parent;
 	$post->name = $name;
 	$post->tripcode = $tripcode;

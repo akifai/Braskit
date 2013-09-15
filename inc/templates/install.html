@@ -20,37 +20,23 @@
       <legend>Database</legend>
 
       <div class="row">
-        <label for="db_driver">DB driver</label>
-        <select name="db_driver" id="db_driver">
-          <option value="mysql">MySQL</option>
-          <option value="sqlite">SQLite</option>
-        </select>
+        <label for="db_name">DB name</label>
+        <input type="text" name="db_name" id="db_name" autocomplete="off">
+        <p>The name of your PostgreSQL database.</p>
       </div>
 
       <div class="row">
-        <label for="db_name">DB name</label>
-        <input type="text" name="db_name" id="db_name" autocomplete="off">
-
-        <p class="driver-specific mysql"><strong>MySQL</strong>: Name of
-          database. The database must be created prior to installing
-          PlainIB.</p>
-        <p class="driver-specific sqlite"><strong>SQLite</strong>: Filesystem
-          path to database. Make sure that this path is not accessible from the
-          web.</p>
-      </div>
-
-      <div class="row driver-specific mysql">
         <label for="db_host">Host</label>
         <input type="text" name="db_host" id="db_host" value="localhost" autocomplete="off">
         <p>Usually <kbd>localhost</kbd>, but may vary.</p>
       </div>
  
-      <div class="row driver-specific mysql">
+      <div class="row">
         <label for="db_username">Username</label>
         <input type="text" name="db_username" id="db_username" autocomplete="off">
       </div>
 
-      <div class="row driver-specific mysql">
+      <div class="row">
         <label for="db_password">Password</label>
         <input type="password" name="db_password" id="db_password" autocomplete="off">
       </div>

@@ -44,7 +44,7 @@
 			{% if context.admin %}
 				<span class="postip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip|raw }}</a>)</span>
 			{% endif %}
-			<span class="postdate">{{ p.date|raw }}</span>
+			<span class="postdate">{{ p.timestamp|raw }}</span>
 		</label>
 		{%- spaceless %}
 			<span class="reflink">

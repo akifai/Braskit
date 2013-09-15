@@ -3,6 +3,7 @@ defined('TINYIB') or exit;
 
 class Post {
 	public $parent = 0;
+	public $board = '';
 	public $timestamp = 0;
 	public $bumped = 0;
 	public $name = '';

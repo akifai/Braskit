@@ -13,8 +13,7 @@ class Database extends PDO {
 
 	protected $dsn;
 
-	public function __construct($driver, $name, $host, $user, $pass, $dsn = false) {
-		$this->driver = $driver;
+	public function __construct($name, $host, $user, $pass, $dsn = false) {
 		$this->name = $name;
 		$this->host = $host;
 		$this->user = $user;
@@ -40,11 +39,10 @@ class Database extends PDO {
 	}
 
 	protected function create_dsn() {
-		if ($this->driver === 'mysql')
-			$this->dsn = 'mysql:dbname='.$this->name.';host='.$this->host;
-
-		if ($this->driver === 'sqlite')
-			$this->dsn = 'sqlite:'.$this->name;
+		$this->dsn = sprintf('pgsql:dbname=%s;host=%s',
+			$this->name,
+			$this->host
+		);
 	}
 
 	/**
@@ -61,6 +59,9 @@ class Database extends PDO {
 
 		// return associative arrays when fetch()ing
 		$options[PDO::ATTR_DEFAULT_FETCH_MODE] = PDO::FETCH_ASSOC;
+
+		// use real prepared statements
+		$options[PDO::ATTR_EMULATE_PREPARES] = false;
 
 		return parent::__construct($this->dsn, $this->user, $this->pass, $options);
 	}

@@ -7,6 +7,13 @@ been largely rewritten and hardly resembles TinyIB now.
 **Do not use this software. It is still in early beta and is not yet ready for
 production use. Contributors are welcome.**
 
+## Requirements
+
+* Some webserver
+* PHP >= 5.3
+* PostgreSQL >= 9.1
+* GD (library) or Imagemagick (CLI/library)
+
 ## Project goal
 
 Create a scalable, extendable and easily configurable imageboard script which is

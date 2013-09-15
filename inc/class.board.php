@@ -74,7 +74,7 @@ class Board {
 		foreach (array('', '/res', '/src', '/thumb') as $folder) {
 			$folder = $this->board.$folder;
 
-			if (!@mkdir(TINYIB_ROOT."/$folder"))
+			if ($check_folder && !@mkdir(TINYIB_ROOT."/$folder"))
 				throw new Exception("Couldn't create folder: {$folder}");
 		}
 
@@ -115,7 +115,7 @@ class Board {
 	 * Inserts a post
 	 */
 	public function insert($post) {
-		return insertPost($this->board, $post);
+		return insertPost($post);
 	}
 
 	/**
@@ -309,9 +309,6 @@ class Board {
 	}
 
 	public function checkFlood($time, $ip, $comment_hex, $has_file) {
-		$iplib = new IP($ip);
-		$ip = (string)$iplib->toInteger();
-
 		// check if images are being posted too fast
 		if ($has_file && $this->config->seconds_between_images > 0) {
 			$max = $time - $this->config->seconds_between_images;

@@ -30,7 +30,7 @@ $db_username = <?php var_export($vars['db_username']) ?>;
 $db_password = <?php var_export($vars['db_password']) ?>;
 
 # database host - usually 'localhost', but may vary
-$db_host = <?php var_export($vars['db_username']) ?>;
+$db_host = <?php var_export($vars['db_host']) ?>;
 
 # table prefix - if you're sharing the database with another application (i.e.
 # wordpress or another PlainIB install), then set this to something unique.
@@ -70,7 +70,7 @@ $default_stylesheet = 'Futaba';
 $javascript_includes = array(
 	'jquery-1.9.0.min.js',
 	'bootstrap.min.js',
-	'spin.min.js',
+	'spin.js',
 	'PlainIB.js',
 );
 

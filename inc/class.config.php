@@ -8,7 +8,7 @@ abstract class Config implements Iterator {
 	// these must be set in subclasses
 	protected $standard_config;
 	protected $cache_key;
-	protected $config_table_prefix;
+	protected $db_key = null;
 
 	protected $config = array();
 	protected $changes = array();
@@ -96,12 +96,12 @@ abstract class Config implements Iterator {
 		foreach ($this->changes as $key)
 			$values[$key] = $this->config[$key]['value'];
 
-		saveConfig($this->config_table_prefix, $values);
+		saveConfig($this->db_key, $values);
 
 		$this->changes = array();
 
 		// do deletions
-		deleteConfigKeys($this->config_table_prefix, $this->deletions);
+		deleteConfigKeys($this->db_key, $this->deletions);
 
 		$this->deletions = array();
 	}
@@ -126,7 +126,7 @@ abstract class Config implements Iterator {
 
 	protected function loadSQLConfig() {
 		// get config from sql
-		$config = loadConfig($this->config_table_prefix);
+		$config = loadConfig($this->db_key);
 
 		if (!is_array($config))
 			return;
@@ -192,7 +192,6 @@ abstract class Config implements Iterator {
 class GlobalConfig extends Config {
 	protected $standard_config = 'global_config.php';
 	protected $cache_key = '_global_config';
-	protected $config_table_prefix = '';
 }
 
 class BoardConfig extends Config {
@@ -200,7 +199,7 @@ class BoardConfig extends Config {
 
 	public function __construct($board) {
 		$this->cache_key = $board.'_config';
-		$this->config_table_prefix = (string)$board;
+		$this->db_key = (string)$board;
 
 		parent::__construct();
 	}
