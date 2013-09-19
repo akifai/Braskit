@@ -22,6 +22,7 @@ class AutoLoader {
 		'JSMinPlus' => 'lib/jsminplus/jsminplus.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',
 		'lessc_fixed' => 'class.less.php',
+		'PgError' => 'class.pgerror.php',
 		'PlainIB_Twig_Extension' => 'class.template.php',
 		'PlainIB_Twig_Loader' => 'class.template.php',
 		'Post' => 'class.post.php',

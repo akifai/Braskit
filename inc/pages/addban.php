@@ -42,9 +42,16 @@ function addban_post($url) {
 	} catch (PDOException $e) {
 		$errcode = $e->getCode();
 
-		if ($errcode === '22P02') {
+		switch ($errcode) {
+		case PgError::INVALID_TEXT_REPRESENTATION:
+			// pgsql says the IP was not valid!
 			throw new Exception("Invalid IP address.");
-		} else {
+			break;
+		case PgError::UNIQUE_VIOLATION:
+			// do nothing
+			break;
+		default:
+			// unexpected error
 			throw $e;
 		}
 	}
