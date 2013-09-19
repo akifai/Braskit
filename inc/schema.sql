@@ -74,8 +74,7 @@ CREATE TABLE /*_*/flood (
 );
 
 CREATE TABLE /*_*/users (
-    id serial PRIMARY KEY,
-    username text UNIQUE NOT NULL CHECK (username <> ''),
+    username text PRIMARY KEY CHECK (username ~ '^\w{1,20}$'),
     password text NOT NULL CHECK (password <> ''),
     hashtype text NOT NULL,
     lastlogin timestamp,

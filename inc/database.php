@@ -462,16 +462,7 @@ function deleteConfigKeys($board, $keys) {
 // Users
 //
 
-function getUserByID($id) {
-	global $dbh, $db_prefix;
-
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}users WHERE id = ?");
-	$sth->execute(array($id));
-
-	return $sth->fetch();
-}
-
-function getUserByName($username) {
+function getUser($username) {
 	global $dbh, $db_prefix;
 
 	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}users WHERE username = ?");
@@ -485,8 +476,6 @@ function insertUser($user) {
 
 	$sth = $dbh->prepare("INSERT INTO {$db_prefix}users (username, password, hashtype, level, email, capcode) VALUES (?, ?, ?, ?, ?, ?)");
 	$sth->execute(array($user['username'], $user['password'], $user['hashtype'], $user['level'], $user['email'], $user['capcode']));
-
-	return $dbh->lastInsertID($db_prefix.'users_id_seq');
 }
 
 function modifyUser($user) {
@@ -498,18 +487,23 @@ function modifyUser($user) {
 	// generate argument list
 	// the array keys are not from user input and are thus safe
 	foreach ($user as $key => $value) {
-		if ($key !== "id") {
-			$sqlargs[] = "$key = ?";
-			$values[] = $value;
-		}
+		$sqlargs[] = "$key = ?";
+		$values[] = $value;
 	}
 
 	// turn $sqlargs into string
 	$sqlargs = implode(', ', $sqlargs);
 
 	// must be last
-	$values[] = $user['id'];
+	$values[] = $user['username'];
 
-	$sth = $dbh->prepare("UPDATE {$db_prefix}_users SET {$sqlargs} WHERE id = ?");
+	$sth = $dbh->prepare("UPDATE {$db_prefix}users SET {$sqlargs} WHERE username = ?");
 	$sth->execute($values);
+}
+
+function deleteUser($username) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("DELETE FROM {$db_prefix}users WHERE username = ?");
+	$sth->execute(array($username));
 }

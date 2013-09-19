@@ -8,32 +8,28 @@ defined('TINYIB') or exit;
  *   $user = new User($username, $password);
  *
  *   // Create user
- *   $newUser = $user->create();
- *   $newUser->username("username");
+ *   $newUser = $user->create("username");
  *   $newUser->password("password");
  *   $newUser->level(9999);
- *   $id = $newUser->commit();
+ *   $newUser->commit();
  *
  *   // Edit user
- *   $target = $user->edit($id);
- *   $target->username("username");
+ *   $target = $user->edit("username");
  *   $target->password("password");
  *   $target->level(9999);
  *   $target->commit();
  *
  *   // Delete user
- *   $user->delete($id);
+ *   $user->delete("username");
  *
  * TODO:
  *   - Check permissions for actions
  *   - Test everything properly
- *   - Disallow blank usernames/passwords (lol)
  */
 
 class User {
 	protected $hashed = false;
 
-	protected $id = false;
 	protected $username = false;
 	protected $password = false;
 	protected $hashtype = false;
@@ -44,7 +40,7 @@ class User {
 
 	public function __construct($username, $password) {
 		try {
-			$this->loadByUsername($username);
+			$this->load($username);
 		} catch (UserException $e) {
 			throw new UserException('Invalid login.');
 		}
@@ -55,7 +51,7 @@ class User {
 
 	public function __wakeup() {
 		// Things might change between requests. Reload everything.
-		$this->loadByID($this->id);
+		$this->load($this->username);
 
 		// Just in case...
 		if ($this->hashed === false || $this->password === false)
@@ -66,19 +62,22 @@ class User {
 			throw new UserException('Invalid password.');
 	}
 
-	public function create() {
-		return new UserCreate($this->level);
+	public function create($username) {
+		return new UserCreate($username, $this->level);
 	}
 
 	public function edit($id) {
 		return new UserEdit($id, $this->level);
 	}
 
-	public function delete($id) {
-		if ($this->id === $id)
+	public function delete($username) {
+		if ($this->username === $username)
 			throw new UserException('You cannot delete yourself.');
 
-		return deleteUserByID($id);
+		// TODO: Check if we have higher permissions than the user
+		// we're deleting.
+
+		deleteUser($username);
 	}
 
 
@@ -103,7 +102,7 @@ class User {
 		if ($capcode === false)
 			return $this->capcode;
 
-		// TODO
+		// TODO: Restrict to a subset of HTML
 
 		$this->capcode = $capcode;
 		$this->changes[] = 'capcode';
@@ -115,14 +114,6 @@ class User {
 
 		$this->level = (int)$level;
 		$this->changes[] = 'level';
-	}
-
-	public function username($username = false) {
-		if ($username === false)
-			return $this->username;
-
-		$this->username = $username;
-		$this->changes[] = 'username';
 	}
 
 	public function password($password) {
@@ -149,38 +140,17 @@ class User {
 		throw new UserException("You don't have sufficient permissions.");
 	}
 
-
-	/**
-	 * @param int User ID
-	 */
-	protected function loadByID($id) {
-		$user = getUserByID($id);
-
-		if ($user === false)
-			throw new UserException("No such user exists.");
-
-		$this->setVariables($user);
-	}
-
 	/**
 	 * Loads a user account by its username.
 	 *
 	 * @param string Username
 	 */
-	protected function loadByUsername($username) {
-		$user = getUserByName($username);
+	protected function load($username) {
+		$row = getUser($username);
 
-		if ($user === false)
+		if ($row === false)
 			throw new UserException("No such user exists.");
 
-		$this->setVariables($user);
-	}
-
-	/**
-	 * @param array Table row containing user information
-	 */
-	protected function setVariables($row) {
-		$this->id = $row['id'];
 		$this->username = $row['username'];
 		$this->password = $row['password'];
 		$this->hashtype = $row['hashtype'] ?: 'plaintext';
@@ -253,7 +223,11 @@ class User {
 	/**
 	 * Order in which to try hash functions when generating a password.
 	 */
-	protected static $hash_functions = array('sha256', 'sha1');
+	protected static $hash_functions = array(
+		'sha256',
+		'sha1',
+		'plaintext',
+	);
 
 	/**
 	 * Generate a hash based on a plaintext key.
@@ -292,7 +266,7 @@ class User {
 
 		// php's documentation is really vague, so i'm going to assume
 		// that sha256 might not always be available
-		return @hash('sha256', $key);
+		return @hash('sha256', $key.$secret);
 	}
 }
 
@@ -309,8 +283,9 @@ class UserNologin extends User {
 class UserCreate extends User {
 	protected $self_level = 0;
 
-	public function __construct($self_level) {
-		$this->self_level = $self_level;
+	public function __construct($username, $self_level = false) {
+		$this->username = $username;
+		$this->self_level = $self_level === false ? 9999 : $self_level;
 	}
 
 	public function commit() {
@@ -324,16 +299,29 @@ class UserCreate extends User {
 			'capcode',
 		));
 
-		return insertUser($user);
+		try {
+			insertUser($user);
+		} catch (PDOException $e) {
+			$err = $e->getCode();
+
+			switch ($err) {
+			case PgError::UNIQUE_VIOLATION:
+				// Username collision
+				throw new Exception("A user with that name already exists.");
+				break;
+			default:
+				// Unknown error
+				throw $e;
+			}
+		}
 	}
 }
 
 class UserEdit extends User {
 	protected $self_level = 0;
 
-	public function __construct($id, $self_level) {
-		$this->id = $id;
-
+	public function __construct($username, $self_level) {
+		$this->load($username);
 		// TODO - check if we have permission to edit this user
 	}
 
@@ -342,7 +330,7 @@ class UserEdit extends User {
 			return; // nothing to do
 
 		$values = array_unique($this->changes);
-		$values[] = 'id';
+		$values[] = 'username';
 
 		$user = $this->createArray($values);
 
