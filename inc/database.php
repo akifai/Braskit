@@ -337,6 +337,15 @@ function getAllBoards() {
 	return $sth->fetchAll();
 }
 
+function renameBoard($oldname, $newname) {
+	global $dbh, $db_prefix;
+
+	// since we're using cascading and foreign keys, pgsql will handle the
+	// other tables containing board names for us automagically.
+	$sth = $dbh->prepare("UPDATE {$db_prefix}boards SET name = ? WHERE name = ?");
+	$sth->execute(array($newname, $oldname));
+}
+
 function updateBoard($board, $new_title, $new_level) {
 	global $dbh, $db_prefix;
 

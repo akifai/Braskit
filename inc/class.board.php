@@ -5,7 +5,7 @@ class Board {
 	public $title, $minlevel = 0, $config;
 	private $exists, $board;
 
-	public function __construct($board, $must_exist = true, $load_config = true) {
+	public static function validateName($board) {
 		// Check for blank board name
 		if (!strlen($board))
 			throw new Exception('Board name cannot be blank.');
@@ -13,6 +13,10 @@ class Board {
 		// Check for invalid characters
 		if (!preg_match('/^[A-Za-z0-9]+$/', $board))
 			throw new Exception('Board name contains invalid characters.');
+	}
+
+	public function __construct($board, $must_exist = true, $load_config = true) {
+		$this->validateName($board);
 
 		$this->board = (string)$board;
 
@@ -79,6 +83,29 @@ class Board {
 		}
 
 		$this->exists = true;
+	}
+
+	public function rename($newname) {
+		global $dbh;
+
+		$this->validateName($newname);
+
+		$dbh->beginTransaction();
+
+		// rename the board in SQL
+		renameBoard($this->board, $newname);
+
+		$oldfolder = TINYIB_ROOT.'/'.$this->board;
+		$newfolder = TINYIB_ROOT.'/'.$newname;
+
+		$renamed = @rename($oldfolder, $newfolder);
+
+		if (!$renamed)
+			throw new Exception("Write error - cannot rename the board.");
+
+		$dbh->commit();
+
+		$this->board = (string)$newname;
 	}
 
 	/**
