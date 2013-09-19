@@ -33,9 +33,8 @@ function finish_get() {
 
 	// create our user account
 	$user = new UserNologin();
-	$u = $user->create();
 
-	$u->username($_SESSION['installer_user']);
+	$u = $user->create($_SESSION['installer_user']);
 	$u->password($_SESSION['installer_pass']);
 	$u->level(9999);
 	$u->commit();

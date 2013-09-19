@@ -12,7 +12,7 @@ CREATE TABLE /*_*/posts (
     globalid serial PRIMARY KEY,
     id integer NOT NULL,
     parent integer NOT NULL,
-    board text NOT NULL REFERENCES /*_*/boards(name),
+    board text NOT NULL REFERENCES /*_*/boards(name) ON DELETE CASCADE ON UPDATE CASCADE,
     timestamp timestamp NOT NULL,
     lastbump timestamp NOT NULL,
     ip inet NOT NULL DEFAULT '127.0.0.2',
@@ -56,7 +56,7 @@ CREATE INDEX ON /*_*/bans (expire);
 CREATE TABLE /*_*/config (
     name text PRIMARY KEY,
     value text NOT NULL,
-    board text REFERENCES /*_*/boards(name),
+    board text REFERENCES /*_*/boards(name) ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE (board, name)
 );
 
