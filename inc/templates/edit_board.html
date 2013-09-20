@@ -15,7 +15,7 @@
 
       <div class="row">
         <label for="name">Short name</label>
-        <input type="text" name="name" id="name" value="{{ board }}" size="8" disabled>
+        <input type="text" name="name" id="name" value="{{ board }}" size="8">
 
         <p>Directory name for board. Must be unique and can only contain
           letters, numbers and hyphens.</p>
@@ -38,8 +38,9 @@
           board.</p>
       </div>
 
-      <div class="row">
+      <div class="meta">
         <input type="submit" value="Edit Board">
+        <label><input type="checkbox" name="rebuild" id="rebuild" value="on"> Rebuild</label>
       </div>
     </form>
 
@@ -65,7 +66,7 @@
         </p>
       </div>
 
-      <div class="row">
+      <div class="meta">
         <input type="submit" value="Delete Board">
       </div>
     </form>

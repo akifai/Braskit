@@ -18,15 +18,23 @@ function edit_board_post($url, $boardname) {
 
 	$board = new Board($boardname);
 
+	$name = param('name');
 	$title = param('title');
 	$minlevel = param('minlevel');
+	$rebuild = param('rebuild');
 
 	$board->editSettings($title, $minlevel);
 
 	set_time_limit(0);
 	ignore_user_abort(true);
 
-	$board->rebuildAll();
+	if ($name !== '' && $name !== (string)$board) {
+		$board->rename($name);
+	}
 
-	diverge($url);
+	if ($rebuild)
+		$board->rebuildAll();
+
+	// the board might have changes names
+	redirect($board->path('edit', true));
 }

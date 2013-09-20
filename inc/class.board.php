@@ -93,10 +93,26 @@ class Board {
 		$dbh->beginTransaction();
 
 		// rename the board in SQL
-		renameBoard($this->board, $newname);
+		try {
+			renameBoard($this->board, $newname);
+		} catch (PDOException $e) {
+			$err = $e->getCode();
+
+			switch ($err) {
+			case UNIQUE_VIOLATION:
+				// board exists
+				throw new Exception("The board '$board' already exists!");
+			default:
+				// unknown error
+				throw $e;
+			}
+		}
 
 		$oldfolder = TINYIB_ROOT.'/'.$this->board;
 		$newfolder = TINYIB_ROOT.'/'.$newname;
+
+		if (file_exists($newfolder))
+			throw new Exception('Folder name collision - cannot rename board.');
 
 		$renamed = @rename($oldfolder, $newfolder);
 

@@ -339,22 +339,24 @@ a:hover {
 
 .rowform {
 	#wrapper & {
-		label {
-			display: inline-block;
-			font-weight: bold;
-			margin: 0 1em 0 0;
-			min-width: 150px;
-			text-align: right;
-			vertical-align: top;
+		.meta {
+			margin: 1em 0;
 		}
 
 		.row {
-			margin: 0 0 1em;
-
 			p {
 				font-family: @sansSerif;
 				font-size: small;
 				margin: 0.5em 0 0.5em 50px;
+			}
+
+			label {
+				display: inline-block;
+				font-weight: bold;
+				margin: 0 1em 0 0;
+				min-width: 150px;
+				text-align: right;
+				vertical-align: top;
 			}
 		}
 	}
