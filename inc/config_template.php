@@ -76,13 +76,6 @@ $cache_dir = TINYIB_ROOT.'/cache';
 # temporary directory - you should probably not change this
 $temp_dir = sys_get_temp_dir();
 
-# an array containing a list of files containing spam definitions. ideally,
-# these files should be well hidden or inaccessible from the web.
-$spam_files = array();
-
-# uncomment to add spam.txt to the list
-#$spam_files[] = 'spam.txt'; 
-
 
 #
 # Tweaks

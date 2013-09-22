@@ -468,6 +468,20 @@ function deleteConfigKeys($board, $keys) {
 
 
 //
+// Spam
+//
+
+function getLatestSpamRules() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}spam ORDER BY id DESC LIMIT 1");
+	$sth->execute();
+
+	return $sth->fetch();
+}
+
+
+//
 // Users
 //
 

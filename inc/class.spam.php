@@ -2,7 +2,8 @@
 defined('TINYIB') or exit;
 
 /**
- * @todo: Writing spam definitions and other stuff.
+ * @todo Writing spam definitions and other stuff.
+ * @todo rule diffing
  */
 class Spam {
 	public $enable_autobans = true;
@@ -82,10 +83,12 @@ class Spam {
 	 * Retrieve the spam definitions
 	 */
 	protected function loadDefinitions($defs) {
-		foreach ($defs as $filename) {
-			$def = (string)@file_get_contents($filename);
-			$this->parse($def);
-		}
+		$row = getLatestSpamRules();
+
+		if ($row === false)
+			return;
+
+		$this->parse($row['rules']);
 	}
 
 
