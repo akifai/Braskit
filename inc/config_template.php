@@ -65,6 +65,7 @@ $default_stylesheet = 'Futaba';
 # included at the bottom of the page
 $javascript_includes = array(
 	'jquery-1.9.0.min.js',
+	'jquery.cookie.js',
 	'bootstrap.min.js',
 	'spin.js',
 	'PlainIB.js',

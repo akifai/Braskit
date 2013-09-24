@@ -73,8 +73,7 @@ function createStyleSwitcher() {
 		return null;
 
 	// Get selected/defaulted stylesheet
-	var cookie = new Cookie();
-	var selected = cookie.get("style");
+	var selected = $.cookie("style");
 
 	if (!selected) {
 		var currentPath = $("#sitestyle").attr("href");
@@ -118,8 +117,7 @@ function createStyleSwitcher() {
 		changeStyle(value);
 
 		// Save the new style
-		var cookie = new Cookie();
-		cookie.set("style", value);
+		$.cookie("style", value);
 	});
 
 	return switcher;

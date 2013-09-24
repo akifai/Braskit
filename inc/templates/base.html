@@ -23,46 +23,14 @@
         linkEl.href = styles[name];
     }
 
-    function Cookie(options) {
-      var expires = 86400 * 365;
+    (function () {
+      var match = document.cookie.match(/(?:^|;\s+)style=(.*?)(?:;|$)/);
 
-      if (typeof options === "object" && expires in options) {
-        var date = new Date();
-        expires = date.setTime(date.getTime() + options.expires);
-      }
+      if (!match || match.length < 2)
+        return;
 
-      this.get = function(name) {
-        name = escape(name);
-
-        var regex = new RegExp("(?:^|;\\s+)" + name + "=(.*?)(?:;|$)");
-        var match = regex.exec(document.cookie);
-
-        if (!match || match.length < 2)
-          return false;
-
-        var value = unescape(match[1]);
-
-        return value;
-      };
-
-      this.set = function(name, value) {
-        name = escape(name);
-        value = escape(value);
-
-        var cookie = name + "=" + value + "; path=/";
-
-        if (expires)
-          cookie += "; expires=" + expires;
-
-        document.cookie = cookie;
-      };
-    }
-
-    !function() {
-      var style = new Cookie().get("style");
-      if (style)
-        changeStyle(style);
-    }();
+      changeStyle(unescape(match[1]));
+    })();
   </script>
 </head>
 <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}>
