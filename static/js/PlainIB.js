@@ -58,6 +58,16 @@
 
 
 //
+// Cookie options
+//
+
+$.cookie.defaults = {
+    path: '/',
+    expires: 86400 * 365
+};
+
+
+//
 // Style crap
 //
 
