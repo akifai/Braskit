@@ -11,6 +11,7 @@
 	<hr>
 	<form action="{{ self }}{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
+    <input type="hidden" name="admin" value="{{ admin ? "on" : "" }}">
 		{% if admin %}
       <input type="hidden" name="csrf" value="{{ csrf() }}">
 			<input type="hidden" name="nexttask" value="manage">

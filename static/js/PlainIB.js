@@ -239,6 +239,21 @@ function doReplyPage() {
 	highlightPost(num);
 }
 
+function delformSubmit() {
+    var cookie = $.cookie("password");
+
+    if (cookie === undefined)
+        cookie = '';
+
+    var password = $("<input>", {
+        type: "hidden",
+        name: "password",
+        value: cookie
+    });
+
+    $(this).append(password);
+}
+
 
 /*
  * AJAX dialogue boxes
@@ -351,6 +366,8 @@ $("[data-ajax]").click(function(event) {
 
 	new Dialogue(loadUrl, original);
 });
+
+$("[name=delform]").submit(delformSubmit);
 
 // Submit dummy form with CSRF token
 $(".action").click(function(event) {

@@ -6,26 +6,31 @@ function delete_get($url) {
 }
 
 function delete_post($url, $boardname) {
-	do_csrf($url);
-
-	$password = param('password', PARAM_STRING | PARAM_COOKIE);
+	$task = param('task');
 	$posts = param('id', PARAM_DEFAULT | PARAM_ARRAY);
+	$admin_delete = param('admin');
 
-	// check login
-	$user = do_login();
-
-	// Where to redirect after deleting
-	$nexttask = $user ? param('goto') : false;
+	// passwords from POST and cookie, respectively
+	$password = param('password', PARAM_STRING | PARAM_POST);
+	$cookie_pw = param('password', PARAM_STRING | PARAM_COOKIE);
 
 	$board = new Board($boardname);
 
-	// Nothing to do
-	if (!$posts && $nexttask) {
-		diverge($nexttask);
+	$user = null;
+
+	// the deletion form is also used for reporting
+	if (trim(strtolower($task)) === 'report') {
+		// redirect to the report form
+		redirect($board->path('report', array('id' => $posts)));
 		return;
-	} elseif (!$posts) {
-		redirect($board->path('index.html'));
-		return;
+	}
+
+	if ($admin_delete) {
+		do_csrf($url);
+		$user = do_login();
+	} elseif ($password === '' || $password !== $cookie_pw) {
+		// the passwords were either blank or not equal
+		throw new Exception('Incorrect password for deletion.');
 	}
 
 	// Most delete actions will take place from the user delete form, which
@@ -37,9 +42,17 @@ function delete_post($url, $boardname) {
 		sort($posts);
 	}
 
-	// check for blank password, which is always invalid
-	if (!$user && $password === '')
-		throw new Exception('Incorrect password for deletion.');
+	// Where to redirect after deleting
+	$nexttask = $user ? param('goto') : false;
+
+	// Nothing to do
+	if (!$posts && $nexttask) {
+		diverge($nexttask);
+		return;
+	} elseif (!$posts) {
+		redirect($board->path('index.html'));
+		return;
+	}
 
 	$rebuild_queue = array();
 	$deleted_threads = array();
@@ -86,5 +99,5 @@ function delete_post($url, $boardname) {
 	if ($nexttask)
 		diverge($nexttask);
 	else
-		redirect($board->path('index.html'));
+		redirect($board->path('index.html', (bool)$user));
 }

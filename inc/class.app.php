@@ -122,7 +122,6 @@ abstract class App {
 }
 
 class RouteQueryString extends App {
-	// still unsure about how this should work
 	public static function create($task, $args) {
 		$path = '?'.$task;
 
@@ -131,8 +130,19 @@ class RouteQueryString extends App {
 
 		$arg_string = '';
 
-		foreach ($args as $name => $value)
-			$arg_string .= "&{$name}={$value}";
+		foreach ($args as $name => $value) {
+			if (is_array($value)) {
+				foreach ($value as $sk => $sv) {
+					if ($sk === (int)$sk) {
+						$sk = '';
+					}
+
+					$arg_string .= "&{$name}[{$sk}]={$sv}";
+				}
+			} else {
+				$arg_string .= "&{$name}={$value}";
+			}
+		}
 
 		return $path.$arg_string;
 	}
