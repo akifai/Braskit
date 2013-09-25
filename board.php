@@ -66,3 +66,61 @@ $loader->run();
 
 // print buffer
 ob_end_flush();
+
+
+//
+// functions specific to board.php
+//
+
+function make_error_page($e) {
+	$referrer = @$_SERVER['HTTP_REFERER'];
+
+	$message = $e->getMessage();
+
+	// escape HTML if applicable
+	if ($e->getCode() !== HTMLException::HTML_MESSAGE)
+		$message = cleanString($message);
+
+	try {
+		// Error messages using Twig
+		echo render('error.html', array(
+			'message' => $message,
+			'referrer' => $referrer,
+		));
+	} catch (Exception $e) {
+		header('Content-Type: text/plain; charset=UTF-8');
+		echo "[PlainIB] Fatal exception/template error.\n\n";
+		echo $e->getMessage();
+	}
+
+	exit();
+}
+
+function ob_callback($buffer) {
+	global $start_time;
+
+	// We don't want to modify non-html responses
+	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
+		return $buffer;
+
+	// the part of the buffer to insert before
+	$ins = strrpos($buffer, "</body>");
+	if ($ins === false)
+		return $buffer;
+
+	// first part of the new buffer
+	$newbuf = substr($buffer, 0, $ins);
+
+	$total_time = microtime(true) - $start_time;
+	$query_time = round(100 / $total_time * Database::$time);
+
+	// Append debug text
+	$newbuf .= sprintf('<p class="footer">Page generated in %0.4f seconds,'.
+	' of which %d%% was spent running %d database queries.</p>',
+		$total_time, $query_time, Database::$queries);
+
+	// the rest of the buffer
+	$newbuf .= substr($buffer, $ins);
+
+	return $newbuf;
+}

@@ -2,83 +2,11 @@
 defined('TINYIB') or exit;
 
 //
-// Script utilities
-//
-
-function ajax_exception_handler($e) {
-	ob_end_clean();
-
-	header('HTTP/1.1 403 Forbidden');
-
-	echo json_encode(array(
-		'error' => true,
-		'errorMsg' => $e->getMessage(),
-	));
-
-	exit;
-}
-
-function make_error_page($e) {
-	$referrer = @$_SERVER['HTTP_REFERER'];
-
-	$message = $e->getMessage();
-
-	// escape HTML if applicable
-	if ($e->getCode() !== HTMLException::HTML_MESSAGE)
-		$message = cleanString($message);
-
-	try {
-		// Error messages using Twig
-		echo render('error.html', array(
-			'message' => $message,
-			'referrer' => $referrer,
-		));
-	} catch (Exception $e) {}
-
-	exit;
-}
-
-function ob_ajax_callback($output) {
-	return json_encode(array('page' => $output));
-}
-
-function ob_callback($buffer) {
-	global $start_time;
-
-	// We don't want to modify non-html responses
-	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
-		return $buffer;
-
-	// the part of the buffer to insert before
-	$ins = strrpos($buffer, "</body>");
-	if ($ins === false)
-		return $buffer;
-
-	// first part of the new buffer
-	$newbuf = substr($buffer, 0, $ins); 
-
-	$total_time = microtime(true) - $start_time;
-	$query_time = round(100 / $total_time * Database::$time);
-
-	// Append debug text
-	$newbuf .= sprintf('<p class="footer">Page generated in %0.4f seconds,'.
-	' of which %d%% was spent running %d database queries.</p>',
-		$total_time, $query_time, Database::$queries);
-
-	// the rest of the buffer
-	$newbuf .= substr($buffer, $ins);
-
-	return $newbuf;
-}
-
-
-
-//
 // Caching
 //
 
 // TODO
-define('TINYIB_CACHE', extension_loaded('apc') ? 'apc' : 'php');
+define('TINYIB_CACHE', ini_get('apc.enabled') ? 'apc' : 'php');
 
 function get_cache($key) {
 	global $cache_dir, $debug;
@@ -371,13 +299,7 @@ function render($template, $args = array(), $twig = null) {
 			$twig = load_twig();
 	}
 
-	try {
-		$output = $twig->render($template, $args);
-	} catch (Twig_Error $e) {
-		// lol
-		echo "<plaintext>$e";
-		die();
-	}
+	$output = $twig->render($template, $args);
 
 	return $output;
 }
@@ -651,6 +573,8 @@ function shorten_filename($filename) {
 }
 
 function make_name_tripcode($input, $tripkey = '!') {
+	global $secret;
+
 	$tripcode = '';
 
 	// Check if we can reencode strings
@@ -680,7 +604,7 @@ function make_name_tripcode($input, $tripkey = '!') {
 
 	// Do secure tripcodes
 	if ($secure !== false) {
-		$hash = sha1($secure.TINYIB_TRIPSEED);
+		$hash = sha1($secure.$secret);
 		$hash = substr(base64_encode($hash), 0, 10);
 		$tripcode .= $tripkey.$tripkey.$hash;
 	}
@@ -706,20 +630,6 @@ function writePage($filename, $contents) {
 	}
 
 	chmod($filename, 0664); /* it was created 0600 */
-}
-
-function deletePostImages($board, $post) {
-	$files = array();
-
-	if ($post->file)
-		$files[] = "{$board}/src/{$post->file}";
-	if ($post->thumb)
-		$files[] = "{$board}/thumb/{$post->thumb}";
-	if (!$post->parent)
-		$files[] = "{$board}/res/{$post->id}.html";
-
-	foreach ($files as $file)
-		@unlink($file);
 }
 
 function create_ban_message($post) {
@@ -758,8 +668,8 @@ function checkBanned() {
 
 function get_login_credentials() {
 	return array(
-		param('login_user', PARAM_DEFAULT ^ PARAM_GET),
-		param('login_pass', PARAM_DEFAULT ^ PARAM_GET),
+		param('login_user', PARAM_DEFAULT & ~PARAM_GET),
+		param('login_pass', PARAM_DEFAULT & ~PARAM_GET),
 	);
 }
 
