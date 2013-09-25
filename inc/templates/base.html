@@ -42,7 +42,7 @@
     {% include "footer.html" %}
   </div>
 
-  {% if debug %}
+  {% if debug and debug b-and constant("DEBUG_JS") %}
     {% for file in js %}
       {# TODO: absolute paths #}
       <script src="{{ path("static/js/"~file) }}"></script>
