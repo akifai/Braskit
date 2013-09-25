@@ -87,11 +87,18 @@ body {
 	text-align: left;
 }
 
-.postarea, .loginform {
+.postarea {
 	display: table; /* why doesn't inline-block work? */
 	margin: 0px auto;
 
-	th { .postblock; }
+	th {
+		.postblock;
+	}
+
+	.controls {
+		margin: 0.5em 0;
+		text-align: center;
+	}
 }
 
 .rules {
@@ -279,6 +286,14 @@ a:hover {
  * Admin stuff
  */
 
+.loginform {
+	.postarea;
+}
+
+.userform {
+	.postarea;
+}
+
 // edit link in header
 .board-edit {
 	font-size: 14px;
@@ -299,7 +314,7 @@ a:hover {
 	margin: 1em 0 0;
 }
 
-.configform {
+.configform, .usertable {
 	display: table;
 	margin: 0 auto;
 
@@ -324,6 +339,10 @@ a:hover {
 		font-size: smaller;
 		max-width: 300px;
 	}
+}
+
+.usertable {
+	margin-bottom: 1em;
 }
 
 .modpage {

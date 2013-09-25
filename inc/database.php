@@ -485,6 +485,14 @@ function getLatestSpamRules() {
 // Users
 //
 
+function getUserList() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->query("SELECT username, level, lastlogin, email FROM {$db_prefix}users ORDER BY level DESC, username");
+
+	return $sth->fetchAll();
+}
+
 function getUser($username) {
 	global $dbh, $db_prefix;
 

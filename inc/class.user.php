@@ -38,6 +38,14 @@ class User {
 	protected $email = '';
 	protected $capcode = '';
 
+	protected $magic_get_properties = array(
+		'username',
+		'lastlogin',
+		'level',
+		'email',
+		'capcode',
+	);
+
 	public function __construct($username, $password) {
 		try {
 			$this->load($username);
@@ -60,6 +68,22 @@ class User {
 		// Validate password
 		if ($this->hashed !== $this->password)
 			throw new UserException('Invalid password.');
+	}
+
+	public function __toString() {
+		return $this->username;
+	}
+
+	public function __isset($var) {
+		return in_array($var, $this->magic_get_properties);
+	}
+
+	public function __get($var) {
+		if ($this->__isset($var)) {
+			return $this->$var;
+		}
+
+		return null;
 	}
 
 	public function create($username) {
@@ -91,7 +115,7 @@ class User {
 		if ($email === false)
 			return $this->email;
 
-		if (filter_var($email, FILTER_VALIDATE_EMAIL) === false)
+		if ($email && filter_var($email, FILTER_VALIDATE_EMAIL) === false)
 			throw new UserException('Invalid email address.');
 
 		$this->email = $email;

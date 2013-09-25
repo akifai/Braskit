@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% if editing %}
+  {% set title = "Editing user '"~target~"'" %}
+{% else %}
+  {% set title = "User Accounts" %}
+{% endif %}
+
+{% import "post_macros.html" as m %}
+
+{% block content %}
+  {% if editing %}
+  	{{ m.returnlink(_context, path("users", true)) }}
+  {% endif %}
+
+  {% if users %}
+    <div class="theader">User Accounts</div>
+
+    <table class="usertable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Level</th>
+          <th>Email</th>
+          <th>Last seen</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>{% if u.username == user %}<strong>{% endif %}<a href="{{ path("users/"~u.username, true) }}">{{ u.username }}</a>{% if u.username == user %}</strong>{% endif %}</td>
+            <td>{{ u.level }}</td>
+            <td>{% if u.email %}{{ u.email }}{% else %}-{% endif %}</td>
+            <td>{{ u.lastlogin ?: "Never" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if editing %}
+    <div class="theader">Editing user <em>{{ target }}</em></div>
+  {% endif %}
+
+  <form action="{{ path("users" ~ (editing ? ("/" ~ target) : ""), true) }}" method="post" class="userform">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+    {% if not editing %}
+      <div class="theader">Add User Account</div>
+    {% endif %}
+
+    <table>
+      <tbody>
+        <tr>
+          <th>Username</th>
+          <td>
+            <input type="text" name="username" value="{{ target.username }}" size="20" maxlength="20" autocomplete="off" required pattern="^\w{1,20}$">
+          </td>
+        </tr>
+        <tr>
+          <th>Email Address</th>
+          <td><input type="email" name="email" value="{{ target.email }}" size="20" autocomplete="off"></td>
+        </tr>
+        <tr>
+          <th>Password</th>
+          <td><input type="password" name="password" size="20" autocomplete="off"{% if not editing %} required{% endif %}></td>
+        </tr>
+        <tr>
+          <th>(Confirm)</th>
+          <td><input type="password" name="password2" size="20" autocomplete="off"{% if not editing %} required{% endif %}></td>
+        </tr>
+        <tr>
+          <th>Level</th>
+          <td><input type="number" name="level" value="{{ editing ? target.level : 5000 }}" size="4" autocomplete="off" min="0" max="9999" step="1"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="controls">
+      <input type="submit" value="{% if editing %}Edit User{% else %}Add User{% endif %}">
+    </div>
+  </form>
+
+  <hr>
+{% endblock %}

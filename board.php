@@ -44,17 +44,19 @@ $tasks = array(
 	"/$board_re/rebuild" => 'rebuild',
 
 	// Mod global actions
+	'/login' => 'login',
+	'/logout' => 'logout',
 	'/manage' => 'manage',
+
 	'/bans' => 'bans',
 	'/add_ban' => 'addban',
 	"/lift_ban(?:/$num_re)?" => 'liftban',
 	"/edit_ban/$num_re" => 'editban',
+
 	'/config' => 'config',
-	"/view_IP/([a-f0-9.:/]+)" => 'viewip',
-	'/login' => 'login',
-	'/logout' => 'logout',
 
 	'/create_board' => 'create_board',
+	'/users(?:/(\w+)?)?' => 'users',
 );
 
 unset($board_re, $num_re);
