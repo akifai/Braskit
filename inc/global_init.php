@@ -66,6 +66,14 @@ if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	return;
 }
 
+// Constants for debug
+define('DEBUG_NONE', 0);
+define('DEBUG_TEMPLATE', 2);
+define('DEBUG_JS', 4);
+define('DEBUG_LESS', 8);
+define('DEBUG_CACHE', 16);
+define('DEBUG_ALL', ~0);
+
 if (file_exists(TINYIB_ROOT.'/config.php')) {
 	// Load the config
 	require(TINYIB_ROOT.'/config.php');
@@ -74,6 +82,9 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 	redirect('install.php');
 	exit;
 }
+
+if ($debug === 1 || $debug === true)
+	$debug = DEBUG_ALL;
 
 // Don't connect to database or load config from database
 if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)

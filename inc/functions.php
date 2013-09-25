@@ -84,7 +84,7 @@ function get_cache($key) {
 	global $cache_dir, $debug;
 
 	// debug mode - don't get cache
-	if ($debug)
+	if ($debug & DEBUG_CACHE)
 		return false;
 
 	// APC
@@ -114,7 +114,7 @@ function set_cache($key, $data, $ttl = 0) {
 	global $cache_dir, $debug;
 
 	// debug mode - don't save cache
-	if ($debug)
+	if ($debug & DEBUG_CACHE)
 		return true;
 
 	// APC
@@ -151,7 +151,7 @@ function delete_cache($key) {
 	global $cache_dir, $debug;
 
 	// debug mode - don't delete cache
-	if ($debug)
+	if ($debug & DEBUG_CACHE)
 		return true;
 
 	// APC
@@ -349,14 +349,15 @@ function load_twig(array $dirs = array()) {
 	$loader = new PlainIB_Twig_Loader($dirs);
 
 	$twig = new Twig_Environment($loader, array(
-		'cache' => $debug ? false : $cache_dir,
-		'debug' => $debug,
+		'cache' => ($debug & DEBUG_TEMPLATE) ? false : $cache_dir,
+		'debug' => (bool)($debug & DEBUG_TEMPLATE),
 	));
 
 	$twig->addExtension(new PlainIB_Twig_Extension());
 
 	// Load debugger
-	$debug and $twig->addExtension(new Twig_Extension_Debug());
+	if ($debug & DEBUG_TEMPLATE)
+		$twig->addExtension(new Twig_Extension_Debug());
 
 	return $twig;
 }

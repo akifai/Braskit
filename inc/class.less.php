@@ -71,7 +71,7 @@ class Style {
 			// look for compiled LESS
 			$results = glob("$path/$style-*.css");
 
-			if ($results && !$debug) {
+			if ($results && !($debug & DEBUG_LESS)) {
 				// get the newest file
 				$basename = basename(array_pop($results));
 			} else {
@@ -128,7 +128,7 @@ class Style {
 		$less = new lessc_fixed;
 
 		// strip whitespace if we aren't debugging
-		if (!$debug)
+		if (!($debug & DEBUG_LESS))
 			$less->setFormatter('compressed');
 
 		try {
@@ -136,7 +136,7 @@ class Style {
 			return true;
 		} catch (Exception $e) {
 			// print to error log
-			if (!$debug) {
+			if (!($debug & DEBUG_LESS)) {
 				file_put_contents(STDERR, "LESS: $message");
 				return;
 			}
