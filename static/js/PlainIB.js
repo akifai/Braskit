@@ -8,53 +8,63 @@
  * http://www.wtfpl.net/ for more details.
  */
 
-
 //
 // jQuery helper functions
 //
 
-(function($) {
-	jQuery.fn.addToTextarea = function(text) {
-		return this.each(function() {
-			var length = this.value.length + text.length;
+$.fn.extend({
+    /**
+     * Inserts text in an <input> or <textarea> at the current caret position.
+     *
+     * @param {string} The text to insert.
+     * @returns {jQuery}
+     */
+    addToInput: function (text) {
+        return this.each(function () {
+            var length = this.value.length + text.length;
 
-			if (this.createTextRange) {
-				var pos = this.caretPos;
-				pos.text = text;
-			} else if (this.setSelectionRange) {
-				var start = this.selectionStart;
-				var end = this.selectionEnd;
+            if (this.createTextRange) {
+                var pos = this.caretPos;
+                pos.text = text;
+            } else if (this.setSelectionRange) {
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
 
-				this.value = this.value.substr(0, start)
-					+ text + this.value.substr(end);
+                this.value = this.value.substr(0, start) + text +
+                             this.value.substr(end);
 
-				this.setSelectionRange(length, length);
-			} else {
-				this.value += text;
-			}
-		});
-	};
+                this.setSelectionRange(length, length);
+            } else {
+                this.value += text;
+            }
+        });
+    },
 
-	jQuery.fn.focusWithCursorAtEnd = function() {
-		return this.each(function() {
-			var length = this.value.length;
+    /**
+     * Focuses an <input> or <textarea> and places the cursor at the end.
+     *
+     * @returns {jQuery}
+     */
+    focusWithCursorAtEnd: function() {
+        return this.each(function() {
+            var length = this.value.length;
 
-			if (this.createTextRange) {
-				var range = this.createTextRange();
-				range.moveStart('character', length);
-				range.moveEnd('character', length);
-				range.select();
-			} else if (this.setSelectionRange) {
-				this.setSelectionRange(length, length);
-			}
+            if (this.createTextRange) {
+                var range = this.createTextRange();
+                range.moveStart('character', length);
+                range.moveEnd('character', length);
+                range.select();
+            } else if (this.setSelectionRange) {
+                this.setSelectionRange(length, length);
+            }
 
-			$(this).focus();
+            $(this).focus();
 
-			/* chrome needs this because it sucks. */
-			$(this).scrollTop(9999999);
-		});
-	};
-})(jQuery);
+            /* chrome needs this because it sucks. */
+            $(this).scrollTop(9999999);
+        });
+    }
+});
 
 
 //
@@ -72,65 +82,73 @@ $.cookie.defaults = {
 //
 
 if (typeof changeStyle !== "function") {
-	window.changeStyle = function (name) {
-		var link = $("#sitestyle");
-		link.attr("href", lessHandler + "?file=" + styles[name]);
-	};
+    window.changeStyle = function (name) {
+        var link = $("#sitestyle");
+        link.attr("href", lessHandler + "?file=" + styles[name]);
+    };
 }
 
+/**
+ * Creates a <select> element with options, that when toggled, change the style
+ * of the page. If less than two styles are found, returns null.
+ *
+ * @returns {HTMLElement|null}
+ */
 function createStyleSwitcher() {
-	if (typeof styles !== "object")
-		return null;
+    var style;
 
-	// Get selected/defaulted stylesheet
-	var selected = $.cookie("style");
+    if (typeof styles !== "object")
+        return null;
 
-	if (!selected) {
-		var currentPath = $("#sitestyle").attr("href");
+    // Get selected/defaulted stylesheet
+    var selected = $.cookie("style");
 
-		// there used to be a title="" attribute with the default name
-		// on the <link> element, but I can't be bothered to readd it.
-		for (style in styles) {
-			if (styles[style] == currentPath)
-				selected = style;
-		}
-	}
+    if (!selected) {
+        var currentPath = $("#sitestyle").attr("href");
 
-	// Create <select> for switcher
-	var switcher = $(document.createElement("select"));
+        // there used to be a title="" attribute with the default name
+        // on the <link> element, but I can't be bothered to readd it.
+        for (style in styles) {
+            if (styles[style] == currentPath)
+                selected = style;
+        }
+    }
 
-	// Counter for styles
-	var count = 0;
+    // Create <select> for switcher
+    var switcher = $(document.createElement("select"));
 
-	for (style in styles) {
-		count++;
+    // Counter for styles
+    var count = 0;
 
-		var option = $(document.createElement("option"));
+    for (style in styles) {
+        count++;
 
-		// The text automatically becomes the value
-		$(option).text(style);
+        var option = $(document.createElement("option"));
 
-		// If this is the current style, make it selected
-		if (style === selected)
-			$(option).attr("selected", "selected");
+        // The text automatically becomes the value
+        $(option).text(style);
 
-		switcher.append(option);
-	}
+        // If this is the current style, make it selected
+        if (style === selected)
+            $(option).attr("selected", "selected");
 
-	// no styles to switch between
-	if (count < 2)
-		return null;
+        switcher.append(option);
+    }
 
-	// set onchange event for the switcher
-	switcher.change(function() {
-		var value = $(this).val();
-		changeStyle(value);
+    // no styles to switch between
+    if (count < 2)
+        return null;
 
-		// Save the new style
-		$.cookie("style", value);
-	});
+    // set onchange event for the switcher
+    switcher.change(function () {
+        var value = $(this).val();
+        changeStyle(value);
 
-	return switcher;
+        // Save the new style
+        $.cookie("style", value);
+    });
+
+    return switcher;
 }
 
 
@@ -139,104 +157,104 @@ function createStyleSwitcher() {
 //
 
 function runCallbacks() {
-	var callbacks = $(document.body).data("callback");
+    var callbacks = $(document.body).data("callback");
 
-	if (!callbacks)
-		return;
+    if (!callbacks)
+        return;
 
-	callbacks = callbacks.split(/ +/);
+    callbacks = callbacks.split(/ +/);
 
-	for (var i = 0, j = callbacks.length; i < j; i++)
-		if (window[callbacks[i]])
-			window[callbacks[i]]();
+    for (var i = 0, j = callbacks.length; i < j; i++)
+        if (window[callbacks[i]])
+            window[callbacks[i]]();
 }
 
 function doStyleSwitchers() {
-	var ss = createStyleSwitcher();
+    var ss = createStyleSwitcher();
 
-	if (!ss) {
-		// no styles to switch between
-		return;
-	}
+    if (!ss) {
+        // no styles to switch between
+        return;
+    }
 
-	$(".ss-list").html(ss);
-	$(".ss-unhide").removeClass("noscreen");
+    $(".ss-list").html(ss);
+    $(".ss-unhide").removeClass("noscreen");
 }
 
 function doConfig() {
-	// use bootstrap's tooltips
-	$(".configform label[title]").tooltip({
-		placement: "top",
-		delay: { show: 0, hide: 0 }
-	});
+    // use bootstrap's tooltips
+    $(".configform label[title]").tooltip({
+        placement: "top",
+        delay: { show: 0, hide: 0 }
+    });
 
-	// toggle default value
-	$(".toggle-reset").change(function() {
-		var key = "config_" + this.name.match(/\[(.*)\]/)[1];
-		var inputField = $("#" + key);
+    // toggle default value
+    $(".toggle-reset").change(function() {
+        var key = "config_" + this.name.match(/\[(.*)\]/)[1];
+        var inputField = $("#" + key);
 
-		// enable/disable the input field as appropriate
-		inputField.prop("disabled", this.checked);
+        // enable/disable the input field as appropriate
+        inputField.prop("disabled", this.checked);
 
-		// handle boolean options
-		if (inputField.attr("type") == "checkbox") {
-			inputField.prop("checked", !inputField.prop("checked"));
-			return;
-		}
+        // handle boolean options
+        if (inputField.attr("type") == "checkbox") {
+            inputField.prop("checked", !inputField.prop("checked"));
+            return;
+        }
 
-		// set the SQL-stored input so we can retrieve it
-		// gets run the first time a checkbox is ticked
-		if (this.checked && !$(this).data("has-sql-stored")) {
-			$(this).data("sql-stored", inputField.attr("value"));
+        // set the SQL-stored input so we can retrieve it
+        // gets run the first time a checkbox is ticked
+        if (this.checked && !$(this).data("has-sql-stored")) {
+            $(this).data("sql-stored", inputField.attr("value"));
 
-			// fucking weak typing...
-			$(this).data("has-sql-stored", true);
-		}
+            // fucking weak typing...
+            $(this).data("has-sql-stored", true);
+        }
 
-		// we're ticking the checkbox
-		var dataSource = this.checked ? "default" : "sql-stored";
+        // we're ticking the checkbox
+        var dataSource = this.checked ? "default" : "sql-stored";
 
-		inputField.attr("value", $(this).data(dataSource));
-	});
+        inputField.attr("value", $(this).data(dataSource));
+    });
 }
 
 function highlightPost(num) {
-	$(".highlighted").removeClass("highlighted");
-	$("#" + num).addClass("highlighted");
+    $(".highlighted").removeClass("highlighted");
+    $("#" + num).addClass("highlighted");
 }
 
 function doReplyPage() {
-	var textarea = $("#postform textarea[name=field4]");
+    var textarea = $("#postform textarea[name=field4]");
 
-	$(".reflink .no").click(function() {
-		var num = $(this).data("num");
-		highlightPost(num);
-	});
+    $(".reflink .no").click(function() {
+        var num = $(this).data("num");
+        highlightPost(num);
+    });
 
-	$(".reflink .val").click(function() {
-		var num = $(this).data("num");
-		textarea.addToTextarea(">>" + num + "\n");
-		textarea.focus();
-	});
+    $(".reflink .val").click(function() {
+        var num = $(this).data("num");
+        textarea.addToInput(">>" + num + "\n");
+        textarea.focus();
+    });
 
-	var matches = window.location.hash.match(/^#(i)?(\d+)$/);
+    var matches = window.location.hash.match(/^#(i)?(\d+)$/);
 
-	if (!matches)
-		return;
+    if (!matches)
+        return;
 
-	var doInsert = typeof matches[1] != "undefined";
-	var num = matches[2];
+    var doInsert = typeof matches[1] != "undefined";
+    var num = matches[2];
 
-	// Add stuff to textarea
-	if (doInsert && !textarea.val()) {
-		textarea.addToTextarea(">>" + num + "\n");
-		textarea.focus();
+    // Add stuff to textarea
+    if (doInsert && !textarea.val()) {
+        textarea.addToInput(">>" + num + "\n");
+        textarea.focus();
 
-		return;
-	}
+        return;
+    }
 
-	// Highlight post
-	highlightPost(num);
+    // Highlight post
+    highlightPost(num);
 }
 
 function delformSubmit() {
@@ -262,118 +280,118 @@ function delformSubmit() {
  */
 
 function Dialogue(url, orig) {
-	this.url = url;
+    this.url = url;
 
-	// where to redirect if things fail
-	this.defaultURL = orig;
+    // where to redirect if things fail
+    this.defaultURL = orig;
 
-	this.createScreen();
-	this.createSpinner();
+    this.createScreen();
+    this.createSpinner();
 
-	var self = this;
+    var self = this;
 
-	// loads the page using AJAX
-	$.getJSON(this.url, function(data) {
-		// success - display the page
-		self.createWindow(data)
-	}).fail(function() {
-		self.handleError()
-	});
+    // loads the page using AJAX
+    $.getJSON(this.url, function (data) {
+        // success - display the page
+        self.createWindow(data);
+    }).fail(function () {
+        self.handleError();
+    });
 }
 
-Dialogue.prototype.handleError = function() {
-	console.log("Couldn't load the page for some reason.");
+Dialogue.prototype.handleError = function () {
+    console.log("Couldn't load the page for some reason.");
 
-	var href = this.defaultURL;
-	this.destroy();
+    var href = this.defaultURL;
+    this.destroy();
 
-	// redirect to the original location of the href
-	window.location = href;
-}
+    // redirect to the original location of the href
+    window.location = href;
+};
 
-Dialogue.prototype.createScreen = function() {
-	this.container = document.createElement("div");
-	this.screen = document.createElement("div");
+Dialogue.prototype.createScreen = function () {
+    this.container = document.createElement("div");
+    this.screen = document.createElement("div");
 
-	var self = this;
+    var self = this;
 
-	$(this.screen)
-		.addClass("dl-screen")
-		.click(function() { self.destroy() });
+    $(this.screen).addClass("dl-screen").click(function () {
+        self.destroy();
+    });
 
-	$(this.container)
-		.addClass("dl-container")
-		.append(this.screen);
+    $(this.container)
+        .addClass("dl-container")
+        .append(this.screen);
 
-	$("#wrapper").after(this.container);
-	$(this.screen).fadeIn();
-}
+    $("#wrapper").after(this.container);
+    $(this.screen).fadeIn();
+};
 
-Dialogue.prototype.createWindow = function(data) {
-	this.spinner.stop();
+Dialogue.prototype.createWindow = function (data) {
+    this.spinner.stop();
 
-	var win = $(document.createElement("div")).addClass("dl-window");
-	win.html(data.page);
-	win.css("display", "none");
+    var win = $(document.createElement("div")).addClass("dl-window");
+    win.html(data.page);
+    win.css("display", "none");
 
-	$(this.container).append(win);
-	win.fadeIn();
+    $(this.container).append(win);
+    win.fadeIn();
 
-	win.find(".focus").first().focus();
-}
+    win.find(".focus").first().focus();
+};
 
-Dialogue.prototype.createSpinner = function() {
-	this.spinner = new Spinner({
-		lines: 9,
-		length: 6,
-		width: 3,
-		radius: 4,
-		hwaccel: true,
-		color: "#ccc",
-	}).spin(this.screen);
-}
+Dialogue.prototype.createSpinner = function () {
+    this.spinner = new Spinner({
+        lines: 9,
+        length: 6,
+        width: 3,
+        radius: 4,
+        hwaccel: true,
+        color: "#ccc",
+    }).spin(this.screen);
+};
 
-Dialogue.prototype.destroy = function() {
-	// Fades out, then removes the container and all its child nodes
-	$(this.container).fadeOut({
-		done: function() {
-			$(this).remove();
-		}
-	});
-}
+Dialogue.prototype.destroy = function () {
+    // Fades out, then removes the container and all its child nodes
+    $(this.container).fadeOut({
+        done: function () {
+            $(this).remove();
+        }
+    });
+};
 
 
 //
 // Global init
 //
 
-$(document).ready(function() {
-	// run page-specific callbacks
-	runCallbacks();
+$(document).ready(function () {
+    // run page-specific callbacks
+    runCallbacks();
 
-	// Create style switchers
-	doStyleSwitchers();
+    // Create style switchers
+    doStyleSwitchers();
 
-	// Focus stuff
-	$(".focus").first().focus();
+    // Focus stuff
+    $(".focus").first().focus();
 });
 
-$("[data-ajax]").click(function(event) {
-	event.preventDefault();
+$("[data-ajax]").click(function (event) {
+    event.preventDefault();
 
-	var original = $(this).attr("href")
-	var loadUrl = $(this).data("ajax");
+    var original = $(this).attr("href");
+    var loadUrl = $(this).data("ajax");
 
-	new Dialogue(loadUrl, original);
+    new Dialogue(loadUrl, original);
 });
 
 $("[name=delform]").submit(delformSubmit);
 
 // Submit dummy form with CSRF token
-$(".action").click(function(event) {
-	event.preventDefault();
+$(".action").click(function (event) {
+    event.preventDefault();
 
-	// Set the URL for the dummy form and submit it.
-	$("#dummy_form").attr("action", this.href);
-	$("#dummy_form").submit();
+    // Set the URL for the dummy form and submit it.
+    $("#dummy_form").attr("action", this.href);
+    $("#dummy_form").submit();
 });
