@@ -56,6 +56,14 @@ if (get_magic_quotes_gpc()) {
 	set_magic_quotes_runtime(false);
 }
 
+// Constants for debug
+define('DEBUG_NONE', 0);
+define('DEBUG_TEMPLATE', 2);
+define('DEBUG_JS', 4);
+define('DEBUG_LESS', 8);
+define('DEBUG_CACHE', 16);
+define('DEBUG_ALL', ~0);
+
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// temporary config variables needed for the installer
 	$request_handler = 'RouteQueryString';
@@ -65,14 +73,6 @@ if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// we can't use a config or database for this entry point
 	return;
 }
-
-// Constants for debug
-define('DEBUG_NONE', 0);
-define('DEBUG_TEMPLATE', 2);
-define('DEBUG_JS', 4);
-define('DEBUG_LESS', 8);
-define('DEBUG_CACHE', 16);
-define('DEBUG_ALL', ~0);
 
 if (file_exists(TINYIB_ROOT.'/config.php')) {
 	// Load the config
