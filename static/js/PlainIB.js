@@ -45,8 +45,8 @@ $.fn.extend({
      *
      * @returns {jQuery}
      */
-    focusWithCursorAtEnd: function() {
-        return this.each(function() {
+    focusWithCursorAtEnd: function () {
+        return this.each(function () {
             var length = this.value.length;
 
             if (this.createTextRange) {
@@ -60,7 +60,7 @@ $.fn.extend({
 
             $(this).focus();
 
-            /* chrome needs this because it sucks. */
+            // chrome needs this because it sucks
             $(this).scrollTop(9999999);
         });
     }
@@ -78,15 +78,8 @@ $.cookie.defaults = {
 
 
 //
-// Style crap
+// Callbacks
 //
-
-if (typeof changeStyle !== "function") {
-    window.changeStyle = function (name) {
-        var link = $("#sitestyle");
-        link.attr("href", lessHandler + "?file=" + styles[name]);
-    };
-}
 
 /**
  * Creates a <select> element with options, that when toggled, change the style
@@ -97,14 +90,14 @@ if (typeof changeStyle !== "function") {
 function createStyleSwitcher() {
     var style;
 
-    if (typeof styles !== "object")
+    if (typeof styles != 'object')
         return null;
 
     // Get selected/defaulted stylesheet
-    var selected = $.cookie("style");
+    var selected = $.cookie('style');
 
     if (!selected) {
-        var currentPath = $("#sitestyle").attr("href");
+        var currentPath = $('#sitestyle').attr('href');
 
         // there used to be a title="" attribute with the default name
         // on the <link> element, but I can't be bothered to readd it.
@@ -115,7 +108,7 @@ function createStyleSwitcher() {
     }
 
     // Create <select> for switcher
-    var switcher = $(document.createElement("select"));
+    var switcher = $(document.createElement('select'));
 
     // Counter for styles
     var count = 0;
@@ -123,14 +116,14 @@ function createStyleSwitcher() {
     for (style in styles) {
         count++;
 
-        var option = $(document.createElement("option"));
+        var option = $(document.createElement('option'));
 
         // The text automatically becomes the value
         $(option).text(style);
 
         // If this is the current style, make it selected
-        if (style === selected)
-            $(option).attr("selected", "selected");
+        if (style == selected)
+            $(option).attr('selected', 'selected');
 
         switcher.append(option);
     }
@@ -145,19 +138,14 @@ function createStyleSwitcher() {
         changeStyle(value);
 
         // Save the new style
-        $.cookie("style", value);
+        $.cookie('style', value);
     });
 
     return switcher;
 }
 
-
-//
-// Callbacks
-//
-
 function runCallbacks() {
-    var callbacks = $(document.body).data("callback");
+    var callbacks = $(document.body).data('callback');
 
     if (!callbacks)
         return;
@@ -177,63 +165,66 @@ function doStyleSwitchers() {
         return;
     }
 
-    $(".ss-list").html(ss);
-    $(".ss-unhide").removeClass("noscreen");
+    $('.ss-list').html(ss);
+    $('.ss-unhide').removeClass('noscreen');
 }
 
 function doConfig() {
     // use bootstrap's tooltips
-    $(".configform label[title]").tooltip({
-        placement: "top",
-        delay: { show: 0, hide: 0 }
+    $('.configform label[title]').tooltip({
+        placement: 'top',
+        delay: {
+            show: 0,
+            hide: 0
+        }
     });
 
     // toggle default value
-    $(".toggle-reset").change(function() {
-        var key = "config_" + this.name.match(/\[(.*)\]/)[1];
-        var inputField = $("#" + key);
+    $('.toggle-reset').change(function () {
+        var key = 'config_' + this.name.match(/\[(.*)\]/)[1];
+        var inputField = $('#' + key);
 
         // enable/disable the input field as appropriate
-        inputField.prop("disabled", this.checked);
+        inputField.prop('disabled', this.checked);
 
         // handle boolean options
-        if (inputField.attr("type") == "checkbox") {
-            inputField.prop("checked", !inputField.prop("checked"));
+        if (inputField.attr('type') == 'checkbox') {
+            inputField.prop('checked', !inputField.prop('checked'));
             return;
         }
 
         // set the SQL-stored input so we can retrieve it
         // gets run the first time a checkbox is ticked
-        if (this.checked && !$(this).data("has-sql-stored")) {
-            $(this).data("sql-stored", inputField.attr("value"));
+        if (this.checked && !$(this).data('has-sql-stored')) {
+            $(this).data('sql-stored', inputField.attr('value'));
 
             // fucking weak typing...
-            $(this).data("has-sql-stored", true);
+            $(this).data('has-sql-stored', true);
         }
 
         // we're ticking the checkbox
-        var dataSource = this.checked ? "default" : "sql-stored";
+        var dataSource = this.checked ? 'default' : 'sql-stored';
 
-        inputField.attr("value", $(this).data(dataSource));
+        inputField.attr('value', $(this).data(dataSource));
     });
 }
 
 function highlightPost(num) {
-    $(".highlighted").removeClass("highlighted");
-    $("#" + num).addClass("highlighted");
+    $('.highlighted').removeClass('highlighted');
+    $('#' + num).addClass('highlighted');
 }
 
 function doReplyPage() {
-    var textarea = $("#postform textarea[name=field4]");
+    var textarea = $('#postform textarea[name=field4]');
 
-    $(".reflink .no").click(function() {
-        var num = $(this).data("num");
+    $('.reflink .no').click(function () {
+        var num = $(this).data('num');
         highlightPost(num);
     });
 
-    $(".reflink .val").click(function() {
-        var num = $(this).data("num");
-        textarea.addToInput(">>" + num + "\n");
+    $('.reflink .val').click(function () {
+        var num = $(this).data('num');
+        textarea.addToInput('>>' + num + '\n');
         textarea.focus();
     });
 
@@ -242,12 +233,12 @@ function doReplyPage() {
     if (!matches)
         return;
 
-    var doInsert = typeof matches[1] != "undefined";
+    var doInsert = typeof matches[1] != 'undefined';
     var num = matches[2];
 
     // Add stuff to textarea
     if (doInsert && !textarea.val()) {
-        textarea.addToInput(">>" + num + "\n");
+        textarea.addToInput('>>' + num + '\n');
         textarea.focus();
 
         return;
@@ -258,14 +249,14 @@ function doReplyPage() {
 }
 
 function delformSubmit() {
-    var cookie = $.cookie("password");
+    var cookie = $.cookie('password');
 
     if (cookie === undefined)
         cookie = '';
 
-    var password = $("<input>", {
-        type: "hidden",
-        name: "password",
+    var password = $('<input>', {
+        type: 'hidden',
+        name: 'password',
         value: cookie
     });
 
@@ -310,34 +301,34 @@ Dialogue.prototype.handleError = function () {
 };
 
 Dialogue.prototype.createScreen = function () {
-    this.container = document.createElement("div");
-    this.screen = document.createElement("div");
+    this.container = document.createElement('div');
+    this.screen = document.createElement('div');
 
     var self = this;
 
-    $(this.screen).addClass("dl-screen").click(function () {
+    $(this.screen).addClass('dl-screen').click(function () {
         self.destroy();
     });
 
     $(this.container)
-        .addClass("dl-container")
+        .addClass('dl-container')
         .append(this.screen);
 
-    $("#wrapper").after(this.container);
+    $('#wrapper').after(this.container);
     $(this.screen).fadeIn();
 };
 
 Dialogue.prototype.createWindow = function (data) {
     this.spinner.stop();
 
-    var win = $(document.createElement("div")).addClass("dl-window");
+    var win = $(document.createElement('div')).addClass('dl-window');
     win.html(data.page);
-    win.css("display", "none");
+    win.css('display', 'none');
 
     $(this.container).append(win);
     win.fadeIn();
 
-    win.find(".focus").first().focus();
+    win.find('.focus').first().focus();
 };
 
 Dialogue.prototype.createSpinner = function () {
@@ -347,7 +338,7 @@ Dialogue.prototype.createSpinner = function () {
         width: 3,
         radius: 4,
         hwaccel: true,
-        color: "#ccc",
+        color: '#ccc'
     }).spin(this.screen);
 };
 
@@ -373,25 +364,25 @@ $(document).ready(function () {
     doStyleSwitchers();
 
     // Focus stuff
-    $(".focus").first().focus();
+    $('.focus').first().focus();
 });
 
-$("[data-ajax]").click(function (event) {
+$('[data-ajax]').click(function (event) {
     event.preventDefault();
 
-    var original = $(this).attr("href");
-    var loadUrl = $(this).data("ajax");
+    var original = $(this).attr('href');
+    var loadUrl = $(this).data('ajax');
 
     new Dialogue(loadUrl, original);
 });
 
-$("[name=delform]").submit(delformSubmit);
+$('[name=delform]').submit(delformSubmit);
 
 // Submit dummy form with CSRF token
-$(".action").click(function (event) {
+$('.action').click(function (event) {
     event.preventDefault();
 
     // Set the URL for the dummy form and submit it.
-    $("#dummy_form").attr("action", this.href);
-    $("#dummy_form").submit();
+    $('#dummy_form').attr('action', this.href);
+    $('#dummy_form').submit();
 });
