@@ -1,12 +1,12 @@
-{% extends ajax ? "ajax_base.html" : "base.html" %}
+{% extends _base %}
 {% set title = "Moderating %s No.%d"|format(post.parent ? "reply" : "thread", post.id) %}
+{% import "post_macros.html" as m %}
 
 {% block content %}
-  {% if not ajax %}
-    {% import "post_macros.html" as m %}
+  <div class="no-ajax">
     {{ m.returnlink() }}
     <div class="theader">{{ title }}</div>
-  {% endif %}
+  </div>
 
   <div class="modpage">
     <form action="{{ self }}" method="post" class="rowform">
@@ -71,7 +71,5 @@
     </form>
   </div>
 
-  {% if not ajax %}
-    <hr>
-  {% endif %}
+  <hr class="no-ajax">
 {% endblock %}

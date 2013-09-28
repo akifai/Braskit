@@ -12,23 +12,15 @@ define('TINYIB', null);
 ini_set('display_errors', 0);
 
 define('TINYIB_EXCEPTION_HANDLER', 'ajax_exception_handler');
+define('TINYIB_BASE_TEMPLATE', 'ajax_base.html');
 
-require('inc/global_init.php');
+require('./inc/global_init.php');
 
 header('Content-Type: application/json; charset=UTF-8', true);
 
 ob_start('ob_ajax_callback');
 
-$board_re = '([A-Za-z0-9]+)';
-$num_re = '([1-9]\d{0,8})';
-
-$tasks = array(
-	"/$board_re/ban" => 'ban',
-);
-
-unset($board_re, $num_re);
-
-$loader = new RouteQueryString($tasks, 'pages', true);
+$loader = new RouteQueryString(get_routes(), 'pages');
 $loader->run();
 
 // print buffer

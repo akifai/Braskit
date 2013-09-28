@@ -23,45 +23,7 @@ header('Content-Type: text/html; charset=UTF-8', true);
 // start buffering
 ob_start('ob_callback');
 
-$board_re = '([A-Za-z0-9]+)';
-$num_re = '([1-9]\d{0,9})';
-
-$tasks = array(
-	'/' => 'home',
-
-	// User actions
-	"/$board_re/post" => 'post',
-	"/$board_re/delete" => 'delete',
-
-	// Mod view
-	"/$board_re/(?:$num_re(?:\\.html)?|index\\.html)?" => 'viewpage',
-	"/$board_re/res/$num_re(?:\\.html)?" => 'viewthread',
-
-	// Mod board actions
-	"/$board_re/ban" => 'ban',
-	"/$board_re/config" => 'config',
-	"/$board_re/edit" => 'edit_board',
-	"/$board_re/rebuild" => 'rebuild',
-
-	// Mod global actions
-	'/login' => 'login',
-	'/logout' => 'logout',
-	'/manage' => 'manage',
-
-	'/bans' => 'bans',
-	'/add_ban' => 'addban',
-	"/lift_ban(?:/$num_re)?" => 'liftban',
-	"/edit_ban/$num_re" => 'editban',
-
-	'/config' => 'config',
-
-	'/create_board' => 'create_board',
-	'/users(?:/(\w+)?)?' => 'users',
-);
-
-unset($board_re, $num_re);
-
-$loader = new $request_handler($tasks, 'pages');
+$loader = new $request_handler(get_routes(), 'pages');
 $loader->run();
 
 // print buffer

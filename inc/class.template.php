@@ -22,9 +22,13 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 		global $javascript_includes;
 
 		$globals = array(
+			'_base' => 'base.html',
 			'self' => get_script_name(),
 			'style' => Style::getObject(),
 		);
+
+		if (defined('TINYIB_BASE_TEMPLATE'))
+			$globals['_base'] = TINYIB_BASE_TEMPLATE;
 
 		if (isset($config))
 			$globals['config'] = $config;

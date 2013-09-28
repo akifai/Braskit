@@ -1,6 +1,12 @@
 <?php
 defined('TINYIB') or exit;
 
+function get_routes() {
+	require(TINYIB_ROOT.'/inc/routes.php');
+
+	return $routes;
+}
+
 //
 // Caching
 //

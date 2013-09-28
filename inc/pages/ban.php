@@ -4,8 +4,8 @@ defined('TINYIB') or exit;
 /**
  * @todo Find domains and list them.
  */
-function ban_get($req, $boardname) {
-	$user = do_login($req);
+function ban_get($url, $boardname) {
+	$user = do_login($url);
 	$board = new Board($boardname);
 
 	$id = param('id');
@@ -18,7 +18,6 @@ function ban_get($req, $boardname) {
 
 	echo render('ban.html', array(
 		'admin' => true,
-		'ajax' => $req->api,
 		'board' => $board,
 		'post' => $post,
 		'reason' => $reason,

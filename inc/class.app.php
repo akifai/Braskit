@@ -20,13 +20,9 @@ abstract class App {
 	// url arguments
 	protected $matches = array();
 
-	// whether or not this is an API request
-	public $api = false;
-
-	public function __construct($tasks, $dir, $api = false) {
+	public function __construct($tasks, $dir) {
 		$this->tasks = $tasks;
 		$this->dir = $dir;
-		$this->api = $api;
 	}
 
 	public function __toString() {
@@ -82,7 +78,7 @@ abstract class App {
 	}
 
 	protected function runFunction() {
-		$this->matches[0] = new Request($this->matches[0], $this->api);
+		$this->matches[0] = new Request($this->matches[0]);
 
 		// run function equivalent to the current http method
 		if (function_exists($func = $this->match.'_'.$this->method)) {
@@ -174,16 +170,14 @@ class RouteQueryString extends App {
 // this is passed as the first argument to every _get/_post/_any function and
 // thus has massive potential for expansion
 class Request {
-	public $api = false;
 	protected $url = '';
 
 	public function __toString() {
 		return $this->url;
 	}
 
-	public function __construct($url, $api = false) {
+	public function __construct($url) {
 		$this->url = $url;
-		$this->api = $api;
 	}
 }
 
