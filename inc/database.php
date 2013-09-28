@@ -40,7 +40,7 @@ function initDatabase() {
 function postByID($board, $id) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = :board AND id = :id");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_view WHERE board = :board AND id = :id");
 
 	$sth->bindParam(':board', $board);
 	$sth->bindParam(':id', $id);
@@ -117,7 +117,7 @@ function countThreads($board) {
 function allThreads($board) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = ? AND parent = 0 ORDER BY lastbump DESC");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_view WHERE board = ? AND parent = 0 ORDER BY lastbump DESC");
 	$sth->execute(array($board));
 
 	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
@@ -126,7 +126,7 @@ function allThreads($board) {
 function getThreads($board, $offset, $limit) {
 	global $dbh, $db_prefix;
 
-	$sql = "SELECT * FROM {$db_prefix}posts WHERE board = :board AND parent = 0 ORDER BY lastbump DESC";
+	$sql = "SELECT * FROM {$db_prefix}posts_view WHERE board = :board AND parent = 0 ORDER BY lastbump DESC";
 
 	if ($limit)
 		$sql .= ' LIMIT :limit OFFSET :offset';
@@ -150,7 +150,7 @@ function postsInThreadByID($board, $id) {
 	if (!$id)
 		return false;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = :board AND (id = :id OR parent = :id) ORDER BY id ASC");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_view WHERE board = :board AND (id = :id OR parent = :id) ORDER BY id ASC");
 
 	$sth->bindParam(':board', $board, PDO::PARAM_STR);
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
@@ -176,7 +176,7 @@ function countPostsInThread($board, $id) {
 function latestRepliesInThreadByID($board, $id, $limit) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = :board AND parent = :id ORDER BY id DESC LIMIT :limit");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_view WHERE board = :board AND parent = :id ORDER BY id DESC LIMIT :limit");
 	$sth->bindParam(':board', $board);
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 	$sth->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -242,7 +242,7 @@ function getLatestPosts($limit) {
 	if ($limit < 1)
 		$limit = 1;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts ORDER BY id DESC LIMIT :limit");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_view ORDER BY id DESC LIMIT :limit");
 	$sth->bindParam(':limit', $limit, PDO::PARAM_INT);
 	$sth->execute();
 

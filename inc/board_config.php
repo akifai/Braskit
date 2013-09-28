@@ -69,6 +69,13 @@ $this->config['max_kb'] = array(
 	'description' => 'The maximum size of uploaded files, in kilobytes.',
 );
 
+$this->config['date_format'] = array(
+	// Note: this should correspond with the value in inc/schema.php
+	'value' => 'YY/MM/DD(Dy)HH24:MI',
+	'type' => 'string',
+	'description' => 'The date format to use for posts, as a PostgreSQL "to_char" template string.',
+);
+
 $this->config['default_name'] = array(
 	'value' => "Anonymous",
 	'type' => 'string',

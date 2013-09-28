@@ -54,7 +54,7 @@ CREATE INDEX ON /*_*/bans (ip);
 CREATE INDEX ON /*_*/bans (expire);
 
 CREATE TABLE /*_*/config (
-    name text PRIMARY KEY,
+    name text NOT NULL,
     value text NOT NULL,
     board text REFERENCES /*_*/boards(name) ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE (board, name)
@@ -89,6 +89,23 @@ CREATE TABLE /*_*/spam (
     diff text NOT NULL,
     username TEXT REFERENCES users ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+
+--
+-- Post views
+--
+
+-- Adds columns with the boards' configured date formats.
+CREATE VIEW /*_*/posts_view AS
+    SELECT p.*,
+            to_char(
+                p.timestamp,
+                COALESCE(c.value, 'YY/MM/DD(Dy)HH24:MI')
+            ) AS date,
+            EXTRACT(EPOCH FROM p.timestamp) AS unixtime
+        FROM /*_*/posts AS p
+        LEFT OUTER JOIN /*_*/config AS c
+            ON (p.board = c.board AND c.name = 'date_format');
 
 
 --
