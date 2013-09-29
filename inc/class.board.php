@@ -187,6 +187,15 @@ class Board {
 		}
 	}
 
+	public function report($posts, $ip, $reason) {
+		return insertReports($posts, array(
+			'board' => $this->board,
+			'ip' => $ip,
+			'time' => time(),
+			'reason' => $reason,
+		));
+	}
+
 	public function getAllThreads() {
 		return allThreads($this->board);
 	}
@@ -451,7 +460,7 @@ class Board {
 	 * Gets a post
 	 */
 	public function getPost($id) {
-		return PostByID($this->board, $id);
+		return postByID($this->board, $id);
 	}
 
 	/**
@@ -479,7 +488,7 @@ class Board {
 	/**
 	 * Returns a link to a specific post
 	 */
-	public function linkToPost($row, $quote = false, $admin = false) {
+	public function linkToPost(Post $row, $quote = false, $admin = false) {
 		$link = sprintf('res/%d.html#%s%d',
 			$row->parent ?: $row->id,
 			$quote ? 'i' : '',

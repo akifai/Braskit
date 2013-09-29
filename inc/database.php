@@ -468,6 +468,68 @@ function deleteConfigKeys($board, $keys) {
 
 
 //
+// Reporting
+//
+
+function countReports() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->query("SELECT COUNT(*) FROM {$db_prefix}reports");
+
+	return $sth->fetchColumn();
+}
+
+function getReports() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}reports ORDER BY id");
+	$sth->execute(array());
+
+	return $sth->fetch();
+}
+
+function getReportsByIP() {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}reports ORDER BY id WHERE ip << ?");
+	$sth->execute(array($ip));
+
+	return $sth->fetch();
+}
+
+function insertReports($posts, $report) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("INSERT INTO {$db_prefix}reports (postid, board, ip, timestamp, reason) VALUES (:id, :board, :ip, to_timestamp(:time), :reason) RETURNING id");
+	$sth->bindParam(':board', $report['board']);
+	$sth->bindParam(':ip', $report['ip']);
+	$sth->bindParam(':time', $report['time']);
+	$sth->bindParam(':reason', $report['reason']);
+
+	$report_ids = array();
+
+	foreach ($posts as $post) {
+		$sth->bindParam(':id', $post->id);
+		$report_ids[] = $sth->execute();
+	}
+
+	return $report_ids;
+}
+
+function checkReportFlood($ip, $max) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT COUNT(*) FROM {$db_prefix}reports WHERE ip <<= :ip AND timestamp > to_timestamp(:time)");
+	$sth->bindParam(':ip', $ip);
+	$sth->bindParam(':time', $max);
+	$sth->execute();
+
+	// the user is flooding if true
+	return (bool)$sth->fetchColumn();
+}
+
+
+//
 // Spam
 //
 

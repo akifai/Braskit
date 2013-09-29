@@ -10,6 +10,7 @@ $routes = array(
 	// User actions
 	"/$board_re/post" => 'post',
 	"/$board_re/delete" => 'delete',
+	"/$board_re/report" => 'report',
 
 	// Mod view
 	"/$board_re/(?:$num_re(?:\\.html)?|index\\.html)?" => 'viewpage',

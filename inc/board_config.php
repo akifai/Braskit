@@ -218,4 +218,10 @@ $this->config['enable_reports'] = array(
 	'value' => true,
 	'type' => 'boolean',
 	'description' => 'Whether or not post reporting should be enabled for this board.',
-); // TODO
+);
+
+$this->config['seconds_between_reports'] = array(
+	'value' => 30,
+	'type' => 'integer',
+	'description' => 'Minimum time in seconds between reports from the same IP.',
+);

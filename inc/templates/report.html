@@ -1,0 +1,35 @@
+{% extends _base %}
+{% import "post_macros.html" as m %}
+{% set title = "Post Reporting" %}
+
+{% block content %}
+  <div class="no-ajax">
+    {{ m.returnlink(_context) }}
+  </div>
+
+  <form action="{{ board.path("report", true) }}" method="post" class="report-screen">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+    {% for post in posts %}
+      <input type="hidden" name="id[]" value="{{ post.id }}">
+    {% endfor %}
+
+    <p class="title">You are reporting the following posts:</p>
+    <p>
+      {% for post in posts %}
+        <a href="{{ board.linkToPost(post) }}">{{ post.id }}</a>{% if loop.index != loop.length %},{% endif %}
+      {% endfor %}
+    </p>
+
+    <div class="row">
+      <label for="reason">Please enter a report reason:</label>
+      <textarea type="text" name="reason" id="reason" cols="48" rows="4" autocomplete="off"></textarea>
+    </div>
+
+    <div class="row">
+      <input type="submit" value="Report">
+    </div>
+  </form>
+
+  <hr class="no-ajax">
+{% endblock %}

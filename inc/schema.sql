@@ -73,6 +73,16 @@ CREATE TABLE /*_*/flood (
     isreply boolean NOT NULL
 );
 
+CREATE TABLE /*_*/reports (
+    id serial PRIMARY KEY,
+    postid integer NOT NULL,
+    board text NOT NULL,
+    ip inet NOT NULL,
+    timestamp timestamp NOT NULL,
+    reason text NOT NULL,
+    FOREIGN KEY (postid, board) REFERENCES /*_*/posts(id, board) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE /*_*/users (
     username text PRIMARY KEY CHECK (username ~ '^\w{1,20}$'),
     password text NOT NULL CHECK (password <> ''),
@@ -87,7 +97,7 @@ CREATE TABLE /*_*/spam (
     id serial PRIMARY KEY,
     rules text NOT NULL,
     diff text NOT NULL,
-    username TEXT REFERENCES users ON DELETE SET NULL ON UPDATE CASCADE
+    username text REFERENCES /*_*/users ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 
