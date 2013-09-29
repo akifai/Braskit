@@ -117,6 +117,29 @@ CREATE VIEW /*_*/posts_view AS
         LEFT OUTER JOIN /*_*/config AS c
             ON (p.board = c.board AND c.name = 'date_format');
 
+-- Same as above, except with reports as JSON and whether or not the IP is
+-- banned as a boolean value.
+CREATE VIEW /*_*/posts_admin AS
+    SELECT p.*,
+            to_char(
+                p.timestamp,
+                COALESCE(c.value, 'YY/MM/DD(Dy)HH24:MI')
+            ) AS date,
+            EXTRACT(EPOCH FROM p.timestamp) AS unixtime,
+            COUNT(b.*) <> 0 AS banned,
+            (
+                SELECT array_to_json(array_agg(row_to_json(r)))
+                    FROM /*_*/reports AS r
+                    WHERE p.id = r.postid
+                        AND p.board = r.board
+            ) as reports
+        FROM /*_*/posts AS p
+        LEFT OUTER JOIN /*_*/config AS c
+            ON (p.board = c.board AND c.name = 'date_format')
+        LEFT OUTER JOIN /*_*/bans AS b
+            ON (b.ip >>= p.ip)
+        GROUP BY p.globalid, c.value;
+
 
 --
 -- Post insertion magic

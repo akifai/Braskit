@@ -16,6 +16,14 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 		return $functions;
 	}
 
+	public function getFilters() {
+		$filters = array(
+			new Twig_SimpleFilter('json_decode', 'json_decode'),
+		);
+
+		return $filters;
+	}
+
 	public function getGlobals() {
 		global $config;
 		global $debug;

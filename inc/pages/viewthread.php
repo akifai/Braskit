@@ -6,7 +6,7 @@ function viewthread_get($url, $boardname, $id) {
 
 	$board = new Board($boardname);
 
-	$posts = $board->postsInThread($id);
+	$posts = $board->postsInThread($id, true);
 
 	if (!$posts) {
 		// thread doesn't exist

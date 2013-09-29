@@ -8,7 +8,7 @@ function viewpage_get($url, $boardname, $page = 0) {
 
 	$offset = $page * $board->config->threads_per_page;
 
-	$threads = $board->getIndexThreads($offset);
+	$threads = $board->getIndexThreads($offset, true);
 
 	// get number of pages for the page nav
 	$maxpage = $board->getMaxPage($board->countThreads());

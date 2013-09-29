@@ -94,7 +94,25 @@
 	{% endif %}
 {% endmacro %}
 
+{% macro reports(reports) %}
+  <div class="postreports">
+    <div class="inner">
+      <h4>This post has pending report(s)</h4>
+      <ul>
+        {% for report in reports|json_decode(true) %}
+          <li>
+            <a href="{{ path("reports", {"dismiss": report.id}) }}" title="Dismiss" class="dismiss">&times;</a>
+            Reported by <a href="{{ path("ip/"~report.ip, true) }}">{{ report.ip }}</a>: <strong>{{ report.reason }}</strong>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro body(context, p) %}
+	{% import _self as m %}
+
 	<div class="postbody">
 		<div class="posttext">
 			{{- p.comment|raw -}}
@@ -106,6 +124,9 @@
         <div class="modinfo">
           Board: <strong>/{{ context.board|raw }}/</strong>{% if p.parent %}, thread: <strong>{{ p.parent|raw }}</strong></li>{% endif %}
         </div>
+      {% endif %}
+      {% if p.reports %}
+        {{ m.reports(p.reports) }}
       {% endif %}
 		</div>
 	</div>

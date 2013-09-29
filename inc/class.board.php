@@ -202,13 +202,14 @@ class Board {
 
 	// FIXME: This shit works by accident, not by design
 	// A huge cleanup is needed.
-	public function getIndexThreads($offset = false) {
+	public function getIndexThreads($offset = false, $admin = false) {
 		// get all threads
 		if ($offset !== false) {
 			$all_threads = getThreads(
 				$this->board,
 				$offset,
-				$this->config->threads_per_page
+				$this->config->threads_per_page,
+				$admin
 			);
 		} else {
 			$all_threads = $this->getAllThreads();
@@ -230,7 +231,8 @@ class Board {
 				$replies = latestRepliesInThreadByID(
 					$this->board,
 					$thread[0]->id,
-					$replies_shown
+					$replies_shown,
+					$admin
 				);
 
 				foreach ($replies as $reply)
@@ -325,8 +327,8 @@ class Board {
 		}
 	}
 
-	public function postsInThread($id) {
-		return postsInThreadByID($this->board, $id);
+	public function postsInThread($id, $admin = false) {
+		return postsInThreadByID($this->board, $id, $admin);
 	}
 
 	/**
