@@ -42,7 +42,13 @@ class InlineParser {
 			'format' => array('<code>', '</code>'),
 			'callback' => 'trim',
 			'children' => false
-		)
+		),
+		array(
+			'token' => array('[b]', '<b>'),
+			'close_token' => array('[/b]', '</b>'),
+			'format' => array('<strong>', '</strong>'),
+			'children' => true
+		),
 	);
 	
 	public function __construct($text) {
@@ -55,6 +61,10 @@ class InlineParser {
 	}
 	
 	protected function parse() {
+		foreach ($this->markup as &$markup) {
+			if (!isset($markup['close_token']))
+				$markup['close_token'] = $markup['token'];
+		}
 		$this->makeStack();
 		$this->makeTree();
 		$this->parsed = $this->formatTree($this->tree);
@@ -68,14 +78,15 @@ class InlineParser {
 		$this->stack = array();
 		$regex = array();
 		foreach ($this->markup as $markup) {
-			foreach ($markup['token'] as $token) {
-				$regex[] = str_replace('\+', '+', preg_quote($token, '/'));
+			for ($i = 0; $i < count($markup['token']); $i++) {
+				$regex[] = str_replace('\+', '+', preg_quote($markup['token'][$i], '/'));
+				if ($markup['close_token'][$i] !== $markup['token'][$i])
+					$regex[] = str_replace('\+', '+', preg_quote($markup['close_token'][$i], '/'));
 			}
 		}
 		usort($regex, array($this, 'sortByLength'));
 		$regex = '/(' . implode('|', $regex) . ')/';
 		$stack = preg_split($regex, $this->raw, -1, PREG_SPLIT_DELIM_CAPTURE);
-		
 		$new_stack = array();
 		$temp_stack = false;
 		foreach ($stack as $part) {
@@ -100,13 +111,13 @@ class InlineParser {
 	}
 
 	protected function isToken($tokens, $part) {
-		foreach ($tokens as $token) {
+		foreach ($tokens as $i => $token) {
 			if (strlen($token) > 1 && substr($token, -1) == '+') {
 				if (str_repeat(substr($token, 0, -1), strlen($part)) === $part)
-					return true;
+					return $i;
 			} else {
 				if ($token === $part)
-					return true;
+					return $i;
 			}
 		}
 		return false;
@@ -115,7 +126,7 @@ class InlineParser {
 	protected function isOpen($nest, $token, $check_other_tokens = false) {
 		foreach ($nest as $markup) {
 			if (!$check_other_tokens) {
-				if ($markup['real'] === $token)
+				if ($markup['close_token'] === $token)
 					return true;
 			} else {
 				if ($this->isToken($markup['token'], $token))
@@ -129,43 +140,65 @@ class InlineParser {
 		$this->tree = new InlineParseTree();
 		$current = $this->tree;
 		$nest = array();
-		
 		foreach ($this->stack as $part) {
 			$this_markup = false;
 			foreach ($this->markup as $markup) {
-				if ($this->isToken($markup['token'], $part)) {
+				if (($token_num = $this->isToken($markup['token'], $part)) !== false) {
 					$this_markup = $markup;
-					$this_markup['real'] = $part;
+					$this_markup['open_token'] = $markup['token'][$token_num];
+					$this_markup['close_token'] = $markup['close_token'][$token_num];
+					$this_markup['state'] = 'open';
 				}
+				if (($token_num = $this->isToken($markup['close_token'], $part)) !== false) {
+					$unknown_state = isset($this_markup['state']);
+					$this_markup = $markup;
+					$this_markup['open_token'] = $markup['token'][$token_num];
+					$this_markup['close_token'] = $markup['close_token'][$token_num];
+					if ($unknown_state) {
+						if ($this->isOpen($nest, $part))
+							$this_markup['state'] = 'close';
+						else
+							$this_markup['state'] = 'open';
+					} else {
+						$this_markup['state'] = 'close';
+					}
+				}
+				if ($this_markup !== false)
+					break;
 			}
 			if ($this_markup !== false) {
-				$nest_current = end($nest);
-				if ($nest_current && !$nest_current['children'] && $nest_current['real'] !== $part) {
-					// We are inside a block which doesn't accept children. Treat literally.
-					$current->add($part);
-				} elseif ($nest_current && $nest_current['real'] === $part) {
-					// Correct nesting.
-					// Move back up a layer.
-					array_pop($nest);
-					$current = $current->parent;
-				} elseif ($this->isOpen($nest, $part)) {
-					// Invalid. You're closing a tag out of order.
-					for ($x = count($nest) - 1; $x >= 0; $x--) {
-						$markup = array_pop($nest);
-						if ($markup['real'] === $part)
-							break;
-						$defunct = $current;
-						// Go back up a layer.
-						$current = $defunct->parent;
-						// Remove the invalid layer from the tree.
-						$current->pop();
-						// Move the contents of the invalid layer into its parent.
-						$current->add($markup['real']);
-						$defunct->copy_to($current);
+				if ($this_markup['state'] == 'close') {
+					$nest_current = end($nest);
+					if ($nest_current && !$nest_current['children'] && $nest_current['close_token'] !== $part) {
+						// We are inside a block which doesn't accept children. Treat literally.
+						$current->add($part);
+					} elseif ($nest_current && $nest_current['close_token'] === $part) {
+						// Correct nesting.
+						// Move back up a layer.
+						array_pop($nest);
+						$current = $current->parent;
+					} elseif ($this->isOpen($nest, $part)) {
+						// Invalid. You're closing a tag out of order.
+						for ($x = count($nest) - 1; $x >= 0; $x--) {
+							$markup = array_pop($nest);
+							if ($markup['close_token'] === $part)
+								break;
+							$defunct = $current;
+							// Go back up a layer.
+							$current = $defunct->parent;
+							// Remove the invalid layer from the tree.
+							$current->pop();
+							// Move the contents of the invalid layer into its parent.
+							$current->add($markup['open_token']);
+							$defunct->copy_to($current);
+						}
+						// Go back up a step again.
+						$current = $current->parent;
+					} else {
+						// Close tag out of nowhere.
+						$current->add($part);
 					}
-					// Go back up a step again.
-					$current = $current->parent;
-				} else {
+				} elseif ($this_markup['state'] == 'open') {
 					if ($this->isOpen($nest, $part, true)) {
 						// Already open, but with another token. Eg. "**" instead of "__'.
 						// Treat literally.
@@ -182,15 +215,17 @@ class InlineParser {
 				$current->add($part);
 			}
 		}
-			
+		
 		// If $nest is not empty at this point, then something was not closed.
 		for ($i = count($nest) - 1; $i >= 0; $i--) {
 			$defunct = $current;
 			$current = $defunct->parent;
 			$current->pop();
-			$current->add($nest[$i]['real']);
+			$current->add($nest[$i]['open_token']);
 			$defunct->copy_to($current);
 		}
+		
+		// var_dump($this->stack, $this->tree);exit;
 	}
 	
 	protected function doText($text) {		
@@ -223,9 +258,3 @@ class InlineParser {
 	}
 }
 
-/*
-function parse_inline($text) {
-	$parser = new InlineParser($text);
-	return $parser->getParsed();
-}
-*/
