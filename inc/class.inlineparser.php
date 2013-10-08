@@ -111,7 +111,7 @@ abstract class InlineParser {
 				if ($markup['close_token'] === $token)
 					return true;
 			} else {
-				if ($this->isToken($markup['token'], $token))
+				if ($this->isToken($markup['token'], $token) !== false)
 					return true;
 			}
 		}
@@ -206,8 +206,6 @@ abstract class InlineParser {
 			$current->add($nest[$i]['open_token']);
 			$defunct->copy_to($current);
 		}
-
-		// var_dump($this->stack, $this->tree);exit;
 	}
 
 	protected function doText($text) {		
