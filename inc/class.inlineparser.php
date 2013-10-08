@@ -21,37 +21,19 @@ class InlineParseTree {
 	}
 }
 
-class InlineParser {
+abstract class InlineParser {
 	protected $raw = '';
 	protected $parsed = '';
 	protected $stack = array();
 	protected $tree;
-	protected $markup = array(
-		array(
-			'token' => array('*', '_'),
-			'format' => array('<em>', '</em>'),
-			'children' => true
-		),
-		array(
-			'token' => array('**', '__'),
-			'format' => array('<strong>', '</strong>'),
-			'children' => true
-		),
-		array(
-			'token' => array('`+'),
-			'format' => array('<code>', '</code>'),
-			'callback' => 'trim',
-			'children' => false
-		),
-		array(
-			'token' => array('[b]', '<b>'),
-			'close_token' => array('[/b]', '</b>'),
-			'format' => array('<strong>', '</strong>'),
-			'children' => true
-		),
-	);
 
+	protected $markup = array();
+
+	abstract protected function defineMarkup();
+	
 	public function __construct($text) {
+		$this->defineMarkup();
+
 		$this->raw = $text;
 		$this->parse();
 	}
@@ -233,8 +215,8 @@ class InlineParser {
 
 		// TODO >>XX links
 		// TODO: Obviously this will be better in the future:
-		$text = preg_replace('@(https?://[^\s]*)@', '<a href="$1">$1</a>', $text);
-
+		$text = preg_replace('@(https?://[^\s]*)@', '<a href="$1" rel="nofollow">$1</a>', $text);
+		
 		return $text;
 	}
 
