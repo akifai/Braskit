@@ -50,7 +50,7 @@ class InlineParser {
 			'children' => true
 		),
 	);
-	
+
 	public function __construct($text) {
 		$this->raw = $text;
 		$this->parse();
@@ -59,7 +59,7 @@ class InlineParser {
 	public function getParsed() {
 		return $this->parsed;	
 	}
-	
+
 	protected function parse() {
 		foreach ($this->markup as &$markup) {
 			if (!isset($markup['close_token']))
@@ -215,7 +215,7 @@ class InlineParser {
 				$current->add($part);
 			}
 		}
-		
+
 		// If $nest is not empty at this point, then something was not closed.
 		for ($i = count($nest) - 1; $i >= 0; $i--) {
 			$defunct = $current;
@@ -224,20 +224,20 @@ class InlineParser {
 			$current->add($nest[$i]['open_token']);
 			$defunct->copy_to($current);
 		}
-		
+
 		// var_dump($this->stack, $this->tree);exit;
 	}
-	
+
 	protected function doText($text) {		
 		$text = htmlspecialchars($text);
-		
+
 		// TODO >>XX links
 		// TODO: Obviously this will be better in the future:
 		$text = preg_replace('@(https?://[^\s]*)@', '<a href="$1">$1</a>', $text);
-		
+
 		return $text;
 	}
-	
+
 	protected function formatTree($tree) {
 		$text = '';
 		foreach ($tree->nodes as $node) {
@@ -248,7 +248,7 @@ class InlineParser {
 			}
 		}
 		if ($text === '')
-			return $tree->markup['real'] . $tree->markup['real']; // Empty. Example: "****". Treat literally?
+			return $tree->markup['open_token'] . $tree->markup['close_token']; // Empty. Example: "****". Treat literally?
 		if ($tree->markup) {
 			if (isset($tree->markup['callback']))
 				$text = call_user_func($tree->markup['callback'], $text);
