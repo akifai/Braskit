@@ -153,9 +153,13 @@ class Parser_Wakabamark extends Parser {
 	 * Do parsing of inline stuff like bold and italic text.
 	 */
 	protected function parseInline($text) {
-		// TODO
-		$this->stripped .= "$text ";
-		$this->parsed .= $this->escape($text);
+		// yo dawg, parser in your parser, etc
+		$parser = new InlineParser_Wakabamark($text);
+
+		$this->parsed .= $parser->getParsed();
+
+		// TODO: this is dumb
+		$this->stripped .= strip_tags($parser->getParsed().' ');
 	}
 
 	protected function nextLine() {
@@ -320,5 +324,34 @@ class Parser_Wakabamark extends Parser {
 		}
 
 		$this->parseInline($line);
+	}
+}
+
+class InlineParser_Wakabamark extends InlineParser {
+	protected function defineMarkup() {
+		$this->markup = array(
+			array(
+				'token' => array('*', '_'),
+				'format' => array('<em>', '</em>'),
+				'children' => true
+			),
+			array(
+				'token' => array('**', '__'),
+				'format' => array('<strong>', '</strong>'),
+				'children' => true
+			),
+			array(
+				'token' => array('`+'),
+				'format' => array('<code>', '</code>'),
+				'callback' => 'trim',
+				'children' => false
+			),
+			// should we?
+			//array(
+			//	'token' => array('%%'),
+			//	'format' => array('<span class="spoiler">', '</span>'),
+			//	'children' => true,
+			//),
+		);
 	}
 }
