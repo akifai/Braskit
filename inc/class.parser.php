@@ -31,8 +31,8 @@ abstract class Parser {
 		while (($line = array_shift($this->lines)) !== null) {
 			// Loop through all the different syntax types
 			foreach ($this->syntax as $node) {
-				// end the fallback state
 				if (!$node['regex']) {
+					// end the fallback state
 					$this->{$this->endCallback}();
 
 					// no regex, do the callback
