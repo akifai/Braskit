@@ -181,6 +181,9 @@ abstract class InlineParser {
 						$current->add($part);
 					}
 				} elseif ($this_markup['state'] == 'open') {
+					if ($this_markup['open_token'] === $this_markup['close_token']) {
+						$this_markup['close_token'] = $part;
+					}
 					if ($this->isOpen($nest, $part, true)) {
 						// Already open, but with another token. Eg. "**" instead of "__'.
 						// Treat literally.
