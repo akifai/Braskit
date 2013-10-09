@@ -6,7 +6,11 @@ abstract class Parser {
 	protected $parsed = '';
 	protected $stripped = '';
 
-	abstract protected function parse();
+	// These must be defined in subclasses!
+	// See Parser_Wakabamark for an example.
+	protected $syntax = array();
+	protected $fallbackCallback = null;
+	protected $endCallback = null;
 
 	public function __construct($text) {
 		$this->raw = $text;
@@ -17,6 +21,46 @@ abstract class Parser {
 			return;
 
 		$this->parse();
+	}
+
+	protected function parse() {
+		// Split lines
+		$this->lines = preg_split('/\r?\n|\r/', $this->raw);
+
+		// Loop through all the lines
+		while (($line = array_shift($this->lines)) !== null) {
+			// Loop through all the different syntax types
+			foreach ($this->syntax as $node) {
+				// end the fallback state
+				if (!$node['regex']) {
+					$this->{$this->endCallback}();
+
+					// no regex, do the callback
+					$this->{$node['callback']}($line);
+
+					// skip to next line
+					continue 2;
+				} elseif (preg_match($node['regex'], $line, $matches)) {
+					// end the fallback state
+					$this->{$this->endCallback}();
+
+					// there was a regex and it matched the current line
+					if ($node['callback']) {
+						$this->{$node['callback']}($line, $matches);
+					}
+
+					// skip to next line
+					continue 2;
+				}
+			}
+
+			// no syntax matched, do the fallback
+			$this->{$this->fallbackCallback}($line);
+		}
+
+		$this->{$this->endCallback}();
+
+		$this->stripped = trim($this->stripped);
 	}
 
 	/**
@@ -101,53 +145,43 @@ class Parser_Wakabamark extends Parser {
 	protected $lines = array();
 	protected $inParagraph = false;
 
-	protected function parse() {
-		// Split lines
-		$this->lines = preg_split('/\r?\n|\r/', $this->raw);
+	protected $syntax = array(
+		// End of paragraph
+		array(
+			'regex' => self::RE_PARAGRAPH,
+			'callback' => false,
+		),
 
-		while (($line = array_shift($this->lines)) !== null) {
-			// End of paragraph
-			if (preg_match(self::RE_PARAGRAPH, $line)) {
-				$this->endParagraph();
-				continue;
-			}
+		// Unordered lists
+		array(
+			'regex' => self::RE_LIST_UL,
+			'callback' => 'doUnorderedList',
+		),
 
-			// Unordered lists
-			if (preg_match(self::RE_LIST_UL, $line, $matches)) {
-				$this->endParagraph();
-				$this->doUnorderedList($line, $matches[1]);
-				continue;
-			}
+		// Ordered lists
+		array(
+			'regex' => self::RE_LIST_OL,
+			'callback' => 'doOrderedList'
+		),
 
-			// Ordered lists
-			if (preg_match(self::RE_LIST_OL, $line, $matches)) {
-				$this->endParagraph();
-				$this->doOrderedList($line, $matches);
-				continue;
-			}
+		// Blockquote
+		array(
+			'regex' => self::RE_QUOTE,
+			'callback' => 'doQuote',
+		),
 
-			// Blockquote
-			if (preg_match(self::RE_QUOTE, $line)) {
-				$this->endParagraph();
-				$this->doQuote($line);
-				continue;
-			}
+		// Preformatted text
+		array(
+			'regex' => self::RE_PRETEXT,
+			'callback' => 'doPreText',
+		),
+	);
 
-			// Preformatted text
-			if (preg_match(self::RE_PRETEXT, $line, $matches)) {
-				$this->endParagraph();
-				$this->doPreText($line, $matches);
-				continue;
-			}
+	// Normal text
+	protected $fallbackCallback = 'doParagraph';
 
-			// Normal text
-			$this->doParagraph($line);
-		}
-
-		$this->endParagraph();
-
-		$this->stripped = trim($this->stripped);
-	}
+	// Close the open paragraph, if any.
+	protected $endCallback = 'endParagraph';
 
 	/**
 	 * Do parsing of inline stuff like bold and italic text.
@@ -179,8 +213,10 @@ class Parser_Wakabamark extends Parser {
 	/**
 	 * Parses unordered lists.
 	 */
-	protected function doUnorderedList($line, $token) {
+	protected function doUnorderedList($line, $matches) {
 		$this->parsed .= '<ul>';
+
+		$token = $matches[1];
 
 		// In wakaba, a new list is started if we change the bullet.
 		// We emulate this behaviour.
