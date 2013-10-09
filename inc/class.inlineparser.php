@@ -128,6 +128,7 @@ abstract class InlineParser {
 				if (($token_num = $this->isToken($markup['token'], $part)) !== false) {
 					$this_markup = $markup;
 					$this_markup['open_token'] = $markup['token'][$token_num];
+					$this_markup['real_open'] = $part;
 					$this_markup['close_token'] = $markup['close_token'][$token_num];
 					$this_markup['state'] = 'open';
 				}
@@ -137,10 +138,12 @@ abstract class InlineParser {
 					$this_markup['open_token'] = $markup['token'][$token_num];
 					$this_markup['close_token'] = $markup['close_token'][$token_num];
 					if ($unknown_state) {
-						if ($this->isOpen($nest, $part))
+						if ($this->isOpen($nest, $part)) {
 							$this_markup['state'] = 'close';
-						else
+						} else {
+							$this_markup['real_open'] = $part;
 							$this_markup['state'] = 'open';
+						}
 					} else {
 						$this_markup['state'] = 'close';
 					}
@@ -168,7 +171,7 @@ abstract class InlineParser {
 							// Remove the invalid layer from the tree.
 							$current->pop();
 							// Move the contents of the invalid layer into its parent.
-							$current->add($markup['open_token']);
+							$current->add($markup['real_open']);
 							$defunct->copy_to($current);
 						}
 						// Go back up a step again.
@@ -205,7 +208,7 @@ abstract class InlineParser {
 			$defunct = $current;
 			$current = $defunct->parent;
 			$current->pop();
-			$current->add($nest[$i]['open_token']);
+			$current->add($nest[$i]['real_open']);
 			$defunct->copy_to($current);
 		}
 	}
