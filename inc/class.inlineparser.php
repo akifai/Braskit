@@ -207,15 +207,53 @@ abstract class InlineParser {
 			$defunct->copy_to($current);
 		}
 	}
+	
+	protected function doLinks($text, $callback_for_the_bits_outside) {
+		$offset = 0;
+		$output = '';
+		
+		// Find all links
+		preg_match_all('@((?:https?://|ftp://|irc://)[^\s<>()"]+?(?:\([^\s<>()"]*?\)[^\s<>()"]*?)*)((?:\s|<|>|"|\.||\]|!|\?|,|&#44;|&quot;)*(?:[\s<>()"]|$))@u', $text, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
+		foreach ($matches as $match) {
+			// Preceding text
+			$before = substr($text, $offset, $match[0][1] - $offset);
+		
+			// Following text
+			$after = $match[2][0];
+		
+			// Apply markup to the parts outside the URL
+			if ($callback_for_the_bits_outside !== false) {
+				$before = call_user_func($callback_for_the_bits_outside, $before);
+				$after = call_user_func($callback_for_the_bits_outside, $after);
+			}
+		
+			// Build and append link
+			$output .= $before . '<a rel="new nofollow" target="_blank" href="' . htmlspecialchars($match[1][0]) . '">' .
+				htmlspecialchars($match[1][0]) . '</a>' . $after;
+		
+			// Increment offset
+			$offset = $match[0][1] + strlen($match[0][0]);
+		}
+		
+		unset($before, $after, $match);
+		
+		// Do the very last bit
+		$end = substr($text, $offset);
+		if ($callback_for_the_bits_outside !== false)
+			$end = call_user_func($callback_for_the_bits_outside, $end);
+		$output .= $end;
+		
+		return $output;
+	}
 
-	protected function doText($text) {		
+	protected function doText($text) {
 		$text = htmlspecialchars($text);
-
-		// TODO >>XX links
-		// TODO: Obviously this will be better in the future:
-		$text = preg_replace('@(https?://[^\s]*)@', '<a href="$1" rel="nofollow">$1</a>', $text);
 		
 		return $text;
+	}
+
+	protected function formatText($text) {
+		return $this->doLinks($text, array($this, 'doText'));
 	}
 
 	protected function formatTree($tree) {
@@ -224,7 +262,7 @@ abstract class InlineParser {
 			if ($node instanceof InlineParseTree) {
 				$text .= $this->formatTree($node);
 			} else {
-				$text .= $this->doText($node);
+				$text .= $this->formatText($node);
 			}
 		}
 		if ($text === '')
