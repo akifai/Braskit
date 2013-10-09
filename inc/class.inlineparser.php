@@ -149,12 +149,9 @@ abstract class InlineParser {
 					break;
 			}
 			if ($this_markup !== false) {
+				$nest_current = end($nest);
 				if ($this_markup['state'] == 'close') {
-					$nest_current = end($nest);
-					if ($nest_current && !$nest_current['children'] && $nest_current['close_token'] !== $part) {
-						// We are inside a block which doesn't accept children. Treat literally.
-						$current->add($part);
-					} elseif ($nest_current && $nest_current['close_token'] === $part) {
+					if ($nest_current && $nest_current['close_token'] === $part) {
 						// Correct nesting.
 						// Move back up a layer.
 						array_pop($nest);
@@ -184,7 +181,9 @@ abstract class InlineParser {
 					if ($this_markup['open_token'] === $this_markup['close_token']) {
 						$this_markup['close_token'] = $part;
 					}
-					if ($this->isOpen($nest, $part, true)) {
+					if ($nest_current && !$nest_current['children'] && $nest_current['close_token'] !== $part) {
+						$current->add($part);
+					} elseif ($this->isOpen($nest, $part, true)) {
 						// Already open, but with another token. Eg. "**" instead of "__'.
 						// Treat literally.
 						$current->add($part);
