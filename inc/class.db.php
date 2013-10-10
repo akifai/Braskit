@@ -39,10 +39,11 @@ class Database extends PDO {
 	}
 
 	protected function create_dsn() {
-		$this->dsn = sprintf('pgsql:dbname=%s;host=%s',
-			$this->name,
-			$this->host
-		);
+		$this->dsn = 'pgsql:dbname='.$this->name;
+
+		if ($this->host === (string)$this->host && $this->host) {
+			$this->dsn .= ';host='.$this->host;
+		}
 	}
 
 	/**
