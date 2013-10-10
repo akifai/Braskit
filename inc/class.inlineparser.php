@@ -128,6 +128,7 @@ abstract class InlineParser {
 				if (($token_num = $this->isToken($markup['token'], $part)) !== false) {
 					$this_markup = $markup;
 					$this_markup['open_token'] = $markup['token'][$token_num];
+					$this_markup['real_open'] = $part;
 					$this_markup['close_token'] = $markup['close_token'][$token_num];
 					$this_markup['state'] = 'open';
 				}
@@ -137,10 +138,12 @@ abstract class InlineParser {
 					$this_markup['open_token'] = $markup['token'][$token_num];
 					$this_markup['close_token'] = $markup['close_token'][$token_num];
 					if ($unknown_state) {
-						if ($this->isOpen($nest, $part))
+						if ($this->isOpen($nest, $part)) {
 							$this_markup['state'] = 'close';
-						else
+						} else {
+							$this_markup['real_open'] = $part;
 							$this_markup['state'] = 'open';
+						}
 					} else {
 						$this_markup['state'] = 'close';
 					}
@@ -149,12 +152,9 @@ abstract class InlineParser {
 					break;
 			}
 			if ($this_markup !== false) {
+				$nest_current = end($nest);
 				if ($this_markup['state'] == 'close') {
-					$nest_current = end($nest);
-					if ($nest_current && !$nest_current['children'] && $nest_current['close_token'] !== $part) {
-						// We are inside a block which doesn't accept children. Treat literally.
-						$current->add($part);
-					} elseif ($nest_current && $nest_current['close_token'] === $part) {
+					if ($nest_current && $nest_current['close_token'] === $part) {
 						// Correct nesting.
 						// Move back up a layer.
 						array_pop($nest);
@@ -171,7 +171,7 @@ abstract class InlineParser {
 							// Remove the invalid layer from the tree.
 							$current->pop();
 							// Move the contents of the invalid layer into its parent.
-							$current->add($markup['open_token']);
+							$current->add($markup['real_open']);
 							$defunct->copy_to($current);
 						}
 						// Go back up a step again.
@@ -181,7 +181,12 @@ abstract class InlineParser {
 						$current->add($part);
 					}
 				} elseif ($this_markup['state'] == 'open') {
-					if ($this->isOpen($nest, $part, true)) {
+					if ($this_markup['open_token'] === $this_markup['close_token']) {
+						$this_markup['close_token'] = $part;
+					}
+					if ($nest_current && !$nest_current['children'] && $nest_current['close_token'] !== $part) {
+						$current->add($part);
+					} elseif ($this->isOpen($nest, $part, true)) {
 						// Already open, but with another token. Eg. "**" instead of "__'.
 						// Treat literally.
 						$current->add($part);
@@ -203,7 +208,7 @@ abstract class InlineParser {
 			$defunct = $current;
 			$current = $defunct->parent;
 			$current->pop();
-			$current->add($nest[$i]['open_token']);
+			$current->add($nest[$i]['real_open']);
 			$defunct->copy_to($current);
 		}
 	}
