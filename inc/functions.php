@@ -618,10 +618,6 @@ function make_name_tripcode($input, $tripkey = '!') {
 	return array($name, $tripcode);
 }
 
-function make_date($timestamp) {
-	return date('y/m/d(D)H:i:s', $timestamp);
-}
-
 function writePage($filename, $contents) {
 	global $temp_dir;
 

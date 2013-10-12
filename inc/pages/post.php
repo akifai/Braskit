@@ -9,7 +9,6 @@ function post_post($url, $boardname) {
 
 	// get the time
 	$time = $_SERVER['REQUEST_TIME'];
-	$date = make_date($time);
 
 	// get the referrer
 	$referrer = isset($_SERVER['HTTP_REFERER'])
@@ -169,7 +168,6 @@ function post_post($url, $boardname) {
 	$post->subject = $subject;
 	$post->comment = $formatted_comment;
 	$post->password = $password;
-	$post->date = $date;
 	$post->time = $time;
 	$post->ip = $ip;
 	$post->file = $file->filename;
