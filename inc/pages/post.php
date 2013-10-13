@@ -62,7 +62,7 @@ function post_post($url, $boardname) {
 
 	if (!$user) {
 		// check for bans
-		checkBanned();
+		Ban::check($ip);
 
 		// check spam
 		if ($board->config->check_spam) {

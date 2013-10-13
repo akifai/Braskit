@@ -656,18 +656,6 @@ function create_ban_message($post) {
 	return $msg;
 }
 
-function checkBanned() {
-	$ban = banByIP($_SERVER['REMOTE_ADDR']);
-	if ($ban) {
-		if ($ban['expire'] == 0 || $ban['expire'] > time()) {
-			$expire = ($ban['expire'] > 0) ? ('<br>This ban will expire ' . date('y/m/d(D)H:i:s', $ban['expire'])) : '<br>This ban is permanent and will not expire.';
-			throw new HTMLException('Your IP address ' . $ban['ip'] . ' has been banned from posting on this image board.  ' . $expire);
-		} else {
-			clearExpiredBans();
-		}
-	}
-}
-
 function get_login_credentials() {
 	return array(
 		param('login_user', PARAM_DEFAULT & ~PARAM_GET),

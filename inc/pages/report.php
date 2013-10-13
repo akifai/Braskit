@@ -32,7 +32,7 @@ function report_post($url, $boardname) {
 		throw new Exception('You cannot report posts on this board.');
 
 	// We don't want banned users reporting.
-	checkBanned();
+	Ban::check($_SERVER['REMOTE_ADDR'], time());
 
 	// prevent flooding the reports
 	if ($config->seconds_between_reports) {

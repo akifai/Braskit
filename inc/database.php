@@ -280,26 +280,39 @@ function getLatestPosts($limit, $admin = false) {
 function banByID($id) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}bans WHERE id = ?");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}bans_view WHERE id = ?");
 	$sth->execute(array($id));
 
 	return $sth->fetch();
 }
 
-function banByIP($ip) {
+function bansByIP($ip) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}bans WHERE ip = ? LIMIT 1");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}bans_view WHERE ip >>= ? ORDER BY timestamp DESC");
 	$sth->execute(array($ip));
 
-	return $sth->fetch();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
+}
+
+function activeBansByIP($ip, $time) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}bans_view WHERE ip >>= :ip AND (expire IS NULL OR expire > to_timestamp(:time)) ORDER BY timestamp DESC");
+
+	$sth->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$sth->bindParam(':time', $time, PDO::PARAM_INT);
+
+	$sth->execute();
+
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
 }
 
 function allBans() {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->query("SELECT * FROM {$db_prefix}bans ORDER BY timestamp DESC");
-	return $sth->fetchAll();
+	$sth = $dbh->query("SELECT * FROM {$db_prefix}bans_view ORDER BY timestamp DESC");
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
 }
 
 function insertBan($ban) {

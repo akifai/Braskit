@@ -1,0 +1,40 @@
+{% extends _base %}
+{% import "post_macros.html" as m %}
+
+{% set title = "Banned" %}
+
+{% block content %}
+  {{ m.returnlink() }}
+
+  <div class="ban-screen">
+    <h2>Banned!</h2>
+
+    <p class="ban-message">Your IP address (<strong>{{ exception.ip }}</strong>) has been banned
+      from all boards for the following reason:
+    </p>
+
+    {% for ban in exception %}
+      {% if loop.index == 2 %}
+        <h3>Additional bans on record for your IP:</h3>
+      {% endif %}
+
+      <p class="ban-reason">
+        {% if ban.reason == "" %}
+          <em>(No reason given)</em>
+        {% else %}
+          {{ ban.reason }}
+        {% endif %}
+      </p>
+
+      <p class="ban-length">This ban will
+        {% if ban.expire %}
+          expire on {{ ban.expire }}.
+        {% else %}
+          <em>not</em> expire.
+        {% endif %}
+      </p>
+    {% endfor %}
+  </div>
+
+  <hr>
+{% endblock %}

@@ -35,17 +35,23 @@ ob_end_flush();
 //
 
 function make_error_page($e) {
-	$referrer = @$_SERVER['HTTP_REFERER'];
-
+	$referrer = getenv('HTTP_REFERER');
 	$message = $e->getMessage();
 
-	// escape HTML if applicable
-	if ($e->getCode() !== HTMLException::HTML_MESSAGE)
+	$template = 'error.html';
+
+	if ($e instanceof HTMLException) {
+		// escape HTML if applicable
 		$message = cleanString($message);
+	} elseif ($e instanceof BanException) {
+		// show the ban screen
+		$template = 'banned.html';
+	}
 
 	try {
 		// Error messages using Twig
-		echo render('error.html', array(
+		echo render($template, array(
+			'exception' => $e,
 			'message' => $message,
 			'referrer' => $referrer,
 		));

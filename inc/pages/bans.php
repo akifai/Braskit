@@ -7,7 +7,7 @@ function bans_get($url) {
 	// TODO: Pagination
 	$bans = allBans();
 
-	$ip = isset($_GET['ip']) ? $_GET['ip'] : false;
+	$ip = param('ip');
 
 	echo render('bans.html', array(
 		'admin' => true,

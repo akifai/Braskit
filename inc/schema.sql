@@ -172,6 +172,28 @@ CREATE TRIGGER /*_*/insert_post_trigger
 
 
 --
+-- Bans view
+--
+
+CREATE VIEW /*_*/bans_view AS
+    SELECT id, ip,
+            -- IP address without the CIDR
+            host(ip) AS host,
+            -- CIDR
+            masklen(ip) AS cidr,
+            -- this is an ipv6 address (boolean)
+            family(ip) <> 4 AS ipv6,
+            -- this is a range ban (boolean)
+            CASE WHEN family(ip) <> 4 THEN
+                masklen(ip) <> 128
+            ELSE
+                masklen(ip) <> 32
+            END AS range,
+            timestamp, expire, reason
+        FROM /*_*/bans;
+
+
+--
 -- Upsert for config table
 -- http://stackoverflow.com/questions/1109061/
 --
