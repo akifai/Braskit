@@ -401,7 +401,7 @@ class Board {
 	}
 
 	public function checkDuplicateImage($hex) {
-		$row = postByHex($this->board, $hex);
+		$row = postByMD5($this->board, $hex);
 
 		if ($row === false)
 			return;

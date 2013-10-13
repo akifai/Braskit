@@ -209,13 +209,17 @@ function latestRepliesInThreadByID($board, $id, $limit, $admin = false) {
 	return $posts;
 }
 
-function postByHex($board, $hex) {
+function postByMD5($board, $md5) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT id, parent FROM {$db_prefix}posts WHERE board = ? AND md5 = ? LIMIT 1");
-	$sth->execute(array($board, $hex));
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = :board AND md5 = :md5 LIMIT 1");
+	$sth->bindParam(':board', $board, PDO::PARAM_STR);
+	$sth->bindParam(':md5', $md5, PDO::PARAM_STR);
+	$sth->execute();
 
-	return $sth->fetch(PDO::FETCH_OBJ);
+	$sth->setFetchMode(PDO::FETCH_CLASS, 'Post');
+
+	return $sth->fetch();
 }
 
 function deletePostByID($board, $post) {
