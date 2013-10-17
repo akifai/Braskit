@@ -154,8 +154,7 @@ function post_post($url, $boardname) {
 	}
 
 	// check flood
-	$comment_hex = make_comment_hex($comment);
-	$board->checkFlood($time, $ip, $comment_hex, (bool)$file);
+	$board->checkFlood($time, $ip, $formatted_comment, $file->exists);
 
 	// Set up database values
 	$post = new Post($parent);
@@ -186,9 +185,6 @@ function post_post($url, $boardname) {
 
 	// Insert the post
 	$id = $board->insert($post);
-
-	// Add flood entry
-	add_flood_entry($ip, $time, $comment_hex, $parent, $file->md5);
 
 	// commit changes to database
 	$dbh->commit();

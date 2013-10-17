@@ -475,18 +475,6 @@ function unset_csrf_token() {
 // Flood stuff
 //
 
-function add_flood_entry($ip, $time, $comment_hex, $parent, $md5) {
-	$entry = array(
-		'ip' => $ip,
-		'posthash' => $comment_hex,
-		'imagehash' => $md5,
-		'time' => $time,
-		'isreply' => (bool)$parent,
-	);
-
-	insertFloodEntry($entry);
-}
-
 function make_comment_hex($str) {
 	// remove cross-board citations
 	// the numbers don't matter

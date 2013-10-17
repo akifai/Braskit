@@ -62,17 +62,6 @@ CREATE TABLE /*_*/config (
 
 CREATE INDEX ON /*_*/config (board);
 
--- FIXME: Now that all posts are stored in the same table, this table only needs
--- to store information for looking up dupes.
-CREATE TABLE /*_*/flood (
-    id serial PRIMARY KEY,
-    ip inet NOT NULL,
-    timestamp timestamp NOT NULL,
-    imagehash text,
-    posthash text,
-    isreply boolean NOT NULL
-);
-
 CREATE TABLE /*_*/reports (
     id serial PRIMARY KEY,
     postid integer NOT NULL,
