@@ -665,8 +665,9 @@ function do_login($url = false) {
 		$user = false;
 	}
 
-	if ($user !== false)
+	if ($user !== false) {
 		return $user;
+	}
 
 	if ($url !== false) {
 		diverge('/login', array('goto' => urlencode($url)));
