@@ -530,21 +530,15 @@ class Board {
 		if (!$spam->arrayMatches($values))
 			return;
 
-		// this could be more elegant
 		if (!$spam->no_ban) {
-			$ban = array();
-			$ban['ip'] = $ip;
-
-			$ban['reason'] = sprintf(
+			$ban = new BanCreate($ip);
+			$ban->setReason(sprintf(
 				$this->config->autoban_spam_message,
 				$spam->word
-			);
+			));
+			$ban->setExpire($this->config->autoban_seconds);
 
-			$ban['expire'] = ($s = $this->config->autoban_seconds)
-				? $_SERVER['REQUEST_TIME'] + $s
-				: 0;
-
-			insertBan($ban);
+			$ban->add();
 		}
 
 		throw new Exception('Spam detected.');

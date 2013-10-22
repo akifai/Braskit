@@ -315,15 +315,15 @@ function allBans() {
 	return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
 }
 
-function insertBan($ban) {
+function insertBan(Ban $ban) {
 	global $dbh, $db_prefix;
 
 	$sth = $dbh->prepare("INSERT INTO {$db_prefix}bans (ip, timestamp, expire, reason) VALUES (network(:ip), to_timestamp(:time), to_timestamp(:expire), :reason)");
 
-	$sth->bindParam(':ip', $ban['ip']);
-	$sth->bindParam(':time', $_SERVER['REQUEST_TIME']);
-	$sth->bindParam(':expire', $ban['expire']);
-	$sth->bindParam(':reason', $ban['reason']);
+	$sth->bindParam(':ip', $ban->ip);
+	$sth->bindParam(':time', $ban->timestamp);
+	$sth->bindParam(':expire', $ban->expire);
+	$sth->bindParam(':reason', $ban->reason);
 
 	$sth->execute();
 
