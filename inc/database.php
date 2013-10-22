@@ -394,10 +394,15 @@ function updateBoard($board, $new_title, $new_level) {
 // Flood
 //
 
+/**
+ * @todo Add a better way of detecting duplicate text
+ */
 function checkDuplicateText($comment_hex, $max) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}flood WHERE posthash = ? AND timestamp > to_timestamp(?)");
+	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}posts WHERE comment = :comment AND timestamp > to_timestamp(:max)");
+	$sth->bindParam(':comment', $comment, PDO::PARAM_STR);
+	$sth->bindParam(':max', $max, PDO::PARAM_INT);
 	$sth->execute(array($comment_hex, $max));
 
 	return (bool)$sth->fetchColumn();
@@ -406,8 +411,10 @@ function checkDuplicateText($comment_hex, $max) {
 function checkFlood($ip, $max) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}flood WHERE ip = ? AND timestamp > to_timestamp(?)");
-	$sth->execute(array($ip, $max));
+	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}posts WHERE ip = :ip AND timestamp > to_timestamp(:max)");
+	$sth->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$sth->bindParam(':max', $max, PDO::PARAM_INT);
+	$sth->execute();
 
 	return (bool)$sth->fetchColumn();
 }
@@ -415,27 +422,12 @@ function checkFlood($ip, $max) {
 function checkImageFlood($ip, $max) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}flood WHERE imagehash IS NOT NULL AND ip = ? AND timestamp > to_timestamp(?)");
-	$sth->execute(array($ip, $max));
+	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}posts WHERE md5 <> '' AND ip = :ip AND timestamp > to_timestamp(:max)");
+	$sth->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$sth->bindParam(':max', $max, PDO::PARAM_INT);
+	$sth->execute();
 
 	return (bool)$sth->fetchColumn();
-}
-
-function insertFloodEntry($entry) {
-	global $dbh, $db_prefix;
-
-	$entry['imagehash'] = $entry['imagehash'] ?: null;
-	$entry['posthash'] = $entry['posthash'] ?: null;
-
-	$sth = $dbh->prepare("INSERT INTO {$db_prefix}flood (ip, timestamp, imagehash, posthash, isreply) VALUES (:ip, to_timestamp(:time), :imagehash, :posthash, :isreply)");
-
-	$sth->bindParam(':ip', $entry['ip'], PDO::PARAM_STR);
-	$sth->bindParam(':time', $entry['time'], PDO::PARAM_INT);
-	$sth->bindParam(':imagehash', $entry['imagehash'], PDO::PARAM_STR);
-	$sth->bindParam(':posthash', $entry['posthash'], PDO::PARAM_STR);
-	$sth->bindParam(':isreply', $entry['isreply'], PDO::PARAM_BOOL);
-
-	$sth->execute();
 }
 
 

@@ -55,6 +55,8 @@ class User {
 
 		if (!$this->checkPassword($password))
 			throw new UserException('Invalid login.');
+
+		$this->checkSuspension();
 	}
 
 	public function __wakeup() {
@@ -63,11 +65,13 @@ class User {
 
 		// Just in case...
 		if ($this->hashed === false || $this->password === false)
-			throw new UserException('Cannot restore user session.');
+			throw new LogicException('Cannot restore user session.');
 
 		// Validate password
 		if ($this->hashed !== $this->password)
 			throw new UserException('Invalid password.');
+
+		$this->checkSuspension();
 	}
 
 	public function __toString() {
@@ -164,6 +168,12 @@ class User {
 		throw new UserException("You don't have sufficient permissions.");
 	}
 
+	protected function checkSuspension() {
+		if ($this->level < 1) {
+			throw new UserException('User account is suspended.');
+		}
+	}
+
 	/**
 	 * Loads a user account by its username.
 	 *
@@ -187,7 +197,7 @@ class User {
 	protected function checkPassword($key = false) {
 		if ($this->password === false || $this->hashtype === false) {
 			// shitty wording lol - this shouldn't happen anyway
-			throw new UserException('Password not loaded.');
+			throw new LogicException('Password not loaded.');
 		}
 
 		$hashed = $this->hash($this->hashtype, $key);
@@ -211,7 +221,7 @@ class User {
 		foreach ($values as $var) {
 			if ($this->$var === false) {
 				// false variables means something is missing
-				throw new UserException("{$var} isn't set.");
+				throw new LogicException("{$var} isn't set.");
 			}
 
 			$user[$var] = $this->$var;
@@ -268,7 +278,7 @@ class User {
 		}
 
 		// should never, ever happen
-		throw new UserException("Couldn't generate password.");
+		throw new LogicException("Couldn't generate password.");
 	}
 
 	protected static function hash_plaintext($key) {

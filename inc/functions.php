@@ -145,7 +145,7 @@ function format_post($comment, $default_comment, $cb, $raw = false) {
 		// remove excessive newlines
 		$comment = str_replace("\n\n\n", "\n\n", $comment, $count);
 	} while ($count);
-	
+
 	$lines = explode("\n", $comment);
 
 	foreach ($lines as &$line) {
@@ -380,15 +380,31 @@ define('PARAM_ARRAY', 2); // can be array
 define('PARAM_GET', 4); // can be GET value
 define('PARAM_POST', 8); // can be POST value
 define('PARAM_COOKIE', 16); // can be cookie value
-define('PARAM_STRICT', 32); // must be defined
+define('PARAM_STRICT', 32); // returns false if parameter is missing
 define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
 
-function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
-	// no flags - nothing to do
-	if (!$flags)
-		return false;
+function param($name, $flags = PARAM_DEFAULT) {
+	if (!$flags) {
+		// no flags
+		throw new LogicException('param() expects type & method flags');
+	}
 
-	$value = false;
+	if (!($flags & (PARAM_STRING | PARAM_ARRAY))) {
+		// missing type flag(s)
+		throw new LogicException('param() expects type flags');
+	}
+
+	if (!($flags & (PARAM_GET | PARAM_POST | PARAM_COOKIE))) {
+		// missing method flag(s)
+		throw new LogicException('param() expects method flags');
+	}
+
+	if ($flags & PARAM_STRICT)
+		$default = false;
+	elseif ($flags & PARAM_STRING)
+		$default = '';
+	elseif ($flags & PARAM_ARRAY)
+		$default = array();
 
 	if (($flags & PARAM_POST) && isset($_POST[$name])) {
 		// POST values
@@ -399,17 +415,9 @@ function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
 	} elseif (($flags & PARAM_COOKIE) && isset($_COOKIE[$name])) {
 		// COOKIE values
 		$value = $_COOKIE[$name];
-	}
-
-	// return empty value in non-strict mode
-	if (!($flags & PARAM_STRICT) && $value === false) {
-		// Empty string
-		if ($flags & PARAM_STRING)
-			return '';
-
-		// Empty array
-		if ($flags & PARAM_ARRAY)
-			return array();
+	} else {
+		// no parameter found
+		return $default;
 	}
 
 	// return defined string
@@ -420,7 +428,8 @@ function param($name, $flags = PARAM_DEFAULT /* string | get | post */) {
 	if (($flags & PARAM_ARRAY) && is_array($value))
 		return $value;
 
-	return false;
+	// type mismatch
+	return $default;
 }
 
 
@@ -474,18 +483,6 @@ function unset_csrf_token() {
 //
 // Flood stuff
 //
-
-function add_flood_entry($ip, $time, $comment_hex, $parent, $md5) {
-	$entry = array(
-		'ip' => $ip,
-		'posthash' => $comment_hex,
-		'imagehash' => $md5,
-		'time' => $time,
-		'isreply' => (bool)$parent,
-	);
-
-	insertFloodEntry($entry);
-}
 
 function make_comment_hex($str) {
 	// remove cross-board citations
@@ -677,8 +674,9 @@ function do_login($url = false) {
 		$user = false;
 	}
 
-	if ($user !== false)
+	if ($user !== false) {
 		return $user;
+	}
 
 	if ($url !== false) {
 		diverge('/login', array('goto' => urlencode($url)));
@@ -691,7 +689,7 @@ function do_login($url = false) {
 function get_session_login() {
 	if (isset($_SESSION['login']) && $_SESSION['login'] !== false)
 		return unserialize($_SESSION['login']);
-	
+
 	return false;
 }
 

@@ -372,14 +372,16 @@ class Board {
 		return file_exists($this->board.'/'.$filename);
 	}
 
-	public function checkFlood($time, $ip, $comment_hex, $has_file) {
+	public function checkFlood($time, $ip, $comment, $has_file) {
 		// check if images are being posted too fast
 		if ($has_file && $this->config->seconds_between_images > 0) {
 			$max = $time - $this->config->seconds_between_images;
 
-			if (checkImageFlood($ip, $max))
+			if (checkImageFlood($ip, $max)) {
 				throw new Exception('Flood detected.');
+			}
 
+			// duplicate text allowed on images
 			return;
 		}
 
@@ -387,16 +389,18 @@ class Board {
 		if ($this->config->seconds_between_posts > 0) {
 			$max = $time - $this->config->seconds_between_posts;
 
-			if (checkFlood($ip, $max))
+			if (checkFlood($ip, $max)) {
 				throw new Exception('Flood detected.');
+			}
 		}
 
 		// check for duplicate text
-		if ($comment_hex && !$this->config->allow_duplicate_text) {
+		if ($comment && !$this->config->allow_duplicate_text) {
 			$max = $time - $this->config->seconds_between_duplicate_text;
 
-			if (checkDuplicateText($comment_hex, $max))
+			if (checkDuplicateText($comment, $max)) {
 				throw new Exception('Duplicate comment detected.');
+			}
 		}
 	}
 

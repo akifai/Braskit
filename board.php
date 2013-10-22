@@ -40,8 +40,8 @@ function make_error_page($e) {
 
 	$template = 'error.html';
 
-	if ($e instanceof HTMLException) {
-		// escape HTML if applicable
+	if (!($e instanceof HTMLException)) {
+		// escape HTML
 		$message = cleanString($message);
 	} elseif ($e instanceof BanException) {
 		// show the ban screen
