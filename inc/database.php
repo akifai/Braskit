@@ -580,46 +580,48 @@ function getUserList() {
 
 	$sth = $dbh->query("SELECT username, level, lastlogin, email FROM {$db_prefix}users ORDER BY level DESC, username");
 
-	return $sth->fetchAll();
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'User');
 }
 
 function getUser($username) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}users WHERE username = ?");
-	$sth->execute(array($username));
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}users WHERE username = :username");
+	$sth->bindParam(':username', $username, PDO::PARAM_STR);
+	$sth->execute();
+
+	$sth->setFetchMode(PDO::FETCH_CLASS, 'User');
 
 	return $sth->fetch();
 }
 
-function insertUser($user) {
+function insertUser(User $user) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("INSERT INTO {$db_prefix}users (username, password, hashtype, level, email, capcode) VALUES (?, ?, ?, ?, ?, ?)");
-	$sth->execute(array($user['username'], $user['password'], $user['hashtype'], $user['level'], $user['email'], $user['capcode']));
+	$sth = $dbh->prepare("INSERT INTO {$db_prefix}users (username, password, hashtype, level, email, capcode) VALUES (:username, :password, :hashtype, :level, :email, :capcode)");
+	$sth->bindParam(':username', $user->username, PDO::PARAM_STR);
+	$sth->bindParam(':password', $user->password, PDO::PARAM_STR);
+	$sth->bindParam(':hashtype', $user->hashtype, PDO::PARAM_STR);
+	$sth->bindParam(':level', $user->level, PDO::PARAM_INT);
+	$sth->bindParam(':email', $user->email, PDO::PARAM_STR);
+	$sth->bindParam(':capcode', $user->capcode, PDO::PARAM_STR);
+
+	$sth->execute();
 }
 
-function modifyUser($user) {
+function modifyUser(User $user) {
 	global $dbh, $db_prefix;
 
-	$values = array();
-	$sqlargs = array();
+	$sth = $dbh->prepare("UPDATE {$db_prefix}users SET username = :newusername, password = :password, hashtype = :hashtype, level = :level, email = :email, capcode = :capcode WHERE username = :username");
+	$sth->bindParam(':newusername', $user->newUsername, PDO::PARAM_STR);
+	$sth->bindParam(':password', $user->password, PDO::PARAM_STR);
+	$sth->bindParam(':hashtype', $user->hashtype, PDO::PARAM_STR);
+	$sth->bindParam(':level', $user->level, PDO::PARAM_INT);
+	$sth->bindParam(':email', $user->email, PDO::PARAM_STR);
+	$sth->bindParam(':capcode', $user->capcode, PDO::PARAM_STR);
+	$sth->bindParam(':username', $user->username, PDO::PARAM_STR);
 
-	// generate argument list
-	// the array keys are not from user input and are thus safe
-	foreach ($user as $key => $value) {
-		$sqlargs[] = "$key = ?";
-		$values[] = $value;
-	}
-
-	// turn $sqlargs into string
-	$sqlargs = implode(', ', $sqlargs);
-
-	// must be last
-	$values[] = $user['username'];
-
-	$sth = $dbh->prepare("UPDATE {$db_prefix}users SET {$sqlargs} WHERE username = ?");
-	$sth->execute($values);
+	$sth->execute();
 }
 
 function deleteUser($username) {

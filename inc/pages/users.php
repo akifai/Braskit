@@ -14,7 +14,7 @@ function users_get($url, $username = false) {
 		$vars['users'] = getUserList();
 	} else {
 		$vars['editing'] = true;
-		$vars['target'] = new UserEdit($username, $user->level);
+		$vars['target'] = $user->edit($username);
 	}
 
 	echo render('users.html', $vars);
@@ -36,14 +36,14 @@ function users_post($url, $username = false) {
 		// Edit user
 		$target = $user->edit($username);
 
-		// TODO: User renaming
+		$target->setUsername($new_username);
 
 		// Set new password if it's not blank in the form
 		if ($password !== '')
-			$target->password($password);
+			$target->setPassword($password);
 
-		$target->email($email);
-		$target->level($level);
+		$target->setEmail($email);
+		$target->setLevel($level);
 	} else {
 		// Add user
 		$target = $user->create($new_username);
@@ -52,9 +52,9 @@ function users_post($url, $username = false) {
 		if ($password === '' || $password !== $password2)
 			throw new Exception('Invalid password');
 
-		$target->email($email);
-		$target->password($password);
-		$target->level($level);
+		$target->setEmail($email);
+		$target->setPassword($password);
+		$target->setLevel($level);
 	}
 
 	$target->commit();

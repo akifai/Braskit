@@ -35,7 +35,7 @@ function login_post($url) {
 
 	try {
 		// validate user/pw
-		$user = new User($username, $password);
+		$user = new UserLogin($username, $password);
 
 		// this keeps us logged in
 		$_SESSION['login'] = serialize($user);

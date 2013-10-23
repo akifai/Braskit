@@ -5,18 +5,19 @@ defined('TINYIB') or exit;
  * Usage:
  *
  *   // Check login
- *   $user = new User($username, $password);
+ *   $user = new UserLogin($username, $password);
  *
  *   // Create user
  *   $newUser = $user->create("username");
- *   $newUser->password("password");
- *   $newUser->level(9999);
+ *   $newUser->setPassword("password");
+ *   $newUser->setLevel(9999);
  *   $newUser->commit();
  *
  *   // Edit user
  *   $target = $user->edit("username");
- *   $target->password("password");
- *   $target->level(9999);
+ *   $target->setUsername("new_username");
+ *   $target->setPassword("password");
+ *   $target->setLevel(9999);
  *   $target->commit();
  *
  *   // Delete user
@@ -28,66 +29,19 @@ defined('TINYIB') or exit;
  */
 
 class User {
+	protected $changes = false;
 	protected $hashed = false;
 
-	protected $username = false;
-	protected $password = false;
-	protected $hashtype = false;
-	protected $lastlogin = 0;
-	protected $level = 0;
-	protected $email = '';
-	protected $capcode = '';
-
-	protected $magic_get_properties = array(
-		'username',
-		'lastlogin',
-		'level',
-		'email',
-		'capcode',
-	);
-
-	public function __construct($username, $password) {
-		try {
-			$this->load($username);
-		} catch (UserException $e) {
-			throw new UserException('Invalid login.');
-		}
-
-		if (!$this->checkPassword($password))
-			throw new UserException('Invalid login.');
-
-		$this->checkSuspension();
-	}
-
-	public function __wakeup() {
-		// Things might change between requests. Reload everything.
-		$this->load($this->username);
-
-		// Just in case...
-		if ($this->hashed === false || $this->password === false)
-			throw new LogicException('Cannot restore user session.');
-
-		// Validate password
-		if ($this->hashed !== $this->password)
-			throw new UserException('Invalid password.');
-
-		$this->checkSuspension();
-	}
+	public $username = false;
+	public $password = false;
+	public $hashtype = false;
+	public $lastlogin = 0;
+	public $level = 0;
+	public $email = '';
+	public $capcode = '';
 
 	public function __toString() {
 		return $this->username;
-	}
-
-	public function __isset($var) {
-		return in_array($var, $this->magic_get_properties);
-	}
-
-	public function __get($var) {
-		if ($this->__isset($var)) {
-			return $this->$var;
-		}
-
-		return null;
 	}
 
 	public function create($username) {
@@ -110,42 +64,41 @@ class User {
 
 
 	//
-	// Accessors
+	// Modifiers
 	//
 
-	protected $changes = array();
-
-	public function email($email = false) {
-		if ($email === false)
-			return $this->email;
+	public function setEmail($email) {
+		if (!strlen($email) || $email === $this->email)
+			return;
 
 		if ($email && filter_var($email, FILTER_VALIDATE_EMAIL) === false)
 			throw new UserException('Invalid email address.');
 
 		$this->email = $email;
-		$this->changes[] = 'email';
+		$this->changes = true;
 	}
 
-	public function capcode($capcode = false) {
-		if ($capcode === false)
-			return $this->capcode;
+	public function setCapcode($capcode) {
+		if (!strlen($capcode) || $capcode === $this->capcode)
+			return;
 
 		// TODO: Restrict to a subset of HTML
 
 		$this->capcode = $capcode;
-		$this->changes[] = 'capcode';
+		$this->changes = true;
 	}
 
-	public function level($level = false) {
-		if ($level === false)
-			return $this->level;
+	public function setLevel($level) {
+		if ($level == $this->level)
+			return;
 
 		$this->level = (int)$level;
-		$this->changes[] = 'level';
+		$this->changes = true;
 	}
 
-	public function password($password) {
-		// there's no reason to return the password
+	public function setPassword($password) {
+		if (!strlen($password))
+			return;
 
 		// we're going to assume this is failsafe
 		$bits = $this->generateHash($password);
@@ -153,7 +106,7 @@ class User {
 		$this->hashtype = $bits[0];
 		$this->password = $bits[1];
 
-		$this->changes[] = 'password';
+		$this->changes = true;
 	}
 
 
@@ -185,13 +138,13 @@ class User {
 		if ($row === false)
 			throw new UserException("No such user exists.");
 
-		$this->username = $row['username'];
-		$this->password = $row['password'];
-		$this->hashtype = $row['hashtype'] ?: 'plaintext';
-		$this->lastlogin = $row['lastlogin'];
-		$this->level = $row['level'];
-		$this->email = $row['email'];
-		$this->capcode = $row['capcode'];
+		$this->username = $row->username;
+		$this->password = $row->password;
+		$this->hashtype = $row->hashtype ?: 'plaintext';
+		$this->lastlogin = $row->lastlogin;
+		$this->level = $row->level;
+		$this->email = $row->email;
+		$this->capcode = $row->capcode;
 	}
 
 	protected function checkPassword($key = false) {
@@ -210,24 +163,6 @@ class User {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Create an array for passing to a database function
-	 */
-	protected function createArray(Array $values) {
-		$user = array();
-
-		foreach ($values as $var) {
-			if ($this->$var === false) {
-				// false variables means something is missing
-				throw new LogicException("{$var} isn't set.");
-			}
-
-			$user[$var] = $this->$var;
-		}
-
-		return $user;
 	}
 
 
@@ -302,13 +237,56 @@ class User {
 		// that sha256 might not always be available
 		return @hash('sha256', $key.$secret);
 	}
+
+
+	//
+	// Static API
+	//
+
+	public static function get($username) {
+		return getUser($username);
+	}
+
+	public static function getAll() {
+		return getUserList();
+	}
 }
 
-class UserNologin extends User {
+class UserLogin extends User {
+	public function __construct($username, $password) {
+		try {
+			$this->load($username);
+		} catch (UserException $e) {
+			throw new UserException('Invalid login.');
+		}
+
+		if (!$this->checkPassword($password))
+			throw new UserException('Invalid login.');
+
+		$this->checkSuspension();
+	}
+
+	public function __wakeup() {
+		// Things might change between requests. Reload everything.
+		$this->load($this->username);
+
+		// Just in case...
+		if ($this->hashed === false || $this->password === false)
+			throw new LogicException('Cannot restore user session.');
+
+		// Validate password
+		if ($this->hashed !== $this->password)
+			throw new UserException('Invalid password.');
+
+		$this->checkSuspension();
+	}
+}
+
+class UserAdmin extends User {
 	public function __construct() {}
 
 	// we always have the highest permissions
-	protected $level = 9999;
+	public $level = 9999;
 
 	// doesn't throw an exception, so it bypasses all the checks
 	protected function requireLevel($level) {}
@@ -323,18 +301,8 @@ class UserCreate extends User {
 	}
 
 	public function commit() {
-		$user = $this->createArray(array(
-			'username',
-			'password',
-			'hashtype',
-			'lastlogin',
-			'level',
-			'email',
-			'capcode',
-		));
-
 		try {
-			insertUser($user);
+			insertUser($this);
 		} catch (PDOException $e) {
 			$err = $e->getCode();
 
@@ -354,20 +322,42 @@ class UserCreate extends User {
 class UserEdit extends User {
 	protected $self_level = 0;
 
+	public $newUsername = '';
+
+	/// @todo check if we have permission to edit this user
 	public function __construct($username, $self_level) {
 		$this->load($username);
-		// TODO - check if we have permission to edit this user
+
+		$this->newUsername = $this->username;
+	}
+
+	public function setUsername($username) {
+		if (!strlen($username))
+			return;
+
+		$this->newUsername = $username;
+
+		$this->changes = true;
 	}
 
 	public function commit() {
 		if (!$this->changes)
 			return; // nothing to do
 
-		$values = array_unique($this->changes);
-		$values[] = 'username';
+		try {
+			modifyUser($this);
+		} catch (PDOException $e) {
+			$err = $e->getCode();
 
-		$user = $this->createArray($values);
-
-		modifyUser($user);
+			switch ($err) {
+			case PgError::UNIQUE_VIOLATION:
+				// Username collision
+				throw new Exception("A user with that name already exists.");
+				break;
+			default:
+				// Unknown error
+				throw $e;
+			}
+		}
 	}
 }

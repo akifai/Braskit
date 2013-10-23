@@ -105,8 +105,8 @@ function post_post($url, $boardname) {
 			$tripcode = '';
 
 		// add capcode if applicable
-		if ($capcode && $user && strlen($user->capcode()))
-			$tripcode .= ' '.$user->capcode();
+		if ($capcode && $user && strlen($user->capcode))
+			$tripcode .= ' '.$user->capcode;
 
 		if ($board->config->allow_email && length($email)) {
 			// set email address

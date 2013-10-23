@@ -32,7 +32,7 @@ function finish_get() {
 	initDatabase();
 
 	// create our user account
-	$user = new UserNologin();
+	$user = new UserAdmin();
 
 	$u = $user->create($_SESSION['installer_user']);
 	$u->password($_SESSION['installer_pass']);
