@@ -35,8 +35,8 @@ function finish_get() {
 	$user = new UserAdmin();
 
 	$u = $user->create($_SESSION['installer_user']);
-	$u->password($_SESSION['installer_pass']);
-	$u->level(9999);
+	$u->setPassword($_SESSION['installer_pass']);
+	$u->setLevel(9999);
 	$u->commit();
 
 	// if something fails, nothing is committed to the database

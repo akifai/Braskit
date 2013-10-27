@@ -38,6 +38,7 @@ class AutoLoader {
 		'ThumbImagick' => 'class.thumb.php',
 		'ThumbSips' => 'class.thumb.php',
 		'User' => 'class.user.php',
+		'UserAdmin' => 'class.user.php',
 		'UserCreate' => 'class.user.php',
 		'UserEdit' => 'class.user.php',
 		'UserException' => 'class.exception.php',
