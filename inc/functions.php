@@ -216,13 +216,19 @@ function get_url($path = false) {
 	if (isset($url))
 		return $url;
 
-	$https = getenv('HTTPS');
-	$user = getenv('PHP_AUTH_USER');
-	$pass = getenv('PHP_AUTH_PW');
-	$host = (getenv('HTTP_HOST') ?: getenv('SERVER_NAME')) ?: 'localhost';
-	$port = getenv('SERVER_PORT');
-	if ($path === false)
-		$path = getenv('REQUEST_URI');
+	$flags = PARAM_SERVER | PARAM_STRING | PARAM_STRICT;
+
+	if ($path === false) {
+		$path = param('REQUEST_URI', $flags);
+	}
+
+	$https = param('HTTPS', $flags);
+	$user = param('PHP_AUTH_USER', $flags);
+	$pass = param('PHP_AUTH_PW', $flags);
+	$host = param('HTTP_HOST', $flags)
+		?: param('SERVER_NAME', $flags)
+		?: 'localhost';
+	$port = param('SERVER_PORT', $flags);
 
 	$url = 'http';
 
@@ -380,7 +386,8 @@ define('PARAM_ARRAY', 2); // can be array
 define('PARAM_GET', 4); // can be GET value
 define('PARAM_POST', 8); // can be POST value
 define('PARAM_COOKIE', 16); // can be cookie value
-define('PARAM_STRICT', 32); // returns false if parameter is missing
+define('PARAM_SERVER', 32); // can be server var
+define('PARAM_STRICT', 64); // returns false if parameter is missing
 define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
 
 function param($name, $flags = PARAM_DEFAULT) {
@@ -394,7 +401,7 @@ function param($name, $flags = PARAM_DEFAULT) {
 		throw new LogicException('param() expects type flags');
 	}
 
-	if (!($flags & (PARAM_GET | PARAM_POST | PARAM_COOKIE))) {
+	if (!($flags & (PARAM_GET | PARAM_POST | PARAM_COOKIE | PARAM_SERVER))) {
 		// missing method flag(s)
 		throw new LogicException('param() expects method flags');
 	}
@@ -415,6 +422,9 @@ function param($name, $flags = PARAM_DEFAULT) {
 	} elseif (($flags & PARAM_COOKIE) && isset($_COOKIE[$name])) {
 		// COOKIE values
 		$value = $_COOKIE[$name];
+	} elseif (($flags & PARAM_SERVER) && isset($_SERVER[$name])) {
+		// Server variables
+		$value = $_SERVER[$name];
 	} else {
 		// no parameter found
 		return $default;

@@ -35,7 +35,9 @@ ob_end_flush();
 //
 
 function make_error_page($e) {
-	$referrer = getenv('HTTP_REFERER');
+	$flags = PARAM_STRING | PARAM_SERVER | PARAM_STRICT;
+	$referrer = param('HTTP_REFERER', $flags);
+
 	$message = $e->getMessage();
 
 	$template = 'error.html';
