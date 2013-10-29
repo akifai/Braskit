@@ -26,6 +26,7 @@ $routes = array(
 	'/login' => 'login',
 	'/logout' => 'logout',
 	'/manage' => 'manage',
+	'/reports' => 'reports',
 
 	'/bans' => 'bans',
 	'/add_ban' => 'addban',

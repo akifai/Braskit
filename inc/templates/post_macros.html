@@ -101,7 +101,7 @@
       <ul>
         {% for report in reports|json_decode(true) %}
           <li>
-            <a href="{{ path("reports", {"dismiss": report.id}) }}" title="Dismiss" class="dismiss">&times;</a>
+            <a href="{{ path("reports", {"dismiss": report.id}) }}" data-ajax="{{ apipath("reports", {"dismiss": report.id}) }}" data-handler="doReportDismissal" title="Dismiss" class="dismiss">&times;</a>
             Reported by <a href="{{ path("ip/"~report.ip, true) }}">{{ report.ip }}</a>: <strong>{{ report.reason }}</strong>
           </li>
         {% endfor %}

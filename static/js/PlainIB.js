@@ -263,6 +263,49 @@ function delformSubmit() {
     $(this).append(password);
 }
 
+function getCSRF(success) {
+    // TODO: load CSRF from ajax
+    var csrf = $('body').data('csrf');
+
+    if (csrf !== undefined) {
+        success(csrf);
+        return;
+    }
+
+    console.error('Unable to retrieve CSRF token.');
+}
+
+function doReportDismissal(event, url) {
+    var link = $(this);
+    var listItem = link.parents('li');
+    var reportList = listItem.parents('.postreports');
+
+    getCSRF(function (csrf) {
+        $.post(url, { 'csrf': csrf }, function (data) {
+            if (data.error) {
+                console.error(data.errorMsg);
+                return;
+            }
+
+            // get element to remove
+            var el = (reportList.find('li').length > 1) ? listItem : reportList;
+
+            // fade out
+            el.fadeOut({
+                done: function () {
+                    el.remove();
+                }
+            });
+
+            // change the click handler for the dismiss link
+            link.off('click').on('click', function (event) {
+                // do nothing
+                event.preventDefault();
+            });
+        }, 'json');
+    });
+}
+
 
 /*
  * AJAX dialogue boxes
@@ -291,7 +334,7 @@ function Dialogue(url, orig) {
 }
 
 Dialogue.prototype.handleError = function () {
-    console.log("Couldn't load the page for some reason.");
+    console.error('Couldn\'t load the page for some reason.');
 
     var href = this.defaultURL;
     this.destroy();
@@ -370,19 +413,15 @@ $(document).ready(function () {
 $('[data-ajax]').click(function (event) {
     event.preventDefault();
 
-    var original = $(this).attr('href');
+    var handler = $(this).data('handler');
     var loadUrl = $(this).data('ajax');
+    var original = $(this).attr('href');
 
-    new Dialogue(loadUrl, original);
+    if (handler === undefined) {
+        new Dialogue(loadUrl, original);
+    } else if (window[handler]) {
+        window[handler].apply(this, [event, loadUrl, original]);
+    }
 });
 
 $('[name=delform]').submit(delformSubmit);
-
-// Submit dummy form with CSRF token
-$('.action').click(function (event) {
-    event.preventDefault();
-
-    // Set the URL for the dummy form and submit it.
-    $('#dummy_form').attr('action', this.href);
-    $('#dummy_form').submit();
-});

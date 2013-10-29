@@ -36,3 +36,16 @@ $tasks = array(
 
 $loader = new RouteQueryString($tasks, 'installer');
 $loader->run();
+
+/// Internal redirect
+function diverge($dest, $args = array()) {
+	global $request_handler;
+
+	// missing slash
+	if (substr($dest, 0, 1) !== '/')
+		$dest = "/$goto";
+
+	redirect($request_handler::create($dest, $args));
+}
+
+

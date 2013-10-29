@@ -34,6 +34,17 @@ ob_end_flush();
 // functions specific to board.php
 //
 
+/// Internal redirect
+function diverge($dest, $args = array()) {
+	global $request_handler;
+
+	// missing slash
+	if (substr($dest, 0, 1) !== '/')
+		$dest = "/$goto";
+
+	redirect($request_handler::create($dest, $args));
+}
+
 function make_error_page($e) {
 	$flags = PARAM_STRING | PARAM_SERVER | PARAM_STRICT;
 	$referrer = param('HTTP_REFERER', $flags);

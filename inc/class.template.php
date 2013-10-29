@@ -11,6 +11,7 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 			new Twig_SimpleFunction('csrf', 'get_csrf_token'),
 			new Twig_SimpleFunction('filename', 'shorten_filename'),
 			new Twig_SimpleFunction('path', 'expand_path'),
+			new Twig_SimpleFunction('apipath', 'expand_api_path'),
 		);
 
 		return $functions;

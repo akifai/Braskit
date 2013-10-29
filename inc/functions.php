@@ -201,6 +201,10 @@ function expand_script_path($script, $dest, $vars = array()) {
 	return $url;
 }
 
+function expand_api_path($path, $vars) {
+	return expand_script_path('ajax.php', $path, $vars);
+}
+
 function get_script_name() {
 	return $_SERVER['SCRIPT_NAME'];
 }
@@ -261,17 +265,6 @@ function get_url($path = false) {
 	$url .= $path;
 
 	return $url;
-}
-
-/// Internal redirect
-function diverge($dest, $args = array()) {
-	global $request_handler;
-
-	// missing slash
-	if (substr($dest, 0, 1) !== '/')
-		$dest = "/$goto";
-
-	redirect($request_handler::create($dest, $args));
 }
 
 function redirect($url) {

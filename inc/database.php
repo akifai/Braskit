@@ -556,6 +556,21 @@ function checkReportFlood($ip, $max) {
 	return (bool)$sth->fetchColumn();
 }
 
+function dismissReports($ids) {
+	global $dbh, $db_prefix;
+
+	$dbh->beginTransaction();
+
+	$sth = $dbh->prepare("DELETE FROM {$db_prefix}reports WHERE id = :id");
+
+	foreach ($ids as $id) {
+		$sth->bindParam(':id', $id, PDO::PARAM_INT);
+		$sth->execute();
+	}
+
+	$dbh->commit();
+}
+
 
 //
 // Spam

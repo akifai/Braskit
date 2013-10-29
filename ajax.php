@@ -18,6 +18,8 @@ require('./inc/global_init.php');
 
 header('Content-Type: application/json; charset=UTF-8', true);
 
+$ajax = array('error' => false);
+
 ob_start('ob_ajax_callback');
 
 $loader = new RouteQueryString(get_routes(), 'pages');
@@ -30,6 +32,13 @@ ob_end_flush();
 //
 // functions specific to ajax.php
 //
+
+function diverge($dest, $args = array()) {
+	global $ajax;
+
+	$ajax['diverge'] = $dest;
+	$ajax['divergeArgs'] = $args;
+}
 
 function ajax_exception_handler($e) {
 	ob_end_clean();
@@ -45,5 +54,12 @@ function ajax_exception_handler($e) {
 }
 
 function ob_ajax_callback($output) {
-	return json_encode(array('page' => $output));
+	global $ajax;
+
+	$vars = array('page' => $output);
+
+	foreach ($ajax as $key => $value)
+		$vars[$key] = $value;
+
+	return json_encode($vars);
 }
