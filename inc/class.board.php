@@ -312,6 +312,7 @@ class Board {
 			$html = $this->render('page.html', array(
 				'board' => $this,
 				'maxpage' => $maxpage,
+				'static' => true,
 				'threads' => $page,
 				'pagenum' => $num,
 			));
@@ -340,6 +341,7 @@ class Board {
 		$html = $this->render('thread.html', array(
 			'board' => $this,
 			'posts' => $posts,
+			'static' => true,
 			'thread' => $id,
 		));
 
