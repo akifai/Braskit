@@ -27,12 +27,14 @@ defined('TINYIB') or exit;
  *   $file->move();
  */
 
-abstract class FileMetaData {
+class FileMetaData {
 	public $filename = '';
 	public $width = 0;
 	public $height = 0;
 	public $size = 0;
+	public $prettysize = '';
 	public $md5 = '';
+	public $shortname = '';
 	public $origname = '';
 	public $t_filename = '';
 	public $t_width = 0;
@@ -96,8 +98,18 @@ class File extends FileMetaData {
 		$this->width = $this->driver->width;
 		$this->height = $this->driver->height;
 		$this->size = $_FILES[$name]['size'];
+		$this->prettysize = make_size($this->size);
 		$this->origname = basename($_FILES[$name]['name']);
+		$this->shortname = shorten_filename($this->origname);
 		$this->md5 = md5_file($_FILES[$name]['tmp_name']);
+	}
+
+	/**
+	 * Insert the file into the database.
+	 */
+	public function insert(Post $post) {
+		if ($this->exists)
+			insertFile($this, $post);
 	}
 
 	/**

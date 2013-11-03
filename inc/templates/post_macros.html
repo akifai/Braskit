@@ -76,7 +76,7 @@
 		<em>(
 			{{- p.prettysize|raw }}, {{ p.width|raw }}x{{ p.height|raw -}}
 			{%- if context.thread and p.origname %},
-				<span title="{{ p.origname }}">{{ filename(p.origname) }}</span>
+				<span title="{{ p.origname }}">{{ p.shortname }}</span>
 			{%- endif -%}
 		)</em>
 	</div>

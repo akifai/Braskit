@@ -1,7 +1,7 @@
 <?php
 defined('TINYIB') or exit;
 
-class Post {
+class Post extends FileMetaData {
 	public $globalid = 0;
 	public $id = 0;
 	public $parent = 0;
@@ -15,16 +15,6 @@ class Post {
 	public $subject = '';
 	public $comment = '';
 	public $password = '';
-	public $file = '';
-	public $md5 = '';
-	public $origname = '';
-	public $filesize = 0;
-	public $prettysize = '';
-	public $width = 0;
-	public $height = 0;
-	public $thumb = '';
-	public $t_width = 0;
-	public $t_height = 0;
 	public $date = '';
 	public $unixtime = 0;
 	public $banned = false;

@@ -77,34 +77,23 @@ function threadExistsByID($board, $id) {
 function insertPost($post) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("INSERT INTO {$db_prefix}posts (parent, board, timestamp, lastbump, ip, name, tripcode, email, subject, comment, password, file, md5, origname, filesize, prettysize, width, height, thumb, t_width, t_height) VALUES (?, ?, to_timestamp(?), to_timestamp(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
-	$sth->execute(array(
-		$post->parent,
-		$post->board,
-		$post->time,
-		$post->time,
-		$post->ip,
-		$post->name,
-		$post->tripcode,
-		$post->email,
-		$post->subject,
-		$post->comment,
-		$post->password,
-		$post->file,
-		$post->md5,
-		$post->origname,
-		$post->size,
-		$post->prettysize,
-		$post->width,
-		$post->height,
-		$post->thumb,
-		$post->t_width,
-		$post->t_height,
-	));
+	$sth = $dbh->prepare("INSERT INTO {$db_prefix}posts (parent, board, timestamp, lastbump, ip, name, tripcode, email, subject, comment, password) VALUES (:parent, :board, to_timestamp(:timestamp), to_timestamp(:timestamp), :ip, :name, :tripcode, :email, :subject, :comment, :password) RETURNING id");
 
-	// Return the ID of the post - PDO::lastInsertID() isn't used because
-	// id doesn't (and cannot) have a sequence object!
-	return $sth->fetchColumn();
+	$sth->bindParam(':parent', $post->parent, PDO::PARAM_INT);
+	$sth->bindParam(':board', $post->board, PDO::PARAM_STR);
+	$sth->bindParam(':timestamp', $post->timestamp, PDO::PARAM_INT);
+	$sth->bindParam(':ip', $post->ip, PDO::PARAM_STR);
+	$sth->bindParam(':name', $post->name, PDO::PARAM_STR);
+	$sth->bindParam(':tripcode', $post->tripcode, PDO::PARAM_STR);
+	$sth->bindParam(':email', $post->email, PDO::PARAM_STR);
+	$sth->bindParam(':subject', $post->subject, PDO::PARAM_STR);
+	$sth->bindParam(':comment', $post->comment, PDO::PARAM_STR);
+	$sth->bindParam(':password', $post->password, PDO::PARAM_STR);
+
+	$sth->execute();
+
+	// assign the new ID to the post - all the other information is known
+	$post->id = $sth->fetchColumn();
 }
 
 function bumpThreadByID($board, $id) {
@@ -212,7 +201,7 @@ function latestRepliesInThreadByID($board, $id, $limit, $admin = false) {
 function postByMD5($board, $md5) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts WHERE board = :board AND md5 = :md5 LIMIT 1");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}posts_simple_view WHERE board = :board AND md5 = :md5 LIMIT 1");
 	$sth->bindParam(':board', $board, PDO::PARAM_STR);
 	$sth->bindParam(':md5', $md5, PDO::PARAM_STR);
 	$sth->execute();
@@ -222,34 +211,57 @@ function postByMD5($board, $md5) {
 	return $sth->fetch();
 }
 
-function deletePostByID($board, $post) {
+function deletePostByID($board, $id) {
 	global $dbh, $db_prefix;
 
-	if ($post->parent) {
-		// delete reply
-		$sth = $dbh->prepare("DELETE FROM {$db_prefix}posts WHERE board = ? AND id = ?");
-		$sth->execute(array($board, $post->id));
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}delete_post(:board, :id)");
 
-		return;
-	}
+	$sth->bindParam(':board', $board, PDO::PARAM_STR);
+	$sth->bindParam(':id', $id, PDO::PARAM_INT);
 
-	// delete thread
-	$sth = $dbh->prepare("DELETE FROM {$db_prefix}posts WHERE board = ? AND (id = ? OR parent = ?)");
-	$sth->execute(array($board, $post->id, $post->id));
-}
-
-function getOldThreads($board, $max_threads) {
-	global $dbh, $db_prefix;
-
-	if ($max_threads <= 0)
-		return array();
-
-	$sth = $dbh->prepare("SELECT id FROM {$db_prefix}posts WHERE board = :board AND parent = 0 ORDER BY lastbump DESC LIMIT :limit OFFSET 1000");
-	$sth->bindParam(':board', $board);
-	$sth->bindParam(':limit', $max_threads, PDO::PARAM_INT);
 	$sth->execute();
 
-	return $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+}
+
+function trimPostsByThreadCount($board, $max_threads) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}trim_board(:board, :offset)");
+
+	$sth->bindParam(':board', $board, PDO::PARAM_STR);
+	$sth->bindParam(':offset', $max_threads, PDO::PARAM_INT);
+
+	$sth->execute();
+
+	return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+}
+
+
+//
+// File functions
+//
+
+function insertFile(File $file, Post $post) {
+	global $dbh, $db_prefix;
+
+	$sth = $dbh->prepare("INSERT INTO {$db_prefix}files (postid, board, file, md5, origname, shortname, filesize, prettysize, width, height, thumb, t_width, t_height) VALUES (:postid, :board, :file, :md5, :origname, :shortname, :filesize, :prettysize, :width, :height, :thumb, :t_width, :t_height)");
+
+	$sth->bindParam(':postid', $post->id, PDO::PARAM_INT);
+	$sth->bindParam(':board', $post->board, PDO::PARAM_STR);
+	$sth->bindParam(':file', $file->filename);
+	$sth->bindParam(':md5', $file->md5);
+	$sth->bindParam(':origname', $file->origname);
+	$sth->bindParam(':shortname', $file->shortname);
+	$sth->bindParam(':filesize', $file->size);
+	$sth->bindParam(':prettysize', $file->prettysize);
+	$sth->bindParam(':width', $file->width);
+	$sth->bindParam(':height', $file->height);
+	$sth->bindParam(':thumb', $file->t_filename);
+	$sth->bindParam(':t_width', $file->t_width);
+	$sth->bindParam(':t_height', $file->t_height);
+
+	$sth->execute();
 }
 
 
@@ -422,7 +434,7 @@ function checkFlood($ip, $max) {
 function checkImageFlood($ip, $max) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}posts WHERE md5 <> '' AND ip = :ip AND timestamp > to_timestamp(:max)");
+	$sth = $dbh->prepare("SELECT 1 FROM {$db_prefix}posts_simple_view WHERE fileid IS NOT NULL AND ip = :ip AND timestamp > to_timestamp(:max)");
 	$sth->bindParam(':ip', $ip, PDO::PARAM_STR);
 	$sth->bindParam(':max', $max, PDO::PARAM_INT);
 	$sth->execute();

@@ -15,16 +15,33 @@ CREATE TABLE /*_*/posts (
     board text NOT NULL REFERENCES /*_*/boards(name) ON DELETE CASCADE ON UPDATE CASCADE,
     timestamp timestamp NOT NULL,
     lastbump timestamp NOT NULL,
-    ip inet NOT NULL DEFAULT '127.0.0.2',
+    ip inet,
     name text NOT NULL,
     tripcode text NOT NULL,
     email text NOT NULL,
     subject text NOT NULL,
     comment text NOT NULL,
     password text NOT NULL,
-    file text NOT NULL,
+    permasaged boolean NOT NULL DEFAULT false,
+    locked boolean NOT NULL DEFAULT false,
+    metadata json,
+    CHECK (parent = 0 OR parent < id),
+    UNIQUE (board, id)
+);
+
+CREATE INDEX ON /*_*/posts (id, board);
+CREATE INDEX ON /*_*/posts (parent);
+CREATE INDEX ON /*_*/posts (timestamp);
+CREATE INDEX ON /*_*/posts (lastbump);
+
+CREATE TABLE /*_*/files (
+    id serial PRIMARY KEY,
+    postid integer NOT NULL,
+    board text NOT NULL,
+    file text NOT NULL CHECK (file <> ''),
     md5 text NOT NULL,
     origname text NOT NULL,
+    shortname text NOT NULL,
     filesize integer NOT NULL,
     prettysize text NOT NULL,
     width integer NOT NULL,
@@ -32,15 +49,11 @@ CREATE TABLE /*_*/posts (
     thumb text NOT NULL,
     t_width integer NOT NULL,
     t_height integer NOT NULL,
-    CHECK (parent = 0 OR parent < id),
-    UNIQUE (board, id)
+    filedata json
 );
 
-CREATE INDEX ON /*_*/posts (id);
-CREATE INDEX ON /*_*/posts (parent);
-CREATE INDEX ON /*_*/posts (board);
-CREATE INDEX ON /*_*/posts (timestamp);
-CREATE INDEX ON /*_*/posts (lastbump);
+CREATE INDEX ON /*_*/files (postid, board);
+CREATE INDEX ON /*_*/files (md5);
 
 CREATE TABLE /*_*/bans (
     id serial PRIMARY KEY,
@@ -101,13 +114,19 @@ CREATE VIEW /*_*/posts_view AS
                 p.timestamp,
                 COALESCE(c.value, 'YY/MM/DD(Dy)HH24:MI')
             ) AS date,
-            EXTRACT(EPOCH FROM p.timestamp) AS unixtime
+            EXTRACT(EPOCH FROM p.timestamp) AS unixtime,
+            f.id AS fileid, f.file, f.md5, f.origname, f.shortname, f.filesize,
+            f.prettysize, f.width, f.height, f.thumb, f.t_width, f.t_height,
+            f.filedata
         FROM /*_*/posts AS p
         LEFT OUTER JOIN /*_*/config AS c
-            ON (p.board = c.board AND c.name = 'date_format');
+            ON (p.board = c.board AND c.name = 'date_format')
+        LEFT OUTER JOIN /*_*/files AS f
+            ON (p.board = f.board AND p.id = f.postid);
 
 -- Same as above, except with reports as JSON and whether or not the IP is
--- banned as a boolean value.
+-- banned as a boolean value. Nested views are apparently a bad thing, so we
+-- don't use them.
 CREATE VIEW /*_*/posts_admin AS
     SELECT p.*,
             to_char(
@@ -121,13 +140,28 @@ CREATE VIEW /*_*/posts_admin AS
                     FROM /*_*/reports AS r
                     WHERE p.id = r.postid
                         AND p.board = r.board
-            ) as reports
+            ) as reports,
+            f.id AS fileid, f.file, f.md5, f.origname, f.shortname, f.filesize,
+            f.prettysize, f.width, f.height, f.thumb, f.t_width, f.t_height,
+            f.filedata
         FROM /*_*/posts AS p
         LEFT OUTER JOIN /*_*/config AS c
             ON (p.board = c.board AND c.name = 'date_format')
         LEFT OUTER JOIN /*_*/bans AS b
             ON (b.ip >>= p.ip)
-        GROUP BY p.globalid, c.value;
+        LEFT OUTER JOIN /*_*/files AS f
+            ON (p.board = f.board AND p.id = f.postid)
+        GROUP BY p.globalid, c.value, f.id;
+
+-- Posts joined with the files table, simple as that!
+CREATE VIEW /*_*/posts_simple_view AS
+    SELECT p.*,
+            f.id AS fileid, f.file, f.md5, f.origname, f.shortname, f.filesize,
+            f.prettysize, f.width, f.height, f.thumb, f.t_width, f.t_height,
+            f.filedata
+        FROM /*_*/posts AS p
+        LEFT OUTER JOIN /*_*/files AS f
+            ON (p.board = f.board AND p.id = f.postid);
 
 
 --
@@ -158,6 +192,56 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER /*_*/insert_post_trigger
     BEFORE INSERT ON /*_*/posts
     FOR EACH ROW EXECUTE PROCEDURE /*_*/insert_post_func();
+
+
+--
+-- Post deletion
+--
+
+CREATE FUNCTION /*_*/delete_post(b TEXT, i INTEGER) RETURNS SETOF /*_*/posts_simple_view AS $$
+DECLARE
+    row RECORD;
+BEGIN
+    FOR row IN SELECT * FROM /*_*/posts_simple_view
+        WHERE board = b AND (id = i OR parent = i)
+    LOOP
+        DELETE FROM /*_*/posts WHERE globalid = row.globalid;
+        DELETE FROM /*_*/files WHERE id = row.fileid;
+
+        RETURN NEXT row;
+    END LOOP;
+
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Delete old threads at any given offset, for any given board.
+-- Returns the posts being deleted.
+CREATE FUNCTION /*_*/trim_board(b TEXT, o INTEGER) RETURNS SETOF /*_*/posts_simple_view AS $$
+DECLARE
+    row RECORD;
+BEGIN
+    FOR row IN
+        WITH RECURSIVE cte AS (
+            SELECT * FROM (
+                SELECT * FROM /*_*/posts
+                    WHERE board = b AND parent = 0
+                    ORDER BY lastbump DESC
+                    OFFSET o
+                ) AS fnord
+            UNION ALL
+                SELECT p.* FROM /*_*/posts AS p
+                    JOIN cte AS c ON (p.parent = c.id)
+            )
+        SELECT * FROM cte
+    LOOP
+        RETURN NEXT /*_*/delete_post(row.board, row.id);
+    END LOOP;
+
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;
 
 
 --

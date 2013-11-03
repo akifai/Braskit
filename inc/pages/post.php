@@ -167,28 +167,23 @@ function post_post($url, $boardname) {
 	$post->subject = $subject;
 	$post->comment = $formatted_comment;
 	$post->password = $password;
-	$post->time = $time;
+	$post->timestamp = $time;
 	$post->ip = $ip;
-	$post->file = $file->filename;
-	$post->size = $file->size;
-	$post->prettysize = $file->exists ? make_size($file->size) : '';
-	$post->md5 = $file->md5;
-	$post->origname = $file->origname;
-	$post->width = $file->width;
-	$post->height = $file->height;
-	$post->thumb = $file->t_filename;
-	$post->t_width = $file->t_width;
-	$post->t_height = $file->t_height;
 
 	// Don't commit anything to the database until we say so.
 	$dbh->beginTransaction();
 
-	// Insert the post
-	$id = $board->insert($post);
+	// Insert the post ($post gets the new ID added to it)
+	$board->insert($post);
+
+	// Insert the file
+	$file->insert($post);
 
 	// commit changes to database
 	$dbh->commit();
 
+	// at this point, we know that the post has been saved to the database,
+	// so the files won't be orphaned when we move them.
 	$file->move();
 
 	if ($parent) {
@@ -199,15 +194,15 @@ function post_post($url, $boardname) {
 		if (!$sage)
 			$board->bump($post->parent);
 
-		$dest = sprintf('res/%d.html#%d', $parent, $id);
+		$dest = sprintf('res/%d.html#%d', $parent, $post->id);
 	} else {
 		// clear old threads
 		$board->trim();
 
 		// build thread cache
-		$board->rebuildThread($id);
+		$board->rebuildThread($post->id);
 
-		$dest = sprintf('res/%d.html#%d', $id, $id);
+		$dest = sprintf('res/%d.html#%d', $post->id, $post->id);
 	}
 
 	$board->rebuildIndexes();

@@ -1,6 +1,12 @@
 <?php
 defined('TINYIB') or exit;
 
+/**
+ * @todo This thing is a huge pile of shit and needs to be redone and
+ *       reorganised. In particular, many methods here would do better in either
+ *       the Post or File classes. Quite a bit of Trevor code still remains
+ *       here; it should be rewritten.
+ */
 class Board {
 	public $title, $minlevel = 0, $config;
 	private $exists, $board;
@@ -166,21 +172,28 @@ class Board {
 	 */
 	public function delete($id) {
 		// make the parent post last
-		$posts = array_reverse($this->postsInThread($id)); 
-		$files = array();
+		$posts = deletePostByID($this->board, $id);
 
 		foreach ($posts as $post) {
-			// delete the post
-			deletePostByID($this->board, $post);
-
-			// delete files belonging to the post
-			if ($post->file)
-				$files[] = "$this/src/{$post->file}";
-			if ($post->thumb)
-				$files[] = "$this/thumb/{$post->thumb}";
-			if (!$post->parent)
-				$files[] = "$this/res/{$post->id}.html";
+			$this->deletePostFiles($post);
 		}
+	}
+
+
+	/**
+	 * Deletes the files associated with a post.
+	 */
+	public function deletePostFiles(FileMetaData $file) {
+		$files = array();
+
+		if ($file->file)
+			$files[] = "$this/src/{$file->file}";
+
+		if ($file->thumb)
+			$files[] = "$this/thumb/{$file->thumb}";
+
+		if ($file instanceof Post && !$file->parent)
+			$files[] = "$this/res/{$file->id}.html";
 
 		foreach ($files as $file) {
 			@unlink(TINYIB_ROOT.'/'.$file);
@@ -276,15 +289,21 @@ class Board {
 	}
 
 	/**
-	 * Clear old threads
+	 * Clear old posts and files.
 	 */
 	public function trim() {
-		$threads = getOldThreads($this->board, $this->config->max_threads);
+		// remove posts
+		$posts = trimPostsByThreadCount(
+			$this->board,
+			$this->config->max_threads
+		);
 
-		foreach ($threads as $thread)
-			$this->delete($thread);
+		// delete the files associated with every post
+		foreach ($posts as $post) {
+			$this->deletePostFiles($post);
+		}
 
-		return count($threads);
+		return count($posts);
 	}
 
 	/**
