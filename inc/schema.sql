@@ -198,13 +198,31 @@ CREATE TRIGGER /*_*/insert_post_trigger
 -- Post deletion
 --
 
-CREATE FUNCTION /*_*/delete_post(b TEXT, i INTEGER) RETURNS SETOF /*_*/posts_simple_view AS $$
+CREATE FUNCTION /*_*/delete_post(b TEXT, i INTEGER, p TEXT)
+    RETURNS SETOF /*_*/posts_simple_view AS $$
 DECLARE
     row RECORD;
 BEGIN
-    FOR row IN SELECT * FROM /*_*/posts_simple_view
-        WHERE board = b AND (id = i OR parent = i)
+    FOR row IN
+        SELECT * FROM /*_*/posts_simple_view
+            WHERE board = b AND (id = i OR parent = i)
+            ORDER BY id ASC -- parent posts first
     LOOP
+        -- check that the password matches. when we're deleting a thread, we
+        -- know that we have permission to delete a post when a row in the loop
+        -- has an id different from the id the function was called with.
+        IF
+            p IS NOT NULL
+            AND row.id = i
+            AND (row.password = '' OR row.password <> p)
+        THEN
+            RAISE EXCEPTION
+                'Incorrect deletion password for post % on board %', i, b
+                USING ERRCODE = 'invalid_password';
+
+            RETURN;
+        END IF;
+
         DELETE FROM /*_*/posts WHERE globalid = row.globalid;
         DELETE FROM /*_*/files WHERE id = row.fileid;
 
@@ -218,7 +236,8 @@ $$ LANGUAGE plpgsql;
 
 -- Delete old threads at any given offset, for any given board.
 -- Returns the posts being deleted.
-CREATE FUNCTION /*_*/trim_board(b TEXT, o INTEGER) RETURNS SETOF /*_*/posts_simple_view AS $$
+CREATE FUNCTION /*_*/trim_board(b TEXT, o INTEGER)
+    RETURNS SETOF /*_*/posts_simple_view AS $$
 DECLARE
     row RECORD;
 BEGIN

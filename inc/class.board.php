@@ -170,9 +170,8 @@ class Board {
 	/**
 	 * Deletes a post
 	 */
-	public function delete($id) {
-		// make the parent post last
-		$posts = deletePostByID($this->board, $id);
+	public function delete($id, $password = null) {
+		$posts = deletePostByID($this->board, $id, $password);
 
 		foreach ($posts as $post) {
 			$this->deletePostFiles($post);

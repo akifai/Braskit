@@ -211,13 +211,14 @@ function postByMD5($board, $md5) {
 	return $sth->fetch();
 }
 
-function deletePostByID($board, $id) {
+function deletePostByID($board, $id, $password = null) {
 	global $dbh, $db_prefix;
 
-	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}delete_post(:board, :id)");
+	$sth = $dbh->prepare("SELECT * FROM {$db_prefix}delete_post(:board, :id, :password)");
 
 	$sth->bindParam(':board', $board, PDO::PARAM_STR);
 	$sth->bindParam(':id', $id, PDO::PARAM_INT);
+	$sth->bindParam(':password', $password, PDO::PARAM_STR);
 
 	$sth->execute();
 

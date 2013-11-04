@@ -7,8 +7,9 @@ function delete_get($url) {
 
 function delete_post($url, $boardname) {
 	$task = param('task');
-	$posts = param('id', PARAM_DEFAULT | PARAM_ARRAY);
-	$admin_delete = param('admin');
+	$is_admin = param('admin');
+
+	$ids = param('id', PARAM_DEFAULT | PARAM_ARRAY);
 
 	// passwords from POST and cookie, respectively
 	$password = param('password', PARAM_STRING | PARAM_POST);
@@ -21,13 +22,15 @@ function delete_post($url, $boardname) {
 	// the deletion form is also used for reporting
 	if (trim(strtolower($task)) === 'report') {
 		// redirect to the report form
-		redirect($board->path('report', array('id' => $posts)));
+		redirect($board->path('report', array('id' => $ids)));
 		return;
 	}
 
-	if ($admin_delete) {
+	if ($is_admin) {
 		do_csrf($url);
 		$user = do_login();
+
+		$password = null;
 	} elseif ($password === '' || $password !== $cookie_pw) {
 		// the passwords were either blank or not equal
 		throw new Exception('Incorrect password for deletion.');
@@ -35,69 +38,77 @@ function delete_post($url, $boardname) {
 
 	// Most delete actions will take place from the user delete form, which
 	// sends post IDs as id[].
-	if (!is_array($posts)) {
-		$posts = array($posts);
+	if (!is_array($ids)) {
+		$ids = array($ids);
 	} else {
-		$posts = array_unique($posts);
-		sort($posts);
+		$ids = array_unique($ids);
+		sort($ids);
 	}
 
 	// Where to redirect after deleting
 	$nexttask = $user ? param('goto') : false;
 
 	// Nothing to do
-	if (!$posts && $nexttask) {
+	if (!$ids && $nexttask) {
 		diverge($nexttask);
 		return;
-	} elseif (!$posts) {
+	} elseif (!$ids) {
 		redirect($board->path('index.html'));
 		return;
 	}
 
+	$deleted_posts = array();
 	$rebuild_queue = array();
-	$deleted_threads = array();
-
 	$error = false;
 
-	foreach ($posts as $id) {
-		$post = $board->getPost($id);
-
-		// Skip non-existent posts
-		if ($post === false)
-			continue;
-
-		// Skip if parent is deleted
-		if (array_key_exists($post->parent, $deleted_threads))
-			continue;
-
-		// Check password
-		if (!$user && $post->password !== $password) {
-			$error = true;
+	foreach ($ids as $id) {
+		if (isset($deleted_posts[$id])) {
+			// Skip if post was deleted
 			continue;
 		}
 
-		$board->delete($id);
+		try {
+			// try deleting the post
+			$posts = $board->delete($id, $password);
 
-		// Collect parents so we can rebuild or delete them
-		if ($post->parent)
-			$rebuild_queue[$post->parent] = true;
-		else
-			$deleted_threads[$id] = true;
+			foreach ($posts as $post) {
+				// mark post id as deleted
+				$deleted_posts[$post->id] = true;
+
+				if ($post->parent) {
+					// Collect threads to be rebuilt
+					$rebuild_queue[$post->parent] = true;
+				}
+			}
+		} catch (PDOException $e) {
+			$err = $e->getCode();
+
+			if ($err === PgError::INVALID_PASSWORD) {
+				// invalid password
+				$error = true;
+			} else {
+				throw $err;
+			}
+		}
 	}
 
 	// Rebuild threads
-	foreach ($rebuild_queue as $id)
+	foreach ($rebuild_queue as $id) {
 		$board->rebuildThread($id);
+	}
 
 	// Rebuild indexes
 	$board->rebuildIndexes();
 
 	// Show an error if any posts had the incorrect password.
-	if ($error)
+	if ($error) {
 		throw new Exception('Incorrect password for deletion.');
+	}
 
-	if ($nexttask)
+	if ($nexttask) {
 		diverge($nexttask);
-	else
-		redirect($board->path('index.html', (bool)$user));
+		return;
+	}
+
+	redirect($board->path('index.html', (bool)$user));
 }
