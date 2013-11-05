@@ -23,17 +23,12 @@ $routes = array(
 	"/$board_re/rebuild" => 'rebuild',
 
 	// Mod global actions
+	'/bans' => 'bans',
+	'/config' => 'config',
 	'/login' => 'login',
 	'/logout' => 'logout',
 	'/manage' => 'manage',
 	'/reports' => 'reports',
-
-	'/bans' => 'bans',
-	'/add_ban' => 'addban',
-	"/lift_ban(?:/$num_re)?" => 'liftban',
-	"/edit_ban/$num_re" => 'editban',
-
-	'/config' => 'config',
 
 	'/create_board' => 'create_board',
 	'/users(?:/(\w+))?' => 'users',

@@ -4,7 +4,7 @@
 {% block content %}
 	<div class="postarea">
     <section id="add-ban">
-      <form action="{{ path("add_ban", true) }}" method="post" class="">
+      <form action="{{ path("bans", true) }}" method="post" class="">
         <input type="hidden" name="csrf" value="{{ csrf() }}">
         <fieldset>
           <legend>Add ban</legend>
@@ -39,7 +39,7 @@
 	</div>
 	{% if bans %}
     <section id="bans">
-      <form action="{{ path("liftban", true) }}" method="post">
+      <form action="{{ path("bans", true) }}" method="post">
         <table class="modlist">
           <thead>
             <tr>
@@ -58,8 +58,7 @@
                 <td class="minimal">{{ ban.expire }}</td>
                 <td>{{ ban.reason }}</td>
                 {# XXX #}
-                <td class="minimal action"><a href="{{ path("lift_ban/"~ban.id, true) }}">Lift</a></td>
-                <td class="minimal action"><a href="{{ path("edit_ban/"~ban.id, true) }}">Edit</a></td>
+                <td class="minimal action"><a href="{{ path("bans", { lift: ban.id }) }}">Lift</a></td>
               </tr>
             {% endfor %}
           </tbody>

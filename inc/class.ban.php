@@ -42,6 +42,15 @@ class Ban {
 
 		throw $e;
 	}
+
+	/**
+	 * Deletes a ban by its ID.
+	 *
+	 * @returns boolean Whether or not a ban was removed.
+	 */
+	public static function delete($id) {
+		return deleteBanByID($id);
+	}
 }
 
 class BanCreate extends Ban {
