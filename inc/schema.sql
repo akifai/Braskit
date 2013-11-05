@@ -255,7 +255,7 @@ BEGIN
             )
         SELECT * FROM cte
     LOOP
-        RETURN NEXT /*_*/delete_post(row.board, row.id);
+        RETURN QUERY SELECT * FROM /*_*/delete_post(row.board, row.id, NULL);
     END LOOP;
 
     RETURN;
