@@ -2,70 +2,103 @@
 {% set title = "Bans" %}
 
 {% block content %}
-	<div class="postarea">
-    <section id="add-ban">
-      <form action="{{ path("bans", true) }}" method="post" class="">
-        <input type="hidden" name="csrf" value="{{ csrf() }}">
-        <fieldset>
-          <legend>Add ban</legend>
-            <div class="control-group">
-              <label class="control-label" for="ip">IP address</label>
-              <div class="controls">
-                <input type="text" name="ip" id="ip" size="22" tabindex="1"{% if ip %} value="{{ ip }}"{% endif %}>
-                <input type="submit" value="Add" tabindex="4">
-              </div>
-            </div>
+  <div class="theader">{{ title }}</div>
 
-            <tr>
-              <th><label for="reason">Reason</label></th>
-              <td><textarea name="reason" id="reason" rows="4" cols="30" tabindex="2"{% if ip %} class="focus_onload"{% endif %}></textarea></td>
+  <form action="{{ path("bans", true) }}" method="post" class="banform">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+    <table>
+      <tbody>
+        <tr>
+          <th><label for="ip">IP address</label></th>
+          <td>
+            <input type="text" name="ip" id="ip" size="22" tabindex="1" value="{{ ip }}">
+            <input type="submit" value="Add" tabindex="4">
+          </td>
+        </tr>
+
+        <tr>
+          <th><label for="reason">Reason</label></th>
+          <td><textarea name="reason" id="reason" rows="4" cols="30" tabindex="2"{% if ip %} class="focus_onload"{% endif %}></textarea></td>
+        </tr>
+
+        <tr>
+          <th><label for="expire">Length</label></th>
+          <td>
+            <select name="expire" id="expire" tabindex="3">
+              <option value="0" selected>Infinite</option>
+              <option value="259200">3 days</option>
+              <option value="604800">1 week</option>
+              <option value="2592000">1 month</option>
+              <option value="31536000">1 year</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  {% if bans %}
+    <hr>
+
+    <form action="{{ path("bans", true) }}" method="post" class="bantable">
+      <input type="hidden" name="csrf" value="{{ csrf() }}">
+      <table>
+        <thead>
+          <tr>
+            <th class="minimal">{# Checkbox #}</th>
+            <th class="minimal">IP address</th>
+            <th class="minimal">CIDR</th>
+            <th class="minimal">Time set</th>
+            <th class="minimal">Expires at</th>
+            <th>Reason</th>
+            <th class="minimal">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for ban in bans %}
+            {% set classes = [] %}
+
+            {% if not loop.index % 2 %}
+              {% set classes = classes|merge(["alt"]) %}
+            {% endif %}
+
+            {% if ban.range %}
+              {% set classes = classes|merge(["range"]) %}
+            {% endif %}
+
+            <tr{% if classes %} class="{{ classes|join(" ") }}"{% endif %}>
+              {# Checkbox #}
+              <td class="minimal"><input type="checkbox" name="lift[]" id="ban{{ ban.id }}" value="{{ ban.id }}"></td>
+
+              {# IP address #}
+              <td class="minimal"><label for="ban{{ ban.id }}">{{ ban.host }}</label></td>
+
+              {# CIDR #}
+              <td class="minimal">{% if ban.range %}{{ ban.cidr }}{% endif %}</td>
+
+              {# Time set #}
+              <td class="minimal">{{ ban.timestamp }}</td>
+
+              {# Expires at #}
+              <td class="minimal">{{ ban.expires }}</td>
+
+              {# Reason #}
+              <td>{{ ban.reason }}</td>
+
+              {# Action #}
+              <td class="minimal"><a href="{{ path("bans", { lift: ban.id }) }}">Lift</a></td>
             </tr>
-            <tr>
-              <th><label for="expire">Length</label></th>
-              <td>
-                <select name="expire" id="expire" tabindex="3">
-                  <option value="0" selected>Infinite</option>
-                  <option value="259200">3 days</option>
-                  <option value="604800">1 week</option>
-                  <option value="2592000">1 month</option>
-                  <option value="31536000">1 year</option>
-                </select>
-              </td>
-            </tr>
-          </tbody></table>
-        </fieldset>
-      </form>
-    </section>
-	</div>
-	{% if bans %}
-    <section id="bans">
-      <form action="{{ path("bans", true) }}" method="post">
-        <table class="modlist">
-          <thead>
-            <tr>
-              <th class="minimal"></th>
-              <th class="minimal">IP address</th>
-              <th class="minimal">Expires</th>
-              <th>Reason</th>
-              <th class="minimal" colspan="2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for ban in bans %}
-              <tr>
-                <th class="minimal"><input type="checkbox" name="ban[]" id="ban{{ ban.id }}" value="{{ ban.id }}"></th>
-                <td class="minimal"><label for="ban{{ ban.id }}">{{ ban.ip }}</label></td>
-                <td class="minimal">{{ ban.expire }}</td>
-                <td>{{ ban.reason }}</td>
-                {# XXX #}
-                <td class="minimal action"><a href="{{ path("bans", { lift: ban.id }) }}">Lift</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <p><input type="submit" value="Lift"></p>
-      </form>
-    </section>
-	{% endif %}
-	<hr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="buttons">
+        <input type="submit" value="Lift">
+      </div>
+    </form>
+  {% endif %}
+
+  <hr>
 {% endblock %}

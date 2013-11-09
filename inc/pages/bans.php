@@ -41,8 +41,8 @@ function bans_post($url) {
 	// lifting bans
 	$lifts = param('lift', PARAM_DEFAULT | PARAM_ARRAY);
 
-	if (!is_array($lifts)) {
-		$bans = array($lifts);
+	if ($lifts && !is_array($lifts)) {
+		$lifts = array($lifts);
 	}
 
 	foreach ($lifts as $id) {

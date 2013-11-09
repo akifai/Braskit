@@ -87,7 +87,8 @@ body {
 	text-align: left;
 }
 
-.postarea {
+.postarea,
+.banform {
 	display: table; /* why doesn't inline-block work? */
 	margin: 0px auto;
 
@@ -369,7 +370,7 @@ a:hover {
 	margin: 1em 0 0;
 }
 
-.configform, .usertable {
+.configform, .usertable, .bantable {
 	display: table;
 	margin: 0 auto;
 
@@ -377,18 +378,27 @@ a:hover {
 		margin: 1em 0;
 		text-align: center;
 	}
+
 	label {
 		cursor: pointer;
 	}
+
 	th {
 		background: @blockBackground;
 		text-align: left;
 	}
+
 	.alt {
 		@darkColour: saturate(lighten(@background, 2%), 5%);
 		@lightColour: desaturate(darken(@background, 2%), 50%);
 		background: contrast(@background, @lightColour, @darkColour);
 	}
+
+	.minimal {
+		white-space: nowrap;
+		width: 1%;
+	}
+
 	.description {
 		font-family: sans-serif;
 		font-size: smaller;
