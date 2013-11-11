@@ -55,7 +55,7 @@ function make_error_page($e) {
 
 	if (!($e instanceof HTMLException)) {
 		// escape HTML
-		$message = cleanString($message);
+		$message = Parser::escape($message);
 	} elseif ($e instanceof BanException) {
 		// show the ban screen
 		$template = 'banned.html';

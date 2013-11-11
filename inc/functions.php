@@ -125,50 +125,6 @@ function empty_cache() {
 }
 
 
-
-// Simple formatting
-function format_post($comment, $default_comment, $cb, $raw = false) {
-	$comment = preg_replace('/\r?\n|\r/', "\n", $comment);
-	$comment = trim($comment);
-
-	// set default comment
-	if ($comment === '') {
-		$comment = $default_comment;
-		$raw = true;
-	}
-
-	// raw HTML - nothing to do
-	if ($raw)
-		return $comment;
-
-	do {
-		// remove excessive newlines
-		$comment = str_replace("\n\n\n", "\n\n", $comment, $count);
-	} while ($count);
-
-	$lines = explode("\n", $comment);
-
-	foreach ($lines as &$line) {
-		$line = trim($line);
-		$line = cleanString($line);
-
-		// do >>1 references
-		$line = preg_replace_callback('/&gt;&gt;(\d+)/', $cb, $line);
-
-		// "greentexting"
-		if (strpos($line, '&gt;') === 0)
-			$line = '<span class="unkfunc">'.$line.'</span>';
-	}
-
-	$comment = implode("<br>", $lines);
-
-	return $comment;
-}
-
-function cleanString($str) {
-	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-}
-
 function expand_path($filename, $internal = false) {
 	global $request_handler;
 

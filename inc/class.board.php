@@ -8,6 +8,8 @@ defined('TINYIB') or exit;
  *       here; it should be rewritten.
  */
 class Board {
+	const BOARD_RE = '[A-Za-z0-9]+';
+
 	public $title, $minlevel = 0, $config;
 	private $exists, $board;
 
@@ -17,7 +19,7 @@ class Board {
 			throw new Exception('Board name cannot be blank.');
 
 		// Check for invalid characters
-		if (!preg_match('/^[A-Za-z0-9]+$/', $board))
+		if (!preg_match('/^'.self::BOARD_RE.'$/', $board))
 			throw new Exception('Board name contains invalid characters.');
 	}
 
@@ -514,35 +516,61 @@ class Board {
 	/**
 	 * Returns a link to a specific post
 	 */
-	public function linkToPost(Post $row, $quote = false, $admin = false) {
+	public function linkToPost(Post $post, $quote = false, $admin = false) {
 		$link = sprintf('res/%d.html#%s%d',
-			$row->parent ?: $row->id,
+			$post->parent ?: $post->id,
 			$quote ? 'i' : '',
-			$row->id
+			$post->id
 		);
 
 		return $this->path($link, $admin);
 	}
 
 	/**
-	 * Callback for formatting a post
-	 * Use like this: array($board, 'formatPostRef')
+	 * Parser modifier for linkifying citations.
 	 */
-	public function formatPostRef($match) {
-		$row = postByID($this->board, $match[1]);
+	public function linkifyCitations(&$text) {
+		$callable = array($this, 'formatPostRef');
 
-		if ($row === false)
-			return $match[0]; // post does not exist
+		$text = preg_replace_callback(
+			// $1: &gt;/BOARD_NAME/
+			// $2: BOARD_NAME
+			// $3: post id
+			'@&gt;&gt;(&gt;/('.self::BOARD_RE.')/)?(\d+)@',
+			$callable,
+			$text
+		);
+	}
 
-		$thread = $row->parent ?: $row->id;
+	protected function formatPostRef($matches) {
+		if (isset($matches[2]) && $matches[2] !== '') {
+			// >>>/board/123
+			try {
+				$board = new Board($matches[2], true, false);
+			} catch (Exception $e) {
+				// board doesn't exist or something - ignore it
+				return $matches[0];
+			}
+		} elseif ($matches[3] > 0) {
+			// >>123
+			$board = $this;
+		}
 
-		// this doesn't really belong in this class, but whatever
-		$url = $this->path(sprintf('res/%d.html#%d', $thread, $row->id));
+		$post = $board->getPost($matches[3]);
 
-		$html = sprintf('<a href="%s" class="postref">&gt;&gt;%s</a>',
-			$url, $row->id);
+		if ($post === false) {
+			// post does not exist
+			return $matches[0];
+		}
 
-		return $html;
+		$url = $board->linkToPost($post);
+
+		return sprintf(
+			'<a href="%s" class="postref">&gt;&gt;%s%s</a>',
+			Parser::escape($url),
+			$matches[1],
+			$post->id
+		);
 	}
 
 	public function checkSpam($ip, $values) {

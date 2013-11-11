@@ -57,9 +57,6 @@ function post_post($url, $boardname) {
 	// check if we're logged in
 	$user = do_login();
 
-	// This callable gets run to handle board-specific post formatting crap
-	$format_cb = array($board, 'formatPostRef');
-
 	if (!$user) {
 		// check for bans
 		Ban::check($ip);
@@ -73,13 +70,21 @@ function post_post($url, $boardname) {
 		$raw = false;
 	}
 
-	// format the comment
-	$formatted_comment = format_post(
-		$comment,
-		$board->config->default_comment,
-		$format_cb,
-		$raw
-	);
+	// This callable gets run to handle board-specific post formatting crap
+	$format_cb = array($board, 'linkifyCitations');
+
+	if (!$raw) {
+		// format the comment
+		$parser = new Parser_Wakabamark($comment, array($format_cb));
+		$formatted_comment = $parser->parsed;
+	} else {
+		$formatted_comment = Parser::normaliseInput($comment);
+	}
+
+	if (!strlen($formatted_comment)) {
+		$comment = $board->config->default_comment;
+		$formatted_comment = $board->config->default_comment;
+	}
 
 	if (!$user && $board->config->forced_anon) {
 		// nothing to do here
@@ -98,7 +103,7 @@ function post_post($url, $boardname) {
 		if ($name === false)
 			$name = $board->config->default_name;
 		else
-			$name = cleanString($name);
+			$name = Parser::escape($name);
 
 		// remove tripcodes unless they're allowed
 		if (!$user && !$board->config->allow_tripcodes)
@@ -110,7 +115,7 @@ function post_post($url, $boardname) {
 
 		if ($board->config->allow_email && length($email)) {
 			// set email address
-			$email = 'mailto:'.cleanString($email);
+			$email = 'mailto:'.Parser::escape($email);
 
 			// check for sage
 			if ($board->config->allow_sage)
@@ -126,7 +131,7 @@ function post_post($url, $boardname) {
 	if (!length($subject))
 		$subject = $board->config->default_subject;
 	else
-		$subject = cleanString($subject);
+		$subject = Parser::escape($subject);
 
 	// set password if none is defined
 	if ($password === '') {
