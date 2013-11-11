@@ -15,6 +15,8 @@ if (PHP_SAPI === 'cli' && !defined('TINYIB'))
 
 defined('TINYIB') or exit;
 
+ignore_user_abort(true);
+
 // sessions
 if (!defined('TINYIB_NO_SESSIONS') || TINYIB_NO_SESSIONS) {
 	session_name('TINYIB');

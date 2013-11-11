@@ -26,7 +26,6 @@ function edit_board_post($url, $boardname) {
 	$board->editSettings($title, $minlevel);
 
 	set_time_limit(0);
-	ignore_user_abort(true);
 
 	if ($name !== '' && $name !== (string)$board) {
 		$board->rename($name);
