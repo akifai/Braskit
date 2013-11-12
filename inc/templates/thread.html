@@ -9,7 +9,7 @@
 	<div class="theader">Posting mode: Reply</div>
   {% include "postform.html" %}
 	<hr>
-	<form action="{{ self }}{{ board.path("delete", true) }}" method="post" name="delform">
+	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
     <input type="hidden" name="admin" value="{{ admin ? "on" : "" }}">
 		{% if admin %}
