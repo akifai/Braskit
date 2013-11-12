@@ -504,11 +504,11 @@ abstract class InlineParser extends Parser {
 
 	protected function isToken($tokens, $part) {
 		foreach ($tokens as $i => $token) {
-			if (
-				strlen($token) > 1 && substr($token, -1) === '+' &&
-				str_repeat(substr($token, 0, -1), strlen($part)) === $part ||
-				$token === $part
-			) {
+			if (strlen($token) > 1 && substr($token, -1) == '+') {
+				if (str_repeat(substr($token, 0, -1), strlen($part)) === $part) {
+					return $i;
+				}
+			} elseif ($token === $part) {
 				return $i;
 			}
 		}
@@ -518,8 +518,10 @@ abstract class InlineParser extends Parser {
 
 	protected function isOpen($nest, $token, $check_other_tokens = false) {
 		foreach ($nest as $markup) {
-			if (!$check_other_tokens && $markup['close_token'] === $token) {
-				return true;
+			if (!$check_other_tokens) {
+				if ($markup['close_token'] === $token) {
+					return true;
+				}
 			} elseif ($this->isToken($markup['token'], $token) !== false) {
 				return true;
 			}
