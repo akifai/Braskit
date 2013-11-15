@@ -87,7 +87,7 @@ function delete_post($url, $boardname) {
 				// invalid password
 				$error = true;
 			} else {
-				throw $err;
+				throw $e;
 			}
 		}
 	}
