@@ -6,7 +6,7 @@ abstract class View {
 	 *
 	 * @var string
 	 */
-	public $requestBody = '';
+	public $responseBody = '';
 
 	/**
 	 * @todo Avoid superglobals.
@@ -23,7 +23,7 @@ abstract class View {
 			$this->methodNotAllowed();
 		}
 
-		$this->requestBody = call_user_func_array($method, $router->matches);
+		$this->responseBody = call_user_func_array($method, $router->matches);
 	}
 
 	private function methodNotAllowed() {

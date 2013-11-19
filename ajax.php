@@ -26,7 +26,7 @@ $path = new Path_QueryString();
 $router = new Router_Main($path->get());
 
 $view = new $router->view($router);
-echo $view->requestBody;
+echo $view->responseBody;
 
 // print buffer
 ob_end_flush();

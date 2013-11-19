@@ -25,7 +25,7 @@ $path = new Path_QueryString();
 $router = new Router_Install($path->get());
 
 $view = new $router->view($router);
-echo $view->requestBody;
+echo $view->responseBody;
 
 /// Internal redirect
 function diverge($dest, $args = array()) {
