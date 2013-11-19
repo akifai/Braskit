@@ -126,11 +126,10 @@ function empty_cache() {
 
 
 function expand_path($filename, $internal = false) {
-	global $request_handler;
+	global $path; // TODO
 
 	if ($internal) {
-		return get_script_name().
-			$request_handler::create("/$filename", $internal);
+		return get_script_name().$path->create("/$filename", $internal);
 	}
 
 	$dirname = dirname(get_script_name());

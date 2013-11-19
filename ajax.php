@@ -22,8 +22,11 @@ $ajax = array('error' => false);
 
 ob_start('ob_ajax_callback');
 
-$loader = new RouteQueryString(get_routes(), 'pages');
-$loader->run();
+$path = new Path_QueryString();
+$router = new Router_Main($path->get());
+
+$view = new $router->view($router);
+echo $view->requestBody;
 
 // print buffer
 ob_end_flush();

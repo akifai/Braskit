@@ -1,8 +1,4 @@
 <?php
-defined('TINYIB') or exit;
-
-require_once 'inc/lib/Twig/Autoloader.php';
-Twig_Autoloader::register();
 
 class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {

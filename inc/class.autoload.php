@@ -1,9 +1,19 @@
 <?php
-defined('TINYIB') or exit;
 
 class AutoLoader {
-	protected static $classes = array(
-		'App' => 'class.app.php',
+	public static function register() {
+		require_once('inc/lib/Twig/Autoloader.php');
+		Twig_Autoloader::register();
+
+		spl_autoload_register(array(new self, 'autoload'));
+	}
+
+	protected $prefixes = array(
+		'View' => 'views/',
+		'View_Install' => 'installer/',
+	);
+
+	protected $classes = array(
 		'Ban' => 'class.ban.php',
 		'BanCreate' => 'class.ban.php',
 		'Board' => 'class.board.php',
@@ -24,17 +34,19 @@ class AutoLoader {
 		'JSMinPlus' => 'lib/jsminplus/jsminplus.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',
 		'lessc_fixed' => 'class.less.php',
-		'Parser' => 'class.parser.php',
 		'Parser_Block' => 'class.parser.php',
 		'Parser_Inline' => 'class.parser.php',
 		'Parser_Wakabamark' => 'class.parser.php',
 		'Parser_Inline_Wakabamark' => 'class.parser.php',
+		'Path' => 'class.router.php',
+		'Path_QueryString' => 'class.router.php',
 		'PgError' => 'class.pgerror.php',
 		'PlainIB_Twig_Extension' => 'class.template.php',
 		'PlainIB_Twig_Loader' => 'class.template.php',
 		'Post' => 'class.post.php',
-		'RoutePathInfo' => 'class.app.php',
-		'RouteQueryString' => 'class.app.php',
+		'Router' => 'class.router.php',
+		'Router_Install' => 'class.router.php',
+		'Router_Main' => 'class.router.php',
 		'Spam' => 'class.spam.php',
 		'Style' => 'class.less.php',
 		'Thumb' => 'class.thumb.php',
@@ -49,18 +61,29 @@ class AutoLoader {
 		'UserException' => 'class.exception.php',
 		'UserLogin' => 'class.user.php',
 		'UserNologin' => 'class.user.php',
+		'View' => 'class.view.php',
 	);
 
-	public static function autoload($class) {
-		if (!isset(self::$classes[$class]))
-			return;
+	protected function autoload($class) {
+		if (isset($this->classes[$class])) {
+			require(TINYIB_ROOT.'/inc/'.$this->classes[$class]);
 
-		$filename = TINYIB_ROOT.'/inc/'.self::$classes[$class];
+			return true;
+		}
 
-		require($filename);
+		$pos = strrpos($class, '_');
 
-		return true;
+		if ($pos !== false) {
+			$prefix = substr($class, 0, $pos);
+
+			if (isset($this->prefixes[$prefix])) {
+				$bit = $this->prefixes[$prefix];
+				$file = strtolower(substr($class, $pos + 1));
+
+				require(TINYIB_ROOT.'/inc/'.$bit.$file.'.php');
+
+				return true;
+			}
+		}
 	}
 }
-
-spl_autoload_register('AutoLoader::autoload');

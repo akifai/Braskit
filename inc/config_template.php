@@ -85,10 +85,6 @@ $temp_dir = sys_get_temp_dir();
 # enable debug mode - this will slow the board down considerably, but help with
 # debugging and development
 $debug = false;
-
-# Class to use for handling requests. ("RouteQueryString" / "RoutePathInfo")
-# This will affect how dynamic URLs look like.
-$request_handler = 'RouteQueryString';
 <?php
 	$output = ob_get_contents();
 	ob_end_clean();

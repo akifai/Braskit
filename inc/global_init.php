@@ -29,7 +29,8 @@ date_default_timezone_set('Europe/Berlin');
 define('TINYIB_ROOT', realpath(dirname(__FILE__).'/..'));
 
 // Load classes automagically
-require(TINYIB_ROOT.'/inc/autoload.php');
+require(TINYIB_ROOT.'/inc/class.autoload.php');
+AutoLoader::register();
 
 // Misc functions
 require(TINYIB_ROOT.'/inc/functions.php');
@@ -68,7 +69,6 @@ define('DEBUG_ALL', ~0);
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// temporary config variables needed for the installer
-	$request_handler = 'RouteQueryString';
 	$temp_dir = sys_get_temp_dir();
 	$cache_dir = $temp_dir.'/plainib-cache';
 

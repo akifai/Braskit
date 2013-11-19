@@ -23,8 +23,11 @@ header('Content-Type: text/html; charset=UTF-8', true);
 // start buffering
 ob_start('ob_callback');
 
-$loader = new $request_handler(get_routes(), 'pages');
-$loader->run();
+$path = new Path_QueryString();
+$router = new Router_Main($path->get());
+
+$view = new $router->view($router);
+echo $view->requestBody;
 
 // print buffer
 ob_end_flush();
@@ -36,13 +39,13 @@ ob_end_flush();
 
 /// Internal redirect
 function diverge($dest, $args = array()) {
-	global $request_handler;
+	global $path; // TODO
 
 	// missing slash
 	if (substr($dest, 0, 1) !== '/')
 		$dest = "/$goto";
 
-	redirect($request_handler::create($dest, $args));
+	redirect($path->create($dest, $args));
 }
 
 function make_error_page($e) {
