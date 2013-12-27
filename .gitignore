@@ -1,6 +1,7 @@
 ## Environmental stuff
 .DS_Store
 thumbs.db
+._*
 *~
 *.swp
 *.bak
