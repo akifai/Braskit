@@ -44,6 +44,7 @@ class AutoLoader {
 		'PgError' => 'class.pgerror.php',
 		'PlainIB_Twig_Extension' => 'class.template.php',
 		'PlainIB_Twig_Loader' => 'class.template.php',
+		'Pimple' => 'lib/Pimple/Pimple.php',
 		'Post' => 'class.post.php',
 		'Router' => 'class.router.php',
 		'Router_Install' => 'class.router.php',
