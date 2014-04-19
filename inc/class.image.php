@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 class Image extends FileDriver {
 	public static function detect($filename) {

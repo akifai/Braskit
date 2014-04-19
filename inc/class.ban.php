@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 class Ban {
 	public $id = null;

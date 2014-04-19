@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 /**
   * @todo: __unset()/toggling the default value and the SQL-stored one

@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 /**
  * @todo Writing spam definitions and other stuff.

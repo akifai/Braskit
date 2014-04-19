@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 /**
  * PostgreSQL error constants.

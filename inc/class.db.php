@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 class Database extends PDO {
 	public static $time = 0;

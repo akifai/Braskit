@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 /**
  * @todo This thing is a huge pile of shit and needs to be redone and

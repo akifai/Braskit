@@ -1,5 +1,4 @@
 <?php
-defined('TINYIB') or exit;
 
 class Post extends FileMetaData {
 	public $globalid = 0;
