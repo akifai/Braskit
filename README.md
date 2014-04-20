@@ -11,8 +11,10 @@ production use. Contributors are welcome.**
 
 * Some webserver
 * PHP >= 5.3
-* PostgreSQL >= 9.1
+* PostgreSQL >= 9.2
 * GD (library) or Imagemagick (CLI/library)
+
+MySQL will not work. Period. Don't even try.
 
 ## Project goal
 
@@ -26,10 +28,13 @@ request with details about your changes.
 
 ## Licence/copyrights
 
-All of PlainIB is licenced under the GNU GPL version 3.
+All of PlainIB is licensed under the GNU GPL version 3. PlainIB also makes use
+of many third-party libraries, all of which are licensed under various BSD-style
+licences:
 
 * [Bootstrap](http://twitter.github.io/bootstrap/)
 * [jQuery](http://jquery.com/); https://jquery.org/license/
 * [JSMin+](http://crisp.tweakblogs.net/blog/cat/716)
 * [lessphp](http://leafo.net/lessphp/)
+* [Pimple](http://pimple.sensiolabs.org/)
 * [Twig](http://twig.sensiolabs.org/)
