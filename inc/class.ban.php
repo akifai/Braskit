@@ -15,7 +15,9 @@ class Ban {
 	public $post;
 
 	public static function getByID($id) {
-		return banByID($id);
+		global $db;
+
+		return $db->banByID($id);
 	}
 
 	/**
@@ -24,10 +26,12 @@ class Ban {
 	 * @throws BanException if the IP is banned
 	 */
 	public static function check($ip, $time = false) {
+		global $db;
+
 		if ($time === false)
 			$time = time();
 
-		$bans = activeBansByIP($ip, $time);
+		$bans = $db->activeBansByIP($ip, $time);
 
 		if (!$bans) {
 			// not banned
@@ -48,7 +52,9 @@ class Ban {
 	 * @returns boolean Whether or not a ban was removed.
 	 */
 	public static function delete($id) {
-		return deleteBanByID($id);
+		global $db;
+
+		return $db->deleteBanByID($id);
 	}
 }
 
@@ -109,9 +115,11 @@ class BanCreate extends Ban {
 	}
 
 	public function add($update = false) {
+		global $db;
+
 		try {
 			// add the ban to the database
-			$this->id = insertBan($this);
+			$this->id = $db->insertBan($this);
 		} catch (PDOException $e) {
 			// that failed for some reason - get the error code
 			$errcode = $e->getCode();

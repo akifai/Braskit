@@ -2,7 +2,7 @@
 
 class View_Post extends View {
 	protected function post($url, $boardname) {
-		global $dbh;
+		global $db, $dbh;
 
 		// get the ip
 		$ip = $_SERVER['REMOTE_ADDR'];
@@ -51,7 +51,7 @@ class View_Post extends View {
 		$board = new Board($boardname);
 
 		// check if thread exists
-		if ($parent && !threadExistsByID($board, $parent))
+		if ($parent && !$db->threadExistsByID($board, $parent))
 			throw new Exception('The specified thread does not exist.');
 
 		// check if we're logged in

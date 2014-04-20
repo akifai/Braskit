@@ -96,12 +96,12 @@ function ob_callback($buffer) {
 	$newbuf = substr($buffer, 0, $ins);
 
 	$total_time = microtime(true) - $start_time;
-	$query_time = round(100 / $total_time * Database::$time);
+	$query_time = round(100 / $total_time * DBConnection::$time);
 
 	// Append debug text
 	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
 	' of which %d%% was spent running %d database queries.',
-		$total_time, $query_time, Database::$queries);
+		$total_time, $query_time, DBConnection::$queries);
 
 	// the rest of the buffer
 	$newbuf .= substr($buffer, $ins);

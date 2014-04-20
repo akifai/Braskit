@@ -2,6 +2,8 @@
 
 class View_Users extends View {
 	protected function get($url, $username = false) {
+		global $db;
+
 		$user = do_login($url);
 
 		$vars = array(
@@ -11,7 +13,7 @@ class View_Users extends View {
 		);
 
 		if ($username === false) {
-			$vars['users'] = getUserList();
+			$vars['users'] = $db->getUserList();
 		} else {
 			$vars['editing'] = true;
 			$vars['target'] = $user->edit($username);

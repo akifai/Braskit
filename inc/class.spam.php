@@ -82,7 +82,9 @@ class Spam {
 	 * Retrieve the spam definitions
 	 */
 	protected function loadDefinitions($defs) {
-		$row = getLatestSpamRules();
+		global $db;
+
+		$row = $db->getLatestSpamRules();
 
 		if ($row === false)
 			return;

@@ -2,6 +2,8 @@
 
 class View_Bans extends View {
 	protected function get($url) {
+		global $db;
+
 		$user = do_login($url);
 
 		if (param('ip') || param('lift', PARAM_DEFAULT | PARAM_ARRAY)) {
@@ -10,7 +12,7 @@ class View_Bans extends View {
 		}
 
 		// TODO: Pagination
-		$bans = allBans();
+		$bans = $db->allBans();
 
 		$ip = param('ip');
 

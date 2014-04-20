@@ -2,16 +2,16 @@
 
 class View_Manage extends View {
 	protected function get($url) {
-		global $config;
+		global $config, $db;
 
 		$user = do_login($url);
 
 		$boards = array();
-		foreach (getAllBoards() as $board)
+		foreach ($db->getAllBoards() as $board)
 			$boards[$board['name']] = new Board($board['name']);
 
 		// gets the latest posts from all boards
-		$posts = getLatestPosts($config->latest_posts_count, true);
+		$posts = $db->getLatestPosts($config->latest_posts_count, true);
 
 		// give each post a board object
 		foreach ($posts as &$post)

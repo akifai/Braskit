@@ -23,6 +23,8 @@ class View_Report extends View {
 	}
 
 	protected function post($url, $boardname) {
+		global $db;
+
 		do_csrf($url);
 
 		$board = new Board($boardname);
@@ -38,7 +40,7 @@ class View_Report extends View {
 		if ($config->seconds_between_reports) {
 			$threshold = time() - $config->seconds_between_reports;
 
-			if (checkReportFlood($_SERVER['REMOTE_ADDR'], $threshold)) {
+			if ($db->checkReportFlood($_SERVER['REMOTE_ADDR'], $threshold)) {
 				throw new Exception('You are reporting too fast!');
 			}
 		}

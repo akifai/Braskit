@@ -92,8 +92,9 @@ if ($debug === 1 || $debug === true)
 if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
 	return;
 
-// Database code
-require_once(TINYIB_ROOT.'/inc/database.php');
+// establish database connection
+$dbh = new DBConnection($db_name, $db_host, $db_username, $db_password);
+$db = new Database($dbh, $db_prefix);
 
 // Site configuration
 $config = new GlobalConfig();

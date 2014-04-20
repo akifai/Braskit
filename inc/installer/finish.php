@@ -22,14 +22,15 @@ class View_Install_Finish extends View {
 			throw new Exception('Fuck off.');
 
 		// connect to database
-		require_once(TINYIB_ROOT.'/inc/database.php');
+		$dbh = new DBConnection($db_name, $db_host, $db_username, $db_password);
+		$db = new Database($dbh, $db_prefix);
 
 		// lazy hack: globalise the variables which are supposed to be global
 		$GLOBALS += get_defined_vars();
 
 		$dbh->beginTransaction();
 
-		initDatabase();
+		$db->initDatabase();
 
 		// create our user account
 		$user = new UserAdmin();

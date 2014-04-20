@@ -83,6 +83,8 @@ abstract class Config implements Iterator {
 
 	// we don't use __destruct() because it can't handle thrown exceptions
 	public function save() {
+		global $db;
+
 		// no changes made
 		if (!$this->changes && !$this->deletions)
 			return;
@@ -95,12 +97,12 @@ abstract class Config implements Iterator {
 		foreach ($this->changes as $key)
 			$values[$key] = $this->config[$key]['value'];
 
-		saveConfig($this->db_key, $values);
+		$db->saveConfig($this->db_key, $values);
 
 		$this->changes = array();
 
 		// do deletions
-		deleteConfigKeys($this->db_key, $this->deletions);
+		$db->deleteConfigKeys($this->db_key, $this->deletions);
 
 		$this->deletions = array();
 	}
@@ -124,8 +126,10 @@ abstract class Config implements Iterator {
 	}
 
 	protected function loadSQLConfig() {
+		global $db;
+
 		// get config from sql
-		$config = loadConfig($this->db_key);
+		$config = $db->loadConfig($this->db_key);
 
 		if (!is_array($config))
 			return;
