@@ -7,124 +7,6 @@ function get_routes() {
 	return $routes;
 }
 
-//
-// Caching
-//
-
-// TODO
-define('TINYIB_CACHE', ini_get('apc.enabled') ? 'apc' : 'php');
-
-function get_cache($key) {
-	global $cache_dir, $debug;
-
-	// debug mode - don't get cache
-	if ($debug & DEBUG_CACHE)
-		return false;
-
-	// APC
-	if (TINYIB_CACHE === 'apc')
-		return apc_fetch($key);
-
-	// Plain PHP cache
-	if (TINYIB_CACHE === 'php') {
-		$filename = "$cache_dir/cache-{$key}.php";
-
-		@include($filename);
-
-		// we couldn't load the cache
-		if (!isset($cache) || $expired) {
-			@unlink($filename);
-			return false;
-		}
-
-		return $cache;
-	}
-
-	// unknown cache type
-	return false;
-}
-
-function set_cache($key, $data, $ttl = 0) {
-	global $cache_dir, $debug;
-
-	// debug mode - don't save cache
-	if ($debug & DEBUG_CACHE)
-		return true;
-
-	// APC
-	if (TINYIB_CACHE === 'apc')
-		return apc_add($key, $data, $ttl);
-
-	// Plain PHP cache
-	if (TINYIB_CACHE === 'php') {
-		@mkdir('cache'); // FIXME
-
-		// Content of the cache file
-		$content = '<?php ';
-
-		if ($ttl) {
-			$eol = time() + $ttl; // end of life for cache
-			$content .= sprintf('$expired = time() > %d;', $eol);
-		} else {
-			// the cache never expires
-			$content .= '$expired = false;';
-		}
-
-		$dumped_data = var_export($data, true);
-		$content .= sprintf('$cache = %s;', $dumped_data);
-
-		writePage("$cache_dir/cache-$key.php", $content);
-		return true;
-	}
-
-	// unknown cache type
-	return false;
-}
-
-function delete_cache($key) {
-	global $cache_dir, $debug;
-
-	// debug mode - don't delete cache
-	if ($debug & DEBUG_CACHE)
-		return true;
-
-	// APC
-	if (TINYIB_CACHE === 'apc')
-		return apc_delete($key);
-
-	// Plain PHP cache
-	if (TINYIB_CACHE === 'php')
-		return @unlink("$cache_dir/cache-$key.php");
-
-	// it's gone
-	return true;
-}
-
-function empty_cache() {
-	global $cache_dir;
-
-	// APC
-	if (TINYIB_CACHE === 'apc')
-		return apc_clear_cache('user');
-
-	// Plain PHP cache
-	if (TINYIB_CACHE === 'php') {
-		// get list of cache files
-		$files = glob("$cache_dir/cache-*.php");
-
-		// that didn't work for some reason
-		if (!is_array($files))
-			return false;
-
-		foreach ($files as $file)
-			unlink($file);
-	}
-
-	// unknown cache type
-	return false;
-}
-
-
 function expand_path($filename, $internal = false) {
 	global $path; // TODO
 
@@ -273,7 +155,7 @@ function render($template, $args = array(), $twig = null) {
  * @return string Path to combined JavaScript file
  */
 function get_js() {
-	global $javascript_includes;
+	global $cache, $javascript_includes;
 	static $static_cache;
 
 	// load from static var cache
@@ -281,10 +163,10 @@ function get_js() {
 		return $web_path;
 
 	// try loading from persistent cache
-	$cache = get_cache('js_cache');
+	$data = $cache->get('js_cache');
 
-	if ($cache !== false)
-		return $cache;
+	if ($data !== false)
+		return $data;
 
 	// output path
 	$path = 'static/js/cache-'.time().'.js';
@@ -321,7 +203,7 @@ function get_js() {
 
 	$web_path = expand_path($path);
 
-	set_cache('js_cache', $web_path);
+	$cache->set('js_cache', $web_path);
 
 	return $web_path;
 }

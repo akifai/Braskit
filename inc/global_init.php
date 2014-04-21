@@ -90,6 +90,15 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 if ($debug === 1 || $debug === true)
 	$debug = DEBUG_ALL;
 
+// Cache - TODO
+if ($debug & DEBUG_CACHE) {
+	$cache = new Cache_Debug();
+} elseif (ini_get('apc.enabled') && extension_loaded('apc')) {
+	$cache = new Cache_APC();
+} else {
+	$cache = new Cache_PHP();
+}
+
 // Don't connect to database or load config from database
 if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
 	return;

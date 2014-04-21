@@ -19,15 +19,18 @@ class Style {
 	 * @return Style
 	 */
 	public static function getObject() {
-		$cache = get_cache(self::CACHE_KEY);
+		global $cache;
 
-		if ($cache)
-			return $cache;
+		$obj = $cache->get(self::CACHE_KEY);
+
+		if ($obj) {
+			return $obj;
+		}
 
 		$obj = new self;
 		$obj->transformPaths();
 
-		set_cache(self::CACHE_KEY, $obj);
+		$cache->set(self::CACHE_KEY, $obj);
 
 		return $obj;
 	}

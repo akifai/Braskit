@@ -15,6 +15,14 @@ class Request {
 	public $method = false;
 
 	public function __construct() {
+		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+			// available since php 5.4
+			$this->microtime = $_SERVER['REQUEST_TIME_FLOAT'];
+		} else {
+			// we lose accuracy, but it's a fair compromise
+			$this->microtime = microtime(true);
+		}
+
 		$this->get = $_GET;
 		$this->post = $_POST;
 		$this->cookie = $_COOKIE;
@@ -30,14 +38,6 @@ class Request {
 
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			$this->referrer = $_SERVER['HTTP_REFERER'];
-		}
-
-		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-			// available since php 5.4
-			$this->microtime = $_SERVER['REQUEST_TIME_FLOAT'];
-		} else {
-			// we lose accuracy, but it's a fair compromise
-			$this->microtime = microtime(true);
 		}
 
 		if (isset($_SERVER['REQUEST_METHOD'])) {

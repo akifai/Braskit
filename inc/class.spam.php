@@ -62,20 +62,26 @@ class Spam {
 	//
 
 	protected function loadFromCache() {
-		$cache = get_cache($this->cache_key);
+		global $cache;
 
-		if ($cache === false)
+		$regex = $cache->get($this->cache_key);
+
+		if ($regex === false)
 			return;
 
-		$this->regex = $cache;
+		$this->regex = $regex;
 	}
 
 	protected function clearCache() {
-		delete_cache($this->cache_key);
+		global $cache;
+
+		$cache->delete($this->cache_key);
 	}
 
 	protected function saveToCache() {
-		set_cache($this->cache_key, $this->regex);
+		global $cache;
+
+		$cache->set($this->cache_key, $this->regex);
 	}
 
 	/**

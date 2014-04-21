@@ -83,14 +83,14 @@ abstract class Config implements Iterator {
 
 	// we don't use __destruct() because it can't handle thrown exceptions
 	public function save() {
-		global $db;
+		global $cache, $db;
 
 		// no changes made
 		if (!$this->changes && !$this->deletions)
 			return;
 
 		// cache will be regenerated on next instance
-		delete_cache($this->cache_key);
+		$cache->delete($this->cache_key);
 
 		// make an assoc array with the updated values
 		$values = array();
@@ -148,11 +148,13 @@ abstract class Config implements Iterator {
 	}
 
 	protected function loadFromCache() {
-		$cache = get_cache($this->cache_key);
+		global $cache;
 
-		if (is_array($cache)) {
-			$this->config = $cache['config'];
-			$this->keys = $cache['keys'];
+		$config = $cache->get($this->cache_key);
+
+		if (is_array($config)) {
+			$this->config = $config['config'];
+			$this->keys = $config['keys'];
 
 			return true;
 		}
@@ -161,9 +163,11 @@ abstract class Config implements Iterator {
 	}
 
 	protected function saveToCache() {
-		$cache = array('keys' => $this->keys, 'config' => $this->config);
+		global $cache;
 
-		set_cache($this->cache_key, $cache);
+		$data = array('keys' => $this->keys, 'config' => $this->config);
+
+		$cache->set($this->cache_key, $data);
 	}
 
 
