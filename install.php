@@ -21,7 +21,7 @@ if (file_exists(TINYIB_ROOT.'/config.php') && !isset($_SESSION['installer'])) {
 
 $_SESSION['installer'] = true;
 
-$path = new Path_QueryString();
+$path = new Path_QueryString($request);
 $router = new Router_Install($path->get());
 
 $view = new $router->view($router);

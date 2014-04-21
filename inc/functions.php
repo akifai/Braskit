@@ -161,7 +161,9 @@ function expand_api_path($path, $vars) {
 }
 
 function get_script_name() {
-	return $_SERVER['SCRIPT_NAME'];
+	global $request;
+
+	return $request->server['SCRIPT_NAME'];
 }
 
 
@@ -339,6 +341,8 @@ define('PARAM_STRICT', 64); // returns false if parameter is missing
 define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
 
 function param($name, $flags = PARAM_DEFAULT) {
+	global $request;
+
 	if (!$flags) {
 		// no flags
 		throw new LogicException('param() expects type & method flags');
@@ -361,18 +365,18 @@ function param($name, $flags = PARAM_DEFAULT) {
 	elseif ($flags & PARAM_ARRAY)
 		$default = array();
 
-	if (($flags & PARAM_POST) && isset($_POST[$name])) {
+	if (($flags & PARAM_POST) && isset($request->post[$name])) {
 		// POST values
-		$value = $_POST[$name];
-	} elseif (($flags & PARAM_GET) && isset($_GET[$name])) {
+		$value = $request->post[$name];
+	} elseif (($flags & PARAM_GET) && isset($request->get[$name])) {
 		// GET values
-		$value = $_GET[$name];
-	} elseif (($flags & PARAM_COOKIE) && isset($_COOKIE[$name])) {
+		$value = $request->get[$name];
+	} elseif (($flags & PARAM_COOKIE) && isset($request->cookie[$name])) {
 		// COOKIE values
-		$value = $_COOKIE[$name];
-	} elseif (($flags & PARAM_SERVER) && isset($_SERVER[$name])) {
+		$value = $request->cookie[$name];
+	} elseif (($flags & PARAM_SERVER) && isset($request->server[$name])) {
 		// Server variables
-		$value = $_SERVER[$name];
+		$value = $request->server[$name];
 	} else {
 		// no parameter found
 		return $default;
@@ -396,8 +400,10 @@ function param($name, $flags = PARAM_DEFAULT) {
 //
 
 function do_csrf($url = false) {
+	global $request;
+
 	// Only POST requests can validate our CSRF token
-	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	if ($request->method === 'POST') {
 		if (check_csrf())
 			return; // success
 
@@ -406,9 +412,9 @@ function do_csrf($url = false) {
 
 	// this is a GET request - display a confirmation
 	echo render('csrf.html', array(
-		'display_url' => $url ?: $_SERVER['REQUEST_URI'],
+		'display_url' => $url ?: $request->server['REQUEST_URI'],
 		'token' => get_csrf_token(),
-		'url' => $_SERVER['REQUEST_URI'],
+		'url' => $request->server['REQUEST_URI'],
 	));
 
 	exit;

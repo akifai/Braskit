@@ -22,7 +22,7 @@ $ajax = array('error' => false);
 
 ob_start('ob_ajax_callback');
 
-$path = new Path_QueryString();
+$path = new Path_QueryString($request);
 $router = new Router_Main($path->get());
 
 $view = new $router->view($router);

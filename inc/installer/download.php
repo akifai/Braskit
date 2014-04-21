@@ -2,6 +2,8 @@
 
 class View_Install_Download extends View {
 	protected function get($url) {
+		global $request;
+
 		if (!isset($_SESSION['install_config'])) {
 			$flags = PARAM_STRING | PARAM_SERVER | PARAM_STRICT;
 			$https = (bool)param('HTTPS', $flags);
@@ -14,7 +16,7 @@ class View_Install_Download extends View {
 			printf("[<a href=\"%s\">Click</a>]<br>\n\n", get_script_name());
 			printf("Go to http%s://%s%s to start the installation.\n",
 				$https ? 's' : '',
-				$_SERVER['SERVER_NAME'],
+				$request->server['SERVER_NAME'],
 				get_script_name());
 
 			return;

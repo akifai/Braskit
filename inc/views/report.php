@@ -23,7 +23,7 @@ class View_Report extends View {
 	}
 
 	protected function post($url, $boardname) {
-		global $db;
+		global $db, $request;
 
 		do_csrf($url);
 
@@ -34,13 +34,13 @@ class View_Report extends View {
 			throw new Exception('You cannot report posts on this board.');
 
 		// We don't want banned users reporting.
-		Ban::check($_SERVER['REMOTE_ADDR'], time());
+		Ban::check($request->ip, time());
 
 		// prevent flooding the reports
 		if ($config->seconds_between_reports) {
 			$threshold = time() - $config->seconds_between_reports;
 
-			if ($db->checkReportFlood($_SERVER['REMOTE_ADDR'], $threshold)) {
+			if ($db->checkReportFlood($request->ip, $threshold)) {
 				throw new Exception('You are reporting too fast!');
 			}
 		}
@@ -48,7 +48,7 @@ class View_Report extends View {
 		$posts = get_ids($board);
 		$reason = param('reason');
 
-		$board->report($posts, $_SERVER['REMOTE_ADDR'], $reason);
+		$board->report($posts, $request->ip, $reason);
 
 		// TODO: Confirmation message
 		redirect($board->path(''));

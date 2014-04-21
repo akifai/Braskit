@@ -9,14 +9,16 @@ abstract class View {
 	public $responseBody = '';
 
 	/**
-	 * @todo Avoid superglobals.
+	 * @todo Avoid globals.
 	 */
 	public function __construct(Router $router) {
-		if (!isset($_SERVER['REQUEST_METHOD'])) {
+		global $request;
+
+		if (!$request->method) {
 			throw new LogicException('View executed outside of HTTP context.');
 		}
 
-		$verb = $_SERVER['REQUEST_METHOD'] === 'POST' ? 'post' : 'get';
+		$verb = $request->method === 'POST' ? 'post' : 'get';
 		$method = array($this, $verb);
 
 		if (!is_callable($method)) {

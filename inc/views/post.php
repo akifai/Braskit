@@ -2,18 +2,16 @@
 
 class View_Post extends View {
 	protected function post($url, $boardname) {
-		global $db, $dbh;
+		global $db, $dbh, $request;
 
 		// get the ip
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = $request->ip;
 
 		// get the time
-		$time = $_SERVER['REQUEST_TIME'];
+		$time = $request->time;
 
 		// get the referrer
-		$referrer = isset($_SERVER['HTTP_REFERER'])
-			? $_SERVER['HTTP_REFERER']
-			: false;
+		$referrer = $request->referrer;
 
 		// set default param flags; don't accept GET values
 		$flags = PARAM_DEFAULT & ~PARAM_GET;

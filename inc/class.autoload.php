@@ -47,6 +47,7 @@ class AutoLoader {
 		'PlainIB_Twig_Loader' => 'class.template.php',
 		'Pimple' => 'lib/Pimple/Pimple.php',
 		'Post' => 'class.post.php',
+		'Request' => 'class.request.php',
 		'Router' => 'class.router.php',
 		'Router_Install' => 'class.router.php',
 		'Router_Main' => 'class.router.php',

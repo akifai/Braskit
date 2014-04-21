@@ -23,7 +23,7 @@ header('Content-Type: text/html; charset=UTF-8', true);
 // start buffering
 ob_start('ob_callback');
 
-$path = new Path_QueryString();
+$path = new Path_QueryString($request);
 $router = new Router_Main($path->get());
 
 $view = new $router->view($router);

@@ -147,9 +147,7 @@ abstract class Path {
 	abstract public function create($path, $params);
 
 	/**
-	 * Retrieves the current path. Subclasses are currently expected to use
-	 * superglobals in order to retrieve it. This might be abstracted later
-	 * if there's a need for it.
+	 * Retrieves the current path.
 	 *
 	 * @return string The current path.
 	 */
@@ -161,6 +159,12 @@ abstract class Path {
  * in any setup, but creates ugly URLs.
  */
 class Path_QueryString extends Path {
+	protected $request;
+
+	public function __construct(Request $request) {
+		$this->request = $request;
+	}
+
 	public function create($task, $params) {
 		$path = '?'.$task;
 
@@ -188,26 +192,22 @@ class Path_QueryString extends Path {
 	}
 
 	public function get() {
-		if (
-			!isset($_SERVER['QUERY_STRING']) ||
-			substr($_SERVER['QUERY_STRING'], 0, 1) !== '/'
-		) {
+		$query = &$this->request->server['QUERY_STRING'];
+
+		if (!isset($query) || substr($query, 0, 1) !== '/') {
 			// the query string is either invalid or not defined
 			return '/';
 		}
 
-		$pos = strpos($_SERVER['QUERY_STRING'], '&');
+		$pos = strpos($query, '&');
 
 		if ($pos !== false) {
 			// ignore other GET values
-			$url = substr($_SERVER['QUERY_STRING'], 0, $pos);
+			$url = substr($query, 0, $pos);
 		} else {
 			// we can use the whole query string
-			$url = $_SERVER['QUERY_STRING'];
+			$url = $query;
 		}
-
-		// remove task URL from $_GET
-		array_shift($_GET);
 
 		return $url;
 	}

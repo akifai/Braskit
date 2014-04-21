@@ -59,6 +59,8 @@ if (get_magic_quotes_gpc()) {
 	set_magic_quotes_runtime(false);
 }
 
+$request = new Request();
+
 // Constants for debug
 define('DEBUG_NONE', 0);
 define('DEBUG_TEMPLATE', 2);
