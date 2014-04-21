@@ -1,12 +1,6 @@
 <?php
 defined('TINYIB') or exit;
 
-function get_routes() {
-	require(TINYIB_ROOT.'/inc/routes.php');
-
-	return $routes;
-}
-
 function expand_path($filename, $internal = false) {
 	global $path; // TODO
 
