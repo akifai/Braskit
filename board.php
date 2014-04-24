@@ -81,7 +81,7 @@ function make_error_page($e) {
 }
 
 function ob_callback($buffer) {
-	global $start_time;
+	global $dbh, $start_time;
 
 	// We don't want to modify non-html responses
 	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
@@ -96,12 +96,12 @@ function ob_callback($buffer) {
 	$newbuf = substr($buffer, 0, $ins);
 
 	$total_time = microtime(true) - $start_time;
-	$query_time = round(100 / $total_time * DBConnection::$time);
+	$query_time = round(100 / $total_time * $dbh->time);
 
 	// Append debug text
 	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
 	' of which %d%% was spent running %d database queries.',
-		$total_time, $query_time, DBConnection::$queries);
+		$total_time, $query_time, $dbh->queries);
 
 	// the rest of the buffer
 	$newbuf .= substr($buffer, $ins);

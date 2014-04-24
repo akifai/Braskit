@@ -1,8 +1,8 @@
 <?php
 
 class DBConnection extends PDO {
-	public static $time = 0;
-	public static $queries = 0;
+	public $time = 0;
+	public $queries = 0;
 
 	protected $driver;
 	protected $name;
@@ -18,10 +18,11 @@ class DBConnection extends PDO {
 		$this->user = $user;
 		$this->pass = $pass;
 
-		if ($this->dsn)
+		if ($this->dsn) {
 			$this->dsn = $dsn;
-		else
-			$this->create_dsn();
+		} else {
+			$this->dsn = $this->createDSN();
+		}
 
 		$this->spawn();
 	}
@@ -31,18 +32,21 @@ class DBConnection extends PDO {
 
 		$sth = parent::query($query);
 
-		self::addTime($time);
-		self::$queries++;
+		// update the timer/counter
+		$this->time += microtime(true) - $time;
+		$this->queries++;
 
 		return $sth;
 	}
 
-	protected function create_dsn() {
-		$this->dsn = 'pgsql:dbname='.$this->name;
+	protected function createDSN() {
+		$dsn = 'pgsql:dbname='.$this->name;
 
 		if ($this->host === (string)$this->host && $this->host) {
-			$this->dsn .= ';host='.$this->host;
+			$dsn .= ';host='.$this->host;
 		}
+
+		return $dsn;
 	}
 
 	/**
@@ -65,10 +69,6 @@ class DBConnection extends PDO {
 
 		return parent::__construct($this->dsn, $this->user, $this->pass, $options);
 	}
-
-	public static function addTime($time) {
-		self::$time += microtime(true) - $time;
-	}
 }
 
 class DBStatement extends PDOStatement {
@@ -83,8 +83,9 @@ class DBStatement extends PDOStatement {
 
 		$sth = parent::execute($params);
 
-		DBConnection::addTime($time);
-		DBConnection::$queries++;
+		// update the timer/counter
+		$this->dbh->time += microtime(true) - $time;
+		$this->dbh->queries++;
 
 		return $sth;
 	}
