@@ -1,11 +1,18 @@
 <?php
 
 class AutoLoader {
+	protected $includeDir = '';
+
 	public static function register() {
-		require_once('inc/lib/Twig/Autoloader.php');
+		$inc = dirname(__FILE__);
+
+		// autoloader for twig
+		require_once("$inc/lib/Twig/Autoloader.php");
 		Twig_Autoloader::register();
 
-		spl_autoload_register(array(new self, 'autoload'));
+		// Stick other autoloaders here, kthx
+
+		spl_autoload_register(array(new self($inc), 'autoload'));
 	}
 
 	protected $prefixes = array(
@@ -72,26 +79,38 @@ class AutoLoader {
 		'View' => 'class.view.php',
 	);
 
-	protected function autoload($class) {
-		if (isset($this->classes[$class])) {
-			require(TINYIB_ROOT.'/inc/'.$this->classes[$class]);
+	public function __construct($inc) {
+		$this->includeDir = $inc;
 
-			return true;
+	}
+
+	protected function autoload($class) {
+		// check if the requested class is in the list of classes
+		if (isset($this->classes[$class])) {
+			// it is. load it.
+			require($this->includeDir.'/'.$this->classes[$class]);
+
+			return;
 		}
 
+		// Prefixed classes
 		$pos = strrpos($class, '_');
 
-		if ($pos !== false) {
-			$prefix = substr($class, 0, $pos);
-
-			if (isset($this->prefixes[$prefix])) {
-				$bit = $this->prefixes[$prefix];
-				$file = strtolower(substr($class, $pos + 1));
-
-				require(TINYIB_ROOT.'/inc/'.$bit.$file.'.php');
-
-				return true;
-			}
+		if ($pos === false) {
+			// no indication of a prefix
+			return;
 		}
+
+		$prefix = substr($class, 0, $pos);
+
+		if (!isset($this->prefixes[$prefix])) {
+			// not found in the list of prefixes
+			return;
+		}
+
+		$bit = $this->prefixes[$prefix];
+		$file = strtolower(substr($class, $pos + 1));
+
+		require($this->includeDir.'/'.$bit.$file.'.php');
 	}
 }
