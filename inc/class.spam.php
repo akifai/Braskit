@@ -62,9 +62,9 @@ class Spam {
 	//
 
 	protected function loadFromCache() {
-		global $cache;
+		global $app;
 
-		$regex = $cache->get($this->cache_key);
+		$regex = $app['cache']->get($this->cache_key);
 
 		if ($regex === false)
 			return;
@@ -73,24 +73,24 @@ class Spam {
 	}
 
 	protected function clearCache() {
-		global $cache;
+		global $app;
 
-		$cache->delete($this->cache_key);
+		$app['cache']->delete($this->cache_key);
 	}
 
 	protected function saveToCache() {
-		global $cache;
+		global $app;
 
-		$cache->set($this->cache_key, $this->regex);
+		$app['cache']->set($this->cache_key, $this->regex);
 	}
 
 	/**
 	 * Retrieve the spam definitions
 	 */
 	protected function loadDefinitions($defs) {
-		global $db;
+		global $app;
 
-		$row = $db->getLatestSpamRules();
+		$row = $app['db']->getLatestSpamRules();
 
 		if ($row === false)
 			return;

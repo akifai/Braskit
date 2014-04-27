@@ -2,16 +2,16 @@
 
 class View_Post extends View {
 	protected function post($url, $boardname) {
-		global $db, $dbh, $request;
+		global $app;
 
 		// get the ip
-		$ip = $request->ip;
+		$ip = $app['request']->ip;
 
 		// get the time
-		$time = $request->time;
+		$time = $app['request']->time;
 
 		// get the referrer
-		$referrer = $request->referrer;
+		$referrer = $app['request']->referrer;
 
 		// set default param flags; don't accept GET values
 		$flags = PARAM_DEFAULT & ~PARAM_GET;
@@ -49,7 +49,7 @@ class View_Post extends View {
 		$board = new Board($boardname);
 
 		// check if thread exists
-		if ($parent && !$db->threadExistsByID($board, $parent))
+		if ($parent && !$app['db']->threadExistsByID($board, $parent))
 			throw new Exception('The specified thread does not exist.');
 
 		// check if we're logged in
@@ -174,7 +174,7 @@ class View_Post extends View {
 		$post->ip = $ip;
 
 		// Don't commit anything to the database until we say so.
-		$dbh->beginTransaction();
+		$app['dbh']->beginTransaction();
 
 		// Insert the post ($post gets the new ID added to it)
 		$board->insert($post);
@@ -183,7 +183,7 @@ class View_Post extends View {
 		$file->insert($post);
 
 		// commit changes to database
-		$dbh->commit();
+		$app['dbh']->commit();
 
 		// at this point, we know that the post has been saved to the database,
 		// so the files won't be orphaned when we move them.

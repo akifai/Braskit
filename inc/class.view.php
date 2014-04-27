@@ -12,7 +12,9 @@ abstract class View {
 	 * @todo Avoid globals.
 	 */
 	public function __construct(Router $router) {
-		global $request;
+		global $app;
+
+		$request = $app['request'];
 
 		if (!$request->method) {
 			throw new LogicException('View executed outside of HTTP context.');

@@ -2,10 +2,11 @@
 defined('TINYIB') or exit;
 
 function expand_path($filename, $internal = false) {
-	global $path; // TODO
+	global $app; // TODO
 
 	if ($internal) {
-		return get_script_name().$path->create("/$filename", $internal);
+		return get_script_name().
+			$app['path']->create("/$filename", $internal);
 	}
 
 	$dirname = dirname(get_script_name());
@@ -37,9 +38,9 @@ function expand_api_path($path, $vars) {
 }
 
 function get_script_name() {
-	global $request;
+	global $app;
 
-	return $request->server['SCRIPT_NAME'];
+	return $app['request']->server['SCRIPT_NAME'];
 }
 
 
@@ -106,6 +107,9 @@ function redirect($url) {
 	echo '<html><body><a href="'.$url.'">'.$url.'</a></body></html>';
 }
 
+/**
+ * @todo DI
+ */
 function load_twig(array $dirs = array()) {
 	global $cache_dir;
 	global $debug;
@@ -128,10 +132,13 @@ function load_twig(array $dirs = array()) {
 	return $twig;
 }
 
+/**
+ * @todo DI
+ */
 function render($template, $args = array(), $twig = null) {
-	if ($twig === null) {
-		global $twig;
+	global $twig;
 
+	if ($twig === null) {
 		// Load Twig if necessary
 		if (!isset($twig))
 			$twig = load_twig();
@@ -149,7 +156,9 @@ function render($template, $args = array(), $twig = null) {
  * @return string Path to combined JavaScript file
  */
 function get_js() {
-	global $cache, $javascript_includes;
+	global $app;
+	global $javascript_includes;
+
 	static $static_cache;
 
 	// load from static var cache
@@ -157,7 +166,7 @@ function get_js() {
 		return $web_path;
 
 	// try loading from persistent cache
-	$data = $cache->get('js_cache');
+	$data = $app['cache']->get('js_cache');
 
 	if ($data !== false)
 		return $data;
@@ -197,7 +206,7 @@ function get_js() {
 
 	$web_path = expand_path($path);
 
-	$cache->set('js_cache', $web_path);
+	$app['cache']->set('js_cache', $web_path);
 
 	return $web_path;
 }
@@ -217,7 +226,9 @@ define('PARAM_STRICT', 64); // returns false if parameter is missing
 define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
 
 function param($name, $flags = PARAM_DEFAULT) {
-	global $request;
+	global $app;
+
+	$request = $app['request'];
 
 	if (!$flags) {
 		// no flags
@@ -276,7 +287,9 @@ function param($name, $flags = PARAM_DEFAULT) {
 //
 
 function do_csrf($url = false) {
-	global $request;
+	global $app;
+
+	$request = $app['request'];
 
 	// Only POST requests can validate our CSRF token
 	if ($request->method === 'POST') {

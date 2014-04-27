@@ -22,10 +22,15 @@ $ajax = array('error' => false);
 
 ob_start('ob_ajax_callback');
 
-$path = new Path_QueryString($request);
-$router = new Router_Main($path->get());
+$app['path'] = function () use ($app) {
+	return new Path_QueryString($app['request']);
+};
 
-$view = new $router->view($router);
+$app['router'] = function () use ($app) {
+	return new Router_Main($app['path']->get());
+};
+
+$view = new $app['router']->view($app['router']);
 echo $view->responseBody;
 
 // print buffer
@@ -61,8 +66,9 @@ function ob_ajax_callback($output) {
 
 	$vars = array('page' => $output);
 
-	foreach ($ajax as $key => $value)
+	foreach ($ajax as $key => $value) {
 		$vars[$key] = $value;
+	}
 
 	return json_encode($vars);
 }

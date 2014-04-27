@@ -52,7 +52,7 @@ class User {
 	}
 
 	public function delete($username) {
-		global $db;
+		global $app;
 
 		if ($this->username === $username)
 			throw new UserException('You cannot delete yourself.');
@@ -60,7 +60,7 @@ class User {
 		// TODO: Check if we have higher permissions than the user
 		// we're deleting.
 
-		$db->deleteUser($username);
+		$app['db']->deleteUser($username);
 	}
 
 
@@ -134,9 +134,9 @@ class User {
 	 * @param string Username
 	 */
 	protected function load($username) {
-		global $db;
+		global $app;
 
-		$row = $db->getUser($username);
+		$row = $app['db']->getUser($username);
 
 		if ($row === false)
 			throw new UserException("No such user exists.");
@@ -247,15 +247,15 @@ class User {
 	//
 
 	public static function get($username) {
-		global $db;
+		global $app;
 
-		return $db->getUser($username);
+		return $app['db']->getUser($username);
 	}
 
 	public static function getAll() {
-		global $db;
+		global $app;
 
-		return $db->getUserList();
+		return $app['db']->getUserList();
 	}
 }
 
@@ -308,10 +308,10 @@ class UserCreate extends User {
 	}
 
 	public function commit() {
-		global $db;
+		global $app;
 
 		try {
-			$db->insertUser($this);
+			$app['db']->insertUser($this);
 		} catch (PDOException $e) {
 			$err = $e->getCode();
 
@@ -350,13 +350,13 @@ class UserEdit extends User {
 	}
 
 	public function commit() {
-		global $db;
+		global $app;
 
 		if (!$this->changes)
 			return; // nothing to do
 
 		try {
-			$db->modifyUser($this);
+			$app['db']->modifyUser($this);
 		} catch (PDOException $e) {
 			$err = $e->getCode();
 

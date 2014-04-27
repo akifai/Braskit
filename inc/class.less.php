@@ -19,9 +19,9 @@ class Style {
 	 * @return Style
 	 */
 	public static function getObject() {
-		global $cache;
+		global $app;
 
-		$obj = $cache->get(self::CACHE_KEY);
+		$obj = $app['cache']->get(self::CACHE_KEY);
 
 		if ($obj) {
 			return $obj;
@@ -30,7 +30,7 @@ class Style {
 		$obj = new self;
 		$obj->transformPaths();
 
-		$cache->set(self::CACHE_KEY, $obj);
+		$app['cache']->set(self::CACHE_KEY, $obj);
 
 		return $obj;
 	}

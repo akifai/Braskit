@@ -21,8 +21,7 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 	}
 
 	public function getGlobals() {
-		global $config;
-		global $debug;
+		global $app;
 		global $javascript_includes;
 
 		$globals = array(
@@ -34,8 +33,9 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 		if (defined('TINYIB_BASE_TEMPLATE'))
 			$globals['_base'] = TINYIB_BASE_TEMPLATE;
 
-		if (isset($config))
-			$globals['config'] = $config;
+		if (isset($app['config'])) {
+			$globals['config'] = $app['config'];
+		}
 
 		if (isset($debug))
 			$globals['debug'] = $debug;

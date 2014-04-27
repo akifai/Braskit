@@ -23,10 +23,15 @@ header('Content-Type: text/html; charset=UTF-8', true);
 // start buffering
 ob_start('ob_callback');
 
-$path = new Path_QueryString($request);
-$router = new Router_Main($path->get());
+$app['path'] = function () use ($app) {
+	return new Path_QueryString($app['request']);
+};
 
-$view = new $router->view($router);
+$app['router'] = function () use ($app) {
+	return new Router_Main($app['path']->get());
+};
+
+$view = new $app['router']->view($app['router']);
 echo $view->responseBody;
 
 // print buffer
@@ -39,13 +44,13 @@ ob_end_flush();
 
 /// Internal redirect
 function diverge($dest, $args = array()) {
-	global $path; // TODO
+	global $app; // TODO
 
 	// missing slash
 	if (substr($dest, 0, 1) !== '/')
 		$dest = "/$goto";
 
-	redirect($path->create($dest, $args));
+	redirect($app['path']->create($dest, $args));
 }
 
 function make_error_page($e) {
@@ -81,7 +86,7 @@ function make_error_page($e) {
 }
 
 function ob_callback($buffer) {
-	global $dbh, $start_time;
+	global $app, $start_time;
 
 	// We don't want to modify non-html responses
 	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
@@ -96,12 +101,12 @@ function ob_callback($buffer) {
 	$newbuf = substr($buffer, 0, $ins);
 
 	$total_time = microtime(true) - $start_time;
-	$query_time = round(100 / $total_time * $dbh->time);
+	$query_time = round(100 / $total_time * $app['dbh']->time);
 
 	// Append debug text
 	$newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
 	' of which %d%% was spent running %d database queries.',
-		$total_time, $query_time, $dbh->queries);
+		$total_time, $query_time, $app['dbh']->queries);
 
 	// the rest of the buffer
 	$newbuf .= substr($buffer, $ins);

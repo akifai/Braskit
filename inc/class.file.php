@@ -107,10 +107,10 @@ class File extends FileMetaData {
 	 * Insert the file into the database.
 	 */
 	public function insert(Post $post) {
-		global $db;
+		global $app;
 
 		if ($this->exists) {
-			$db->insertFile($this, $post);
+			$app['db']->insertFile($this, $post);
 		}
 	}
 

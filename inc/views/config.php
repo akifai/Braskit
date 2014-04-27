@@ -2,7 +2,7 @@
 
 class View_Config extends View {
 	protected function get($url, $boardname = false) {
-		global $config;
+		global $app;
 
 		$user = do_login($url);
 
@@ -14,14 +14,14 @@ class View_Config extends View {
 			$template_vars['board'] = $board;
 			$template_vars['config_instance'] = $board->config;
 		} else {
-			$template_vars['config_instance'] = $config;
+			$template_vars['config_instance'] = $app['config'];
 		}
 
 		return $this->render('config.html', $template_vars);
 	}
 
 	protected function post($url, $boardname = false) {
-		global $config;
+		global $app;
 
 		$user = do_login($url);
 
@@ -31,7 +31,7 @@ class View_Config extends View {
 			$board = new Board($boardname);
 			$instance = $board->config;
 		} else {
-			$instance = $config;
+			$instance = $app['config'];
 		}
 
 		$flags = PARAM_DEFAULT | PARAM_ARRAY;

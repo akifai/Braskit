@@ -21,19 +21,24 @@ if (file_exists(TINYIB_ROOT.'/config.php') && !isset($_SESSION['installer'])) {
 
 $_SESSION['installer'] = true;
 
-$path = new Path_QueryString($request);
-$router = new Router_Install($path->get());
+$app['path'] = function () use ($app) {
+	return new Path_QueryString($app['request']);
+};
 
-$view = new $router->view($router);
+$app['router'] = function () use ($app) {
+	return new Router_Install($app['path']->get());
+};
+
+$view = new $app['router']->view($app['router']);
 echo $view->responseBody;
 
 /// Internal redirect
 function diverge($dest, $args = array()) {
-	global $path;
+	global $app;
 
 	// missing slash
 	if (substr($dest, 0, 1) !== '/')
 		$dest = "/$goto";
 
-	redirect($path->create($dest, $args));
+	redirect($app['path']->create($dest, $args));
 }

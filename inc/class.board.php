@@ -44,7 +44,7 @@ class Board {
 	 * Checks if the board exists
 	 */
 	public function exists() {
-		global $db;
+		global $app;
 
 		// TODO: this should look up the board in a table rather than
 		// checking a table with the desired name exists
@@ -52,7 +52,7 @@ class Board {
 		if (is_bool($this->exists))
 			return $this->exists;
 
-		$vars = $db->getBoard($this->board);
+		$vars = $app['db']->getBoard($this->board);
 
 		if ($vars) {
 			$this->exists = true;
@@ -71,7 +71,7 @@ class Board {
 	 * Creates a board.
 	 */
 	public function create($longname, $check_folder = true) {
-		global $db;
+		global $app;
 
 		if (!is_string($longname))
 			throw new Exception("Missing board name.");
@@ -83,7 +83,7 @@ class Board {
 			throw new Exception('Folder name collision - refusing to create board.');
 
 		// create tables/entries for board
-		$db->createBoard($this->board, $longname);
+		$app['db']->createBoard($this->board, $longname);
 
 		// create folders
 		foreach (array('', '/res', '/src', '/thumb') as $folder) {
@@ -97,15 +97,15 @@ class Board {
 	}
 
 	public function rename($newname) {
-		global $db, $dbh;
+		global $app;
 
 		$this->validateName($newname);
 
-		$dbh->beginTransaction();
+		$app['dbh']->beginTransaction();
 
 		// rename the board in SQL
 		try {
-			$db->renameBoard($this->board, $newname);
+			$app['db']->renameBoard($this->board, $newname);
 		} catch (PDOException $e) {
 			$err = $e->getCode();
 
@@ -130,7 +130,7 @@ class Board {
 		if (!$renamed)
 			throw new Exception("Write error - cannot rename the board.");
 
-		$dbh->commit();
+		$app['dbh']->commit();
 
 		$this->board = (string)$newname;
 	}
@@ -141,19 +141,19 @@ class Board {
 	 * @todo: finish this
 	 */
 	public function destroy() {
-		global $db;
+		global $app;
 
 		if (!$this->exists())
 			throw new Exception("The board doesn't exist.");
 
-		return $db->deleteBoardTable($this->board);
+		return $app['db']->deleteBoardTable($this->board);
 	}
 
 	/**
 	 * Changes the title and level
 	 */
 	public function editSettings($title, $minlevel) {
-		global $db;
+		global $app;
 
 		if (!length($title))
 			throw new Exception("Invalid board title.");
@@ -166,25 +166,25 @@ class Board {
 		$this->title = $title;
 		$this->minlevel = $minlevel;
 
-		return $db->updateBoard($this->board, $title, $minlevel);
+		return $app['db']->updateBoard($this->board, $title, $minlevel);
 	}
 
 	/**
 	 * Inserts a post
 	 */
 	public function insert($post) {
-		global $db;
+		global $app;
 
-		return $db->insertPost($post);
+		return $app['db']->insertPost($post);
 	}
 
 	/**
 	 * Deletes a post
 	 */
 	public function delete($id, $password = null) {
-		global $db;
+		global $app;
 
-		$posts = $db->deletePostByID($this->board, $id, $password);
+		$posts = $app['db']->deletePostByID($this->board, $id, $password);
 
 		foreach ($posts as $post) {
 			$this->deletePostFiles($post);
@@ -213,9 +213,9 @@ class Board {
 	}
 
 	public function report($posts, $ip, $reason) {
-		global $db;
+		global $app;
 
-		return $db->insertReports($posts, array(
+		return $app['db']->insertReports($posts, array(
 			'board' => $this->board,
 			'ip' => $ip,
 			'time' => time(),
@@ -224,19 +224,19 @@ class Board {
 	}
 
 	public function getAllThreads() {
-		global $db;
+		global $app;
 
-		return $db->allThreads($this->board);
+		return $app['db']->allThreads($this->board);
 	}
 
 	// FIXME: This shit works by accident, not by design
 	// A huge cleanup is needed.
 	public function getIndexThreads($offset = false, $admin = false) {
-		global $db;
+		global $app;
 
 		// get all threads
 		if ($offset !== false) {
-			$all_threads = $db->getThreads(
+			$all_threads = $app['db']->getThreads(
 				$this->board,
 				$offset,
 				$this->config->threads_per_page,
@@ -259,7 +259,7 @@ class Board {
 
 			// fetch the latest posts and append them to the thread
 			if ($replies_shown) {
-				$replies = $db->latestRepliesInThreadByID(
+				$replies = $app['db']->latestRepliesInThreadByID(
 					$this->board,
 					$thread[0]->id,
 					$replies_shown,
@@ -286,15 +286,15 @@ class Board {
 	}
 
 	public function countThreads() {
-		global $db;
+		global $app;
 
-		return $db->countThreads($this->board);
+		return $app['db']->countThreads($this->board);
 	}
 
 	public function countPostsInThread($id) {
-		global $db;
+		global $app;
 
-		return $db->countPostsInThread($this->board, $id);
+		return $app['db']->countPostsInThread($this->board, $id);
 	}
 
 	/**
@@ -314,10 +314,10 @@ class Board {
 	 * Clear old posts and files.
 	 */
 	public function trim() {
-		global $db;
+		global $app;
 
 		// remove posts
-		$posts = $db->trimPostsByThreadCount(
+		$posts = $app['db']->trimPostsByThreadCount(
 			$this->board,
 			$this->config->max_threads
 		);
@@ -372,9 +372,9 @@ class Board {
 	}
 
 	public function postsInThread($id, $admin = false) {
-		global $db;
+		global $app;
 
-		return $db->postsInThreadByID($this->board, $id, $admin);
+		return $app['db']->postsInThreadByID($this->board, $id, $admin);
 	}
 
 	/**
@@ -420,13 +420,13 @@ class Board {
 	}
 
 	public function checkFlood($time, $ip, $comment, $has_file) {
-		global $db;
+		global $app;
 
 		// check if images are being posted too fast
 		if ($has_file && $this->config->seconds_between_images > 0) {
 			$max = $time - $this->config->seconds_between_images;
 
-			if ($db->checkImageFlood($ip, $max)) {
+			if ($app['db']->checkImageFlood($ip, $max)) {
 				throw new Exception('Flood detected.');
 			}
 
@@ -438,7 +438,7 @@ class Board {
 		if ($this->config->seconds_between_posts > 0) {
 			$max = $time - $this->config->seconds_between_posts;
 
-			if ($db->checkFlood($ip, $max)) {
+			if ($app['db']->checkFlood($ip, $max)) {
 				throw new Exception('Flood detected.');
 			}
 		}
@@ -447,16 +447,16 @@ class Board {
 		if ($comment && !$this->config->allow_duplicate_text) {
 			$max = $time - $this->config->seconds_between_duplicate_text;
 
-			if ($db->checkDuplicateText($comment, $max)) {
+			if ($app['db']->checkDuplicateText($comment, $max)) {
 				throw new Exception('Duplicate comment detected.');
 			}
 		}
 	}
 
 	public function checkDuplicateImage($hex) {
-		global $db;
+		global $app;
 
-		$row = $db->postByMD5($this->board, $hex);
+		$row = $app['db']->postByMD5($this->board, $hex);
 
 		if ($row === false)
 			return;
@@ -517,18 +517,18 @@ class Board {
 	 * Gets a post
 	 */
 	public function getPost($id) {
-		global $db;
+		global $app;
 
-		return $db->postByID($this->board, $id);
+		return $app['db']->postByID($this->board, $id);
 	}
 
 	/**
 	 * Bumps a thread
 	 */
 	public function bump($id) {
-		global $db;
+		global $app;
 
-		return $db->BumpThreadByID($this->board, $id);
+		return $app['db']->BumpThreadByID($this->board, $id);
 	}
 
 	/**

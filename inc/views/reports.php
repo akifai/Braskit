@@ -6,7 +6,7 @@ class View_Reports extends View {
 	}
 
 	protected function post($url) {
-		global $db;
+		global $app;
 
 		do_csrf($url);
 		$user = do_login();
@@ -21,7 +21,7 @@ class View_Reports extends View {
 		$dismiss = array_filter($dismiss, 'ctype_digit');
 
 		if ($dismiss) {
-			$db->dismissReports($dismiss);
+			$app['db']->dismissReports($dismiss);
 		}
 
 		diverge('/reports');

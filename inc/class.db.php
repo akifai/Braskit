@@ -92,10 +92,8 @@ class Database {
 	}
 
 	public function bumpThreadByID($board, $id) {
-		global $request;
-
 		$sth = $this->dbh->prepare("UPDATE {$this->prefix}posts SET lastbump = to_timestamp(?) WHERE id = ?");
-		$sth->execute(array($request->time, $id));
+		$sth->execute(array(time(), $id));
 	}
 
 	public function countThreads($board) {
@@ -307,10 +305,8 @@ class Database {
 	}
 
 	public function clearExpiredBans() {
-		global $request;
-
 		$sth = $this->dbh->prepare("DELETE FROM {$this->prefix}bans WHERE expire > 0 AND expire <= ?");
-		$sth->execute(array($request->time));
+		$sth->execute(array(time()));
 	}
 
 	public function deleteBanByID($id) {

@@ -59,7 +59,11 @@ if (get_magic_quotes_gpc()) {
 	set_magic_quotes_runtime(false);
 }
 
-$request = new Request();
+$app = new Pimple();
+
+$app['request'] = function () {
+	return new Request();
+};
 
 // Constants for debug
 define('DEBUG_NONE', 0);
@@ -72,13 +76,19 @@ define('DEBUG_ALL', ~0);
 $debug = false;
 
 // Cache - TODO
-if ($debug & DEBUG_CACHE) {
-	$cache = new Cache_Debug();
-} elseif (ini_get('apc.enabled') && extension_loaded('apc')) {
-	$cache = new Cache_APC();
-} else {
-	$cache = new Cache_PHP();
-}
+$app['cache'] = function () {
+	global $debug;
+
+	if ($debug & DEBUG_CACHE) {
+		return new Cache_Debug();
+	}
+
+	if (ini_get('apc.enabled') && extension_loaded('apc')) {
+		return new Cache_APC();
+	}
+	
+	return new Cache_PHP();
+};
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// temporary config variables needed for the installer
@@ -101,13 +111,16 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 if ($debug === 1 || $debug === true)
 	$debug = DEBUG_ALL;
 
-// Don't connect to database or load config from database
-if (defined('TINYIB_NO_DATABASE') && TINYIB_NO_DATABASE)
-	return;
-
 // establish database connection
-$dbh = new DBConnection($db_name, $db_host, $db_username, $db_password);
-$db = new Database($dbh, $db_prefix);
+$app['dbh'] = function () use ($db_name, $db_host, $db_username, $db_password) {
+	return new DBConnection($db_name, $db_host, $db_username, $db_password);
+};
+
+$app['db'] = function () use ($app, $db_prefix) {
+	return new Database($app['dbh'], $db_prefix);
+};
 
 // Site configuration
-$config = new GlobalConfig();
+$app['config'] = function () {
+	return new GlobalConfig();
+};

@@ -2,7 +2,7 @@
 
 class View_Users extends View {
 	protected function get($url, $username = false) {
-		global $db;
+		global $app;
 
 		$user = do_login($url);
 
@@ -13,7 +13,7 @@ class View_Users extends View {
 		);
 
 		if ($username === false) {
-			$vars['users'] = $db->getUserList();
+			$vars['users'] = $app['db']->getUserList();
 		} else {
 			$vars['editing'] = true;
 			$vars['target'] = $user->edit($username);
