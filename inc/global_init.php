@@ -65,6 +65,10 @@ $app['request'] = function () {
 	return new Request();
 };
 
+$app['param'] = $app->factory(function () use ($app) {
+	return new Param($app['request']);
+});
+
 // Constants for debug
 define('DEBUG_NONE', 0);
 define('DEBUG_TEMPLATE', 2);

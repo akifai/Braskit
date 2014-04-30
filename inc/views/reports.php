@@ -11,8 +11,8 @@ class View_Reports extends View {
 		do_csrf($url);
 		$user = do_login();
 
-		$flags = PARAM_DEFAULT | PARAM_ARRAY;
-		$dismiss = param('dismiss', $flags);
+		$param = $app['param']->flags(Param::S_DEFAULT|Param::T_ARRAY);
+		$dismiss = $param->get('dismiss');
 
 		if (!is_array($dismiss)) {
 			$dismiss = array($dismiss);

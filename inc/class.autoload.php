@@ -46,6 +46,8 @@ class AutoLoader {
 		'JSMinPlus' => 'lib/jsminplus/jsminplus.php',
 		'lessc' => 'lib/lessphp/lessc.inc.php',
 		'lessc_fixed' => 'class.less.php',
+		'Param' => 'class.param.php',
+		'ParamException' => 'class.param.php',
 		'Parser' => 'class.parser.php',
 		'Parser_Block' => 'class.parser.php',
 		'Parser_Inline' => 'class.parser.php',

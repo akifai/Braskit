@@ -2,6 +2,8 @@
 
 class View_Login extends View {
 	protected function get($url) {
+		global $app;
+
 		$error = false;
 
 		try {
@@ -22,7 +24,7 @@ class View_Login extends View {
 			unset($_SESSION['login_error']);
 		}
 
-		$goto = param('goto');
+		$goto = $app['param']->get('goto');
 
 		return $this->render('login.html', array(
 			'error' => $error,
@@ -31,7 +33,12 @@ class View_Login extends View {
 	}
 
 	protected function post($url) {
-		list($username, $password) = get_login_credentials();
+		global $app;
+
+		$param = $app['param']->flags(Param::T_STRING | Param::M_POST);
+
+		$username = $param->get('login_user');
+		$password = $param->get('login_pass');
 
 		try {
 			// validate user/pw
@@ -49,7 +56,7 @@ class View_Login extends View {
 		}
 
 		if ($loggedin) {
-			$goto = param('goto');
+			$goto = $param->get('goto', Param::S_DEFAULT);
 			redirect_after_login($goto);
 
 			exit;

@@ -5,8 +5,13 @@ class View_Install_Download extends View {
 		global $app;
 
 		if (!isset($_SESSION['install_config'])) {
-			$flags = PARAM_STRING | PARAM_SERVER | PARAM_STRICT;
-			$https = (bool)param('HTTPS', $flags);
+			$param = $app['param']->flags(
+				Param::T_STRING |
+				Param::M_SERVER |
+				Param::S_STRICT
+			);
+
+			$https = (bool)param('HTTPS');
 
 			// No config stored
 			header('HTTP/1.1 404 Not Found');

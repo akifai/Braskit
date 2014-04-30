@@ -54,8 +54,19 @@ function diverge($dest, $args = array()) {
 }
 
 function make_error_page($e) {
-	$flags = PARAM_STRING | PARAM_SERVER | PARAM_STRICT;
-	$referrer = param('HTTP_REFERER', $flags);
+	global $app;
+
+	try {
+		$param = $app['param']->flags(
+			Param::T_STRING |
+			Param::M_SERVER |
+			Param::S_STRICT
+		);
+
+		$referrer = $param->get('HTTP_REFERER');
+	} catch (Exception $e) {
+		$referrer = false;
+	}
 
 	$message = $e->getMessage();
 

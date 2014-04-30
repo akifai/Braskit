@@ -50,29 +50,37 @@ function get_script_name() {
  * case with a sloppy reverse proxy setups.
  */
 function get_url($path = false) {
+	global $app;
 	static $url;
-	if (isset($url))
+
+	if (isset($url)) {
 		return $url;
-
-	$flags = PARAM_SERVER | PARAM_STRING | PARAM_STRICT;
-
-	if ($path === false) {
-		$path = param('REQUEST_URI', $flags);
 	}
 
-	$https = param('HTTPS', $flags);
-	$user = param('PHP_AUTH_USER', $flags);
-	$pass = param('PHP_AUTH_PW', $flags);
-	$host = param('HTTP_HOST', $flags)
-		?: param('SERVER_NAME', $flags)
+	$param = $app['param']->flags(
+		Param::M_SERVER |
+		Param::T_STRING |
+		Param::S_STRICT
+	);
+
+	if ($path === false) {
+		$path = $param->get('REQUEST_URI');
+	}
+
+	$https = $param->get('HTTPS');
+	$user = $param->get('PHP_AUTH_USER');
+	$pass = $param->get('PHP_AUTH_PW');
+	$host = $param->get('HTTP_HOST')
+		?: $param->get('SERVER_NAME')
 		?: 'localhost';
-	$port = param('SERVER_PORT', $flags);
+	$port = $param->get('SERVER_PORT');
 
 	$url = 'http';
 
 	// https
-	if ($https)
+	if ($https) {
 		$url .= 's';
+	}
 
 	$url .= '://';
 
@@ -92,8 +100,9 @@ function get_url($path = false) {
 	// port number
 	// SERVER_NAME might include one, so we have to check the host variable
 	if (!preg_match('/:\d+$/', $host)
-	&& ($https && $port != 443 || !$https && $port != 80))
+	&& ($https && $port != 443 || !$https && $port != 80)) {
 		$url .= ":$port";
+	}
 
 	// path
 	$url .= $path;
@@ -213,76 +222,6 @@ function get_js() {
 
 
 //
-// Parameter fetching
-//
-
-define('PARAM_STRING', 1); // can be string
-define('PARAM_ARRAY', 2); // can be array
-define('PARAM_GET', 4); // can be GET value
-define('PARAM_POST', 8); // can be POST value
-define('PARAM_COOKIE', 16); // can be cookie value
-define('PARAM_SERVER', 32); // can be server var
-define('PARAM_STRICT', 64); // returns false if parameter is missing
-define('PARAM_DEFAULT', PARAM_STRING | PARAM_GET | PARAM_POST);
-
-function param($name, $flags = PARAM_DEFAULT) {
-	global $app;
-
-	$request = $app['request'];
-
-	if (!$flags) {
-		// no flags
-		throw new LogicException('param() expects type & method flags');
-	}
-
-	if (!($flags & (PARAM_STRING | PARAM_ARRAY))) {
-		// missing type flag(s)
-		throw new LogicException('param() expects type flags');
-	}
-
-	if (!($flags & (PARAM_GET | PARAM_POST | PARAM_COOKIE | PARAM_SERVER))) {
-		// missing method flag(s)
-		throw new LogicException('param() expects method flags');
-	}
-
-	if ($flags & PARAM_STRICT)
-		$default = false;
-	elseif ($flags & PARAM_STRING)
-		$default = '';
-	elseif ($flags & PARAM_ARRAY)
-		$default = array();
-
-	if (($flags & PARAM_POST) && isset($request->post[$name])) {
-		// POST values
-		$value = $request->post[$name];
-	} elseif (($flags & PARAM_GET) && isset($request->get[$name])) {
-		// GET values
-		$value = $request->get[$name];
-	} elseif (($flags & PARAM_COOKIE) && isset($request->cookie[$name])) {
-		// COOKIE values
-		$value = $request->cookie[$name];
-	} elseif (($flags & PARAM_SERVER) && isset($request->server[$name])) {
-		// Server variables
-		$value = $request->server[$name];
-	} else {
-		// no parameter found
-		return $default;
-	}
-
-	// return defined string
-	if (($flags & PARAM_STRING) && is_string($value))
-		return $value;
-
-	// return defined array
-	if (($flags & PARAM_ARRAY) && is_array($value))
-		return $value;
-
-	// type mismatch
-	return $default;
-}
-
-
-//
 // CSRF
 //
 
@@ -310,7 +249,9 @@ function do_csrf($url = false) {
 }
 
 function check_csrf() {
-	$sent = param('csrf', PARAM_STRING | PARAM_POST);
+	global $app;
+
+	$sent = $app['param']->get('csrf', Param::T_STRING | Param::M_POST);
 
 	if ($sent === get_csrf_token()) {
 		unset_csrf_token();
@@ -504,13 +445,6 @@ function create_ban_message($post) {
 	$msg .= "Comment:\n$comment";
 
 	return $msg;
-}
-
-function get_login_credentials() {
-	return array(
-		param('login_user', PARAM_DEFAULT & ~PARAM_GET),
-		param('login_pass', PARAM_DEFAULT & ~PARAM_GET),
-	);
 }
 
 /**

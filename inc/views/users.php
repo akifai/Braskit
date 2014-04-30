@@ -23,16 +23,19 @@ class View_Users extends View {
 	}
 
 	protected function post($url, $username = false) {
-		$user = do_login($url);
+		global $app;
 
+		$user = do_login($url);
 		do_csrf();
 
+		$param = $app['param'];
+
 		// Form parameters
-		$new_username = trim(param('username'));
-		$email = trim(param('email'));
-		$password = trim(param('password'));
-		$password2 = trim(param('password2'));
-		$level = abs(trim(param('level')));
+		$new_username = trim($param->get('username'));
+		$email = trim($param->get('email'));
+		$password = trim($param->get('password'));
+		$password2 = trim($param->get('password2'));
+		$level = abs(trim($param->get('level')));
 
 		if ($username !== false) {
 			// Edit user

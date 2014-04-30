@@ -57,8 +57,10 @@ class View_Report extends View {
 
 // helper function - TODO
 function get_ids($board) {
+	global $app;
+
 	$posts = array();
-	$ids = param('id', PARAM_DEFAULT | PARAM_ARRAY);
+	$ids = $app['param']->get('id', Param::S_DEFAULT | Param::T_ARRAY);
 
 	if (!is_array($ids))
 		$ids = array($ids);

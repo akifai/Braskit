@@ -6,14 +6,18 @@ class View_Delete extends View {
 	}
 
 	protected function post($url, $boardname) {
-		$task = param('task');
-		$is_admin = param('admin');
+		global $app;
 
-		$ids = param('id', PARAM_DEFAULT | PARAM_ARRAY);
+		$param = $app['param'];
+
+		$task = $param->get('task');
+		$is_admin = $param->get('admin');
+
+		$ids = $param->get('id', Param::S_DEFAULT | Param::T_ARRAY);
 
 		// passwords from POST and cookie, respectively
-		$password = param('password', PARAM_STRING | PARAM_POST);
-		$cookie_pw = param('password', PARAM_STRING | PARAM_COOKIE);
+		$password = $param->get('password', Param::T_STRING | Param::M_POST);
+		$cookie_pw = $param->get('password', Param::T_STRING | Param::M_COOKIE);
 
 		$board = new Board($boardname);
 
@@ -46,7 +50,7 @@ class View_Delete extends View {
 		}
 
 		// Where to redirect after deleting
-		$nexttask = $user ? param('goto') : false;
+		$nexttask = $user ? $param->get('goto') : false;
 
 		// Nothing to do
 		if (!$ids && $nexttask) {

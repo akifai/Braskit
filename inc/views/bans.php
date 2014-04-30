@@ -6,15 +6,10 @@ class View_Bans extends View {
 
 		$user = do_login($url);
 
-		if (param('ip') || param('lift', PARAM_DEFAULT | PARAM_ARRAY)) {
-			do_csrf();
-			return;
-		}
-
 		// TODO: Pagination
 		$bans = $app['db']->allBans();
 
-		$ip = param('ip');
+		$ip = $app['param']->get('ip');
 
 		return $this->render('bans.html', array(
 			'admin' => true,
@@ -24,13 +19,17 @@ class View_Bans extends View {
 	}
 
 	protected function post($url) {
+		global $app;
+
 		$user = do_login($url);
 		do_csrf();
 
+		$param = $app['param'];
+
 		// adding a ban
-		$expire = param('expire');
-		$reason = param('reason');
-		$ip = param('ip');
+		$expire = $param->get('expire');
+		$reason = $param->get('reason');
+		$ip = $param->get('ip');
 
 		if ($ip) {
 			$ban = new BanCreate($ip);
@@ -41,7 +40,7 @@ class View_Bans extends View {
 		}
 
 		// lifting bans
-		$lifts = param('lift', PARAM_DEFAULT | PARAM_ARRAY);
+		$lifts = $param->get('lift', Param::S_DEFAULT | Param::T_ARRAY);
 
 		if ($lifts && !is_array($lifts)) {
 			$lifts = array($lifts);

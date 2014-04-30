@@ -14,24 +14,24 @@ class View_Post extends View {
 		$referrer = $app['request']->referrer;
 
 		// set default param flags; don't accept GET values
-		$flags = PARAM_DEFAULT & ~PARAM_GET;
+		$param = $app['param']->flags(Param::S_DEFAULT & ~Param::M_GET);
 
 		// POST values
-		$parent = param('parent', $flags);
-		$name = param('field1', $flags);
-		$email = param('field2', $flags);
-		$subject = param('field3', $flags);
-		$comment = param('field4', $flags);
+		$parent = $param->get('parent');
+		$name = $param->get('field1');
+		$email = $param->get('field2');
+		$subject = $param->get('field3');
+		$comment = $param->get('field4');
 
-		$nofile = (bool)param('nofile', $flags);
-		$sage = (bool)param('sage', $flags);
+		$nofile = (bool)$param->get('nofile');
+		$sage = (bool)$param->get('sage');
 
 		// We get the password from cookies
-		$password = param('password', PARAM_COOKIE | PARAM_STRING);
+		$password = $param->get('password', Param::M_COOKIE | PARAM::T_STRING);
 
 		// Moderator options
-		$raw = (bool)param('raw', $flags);
-		$capcode = (bool)param('capcode', $flags);
+		$raw = (bool)$param->get('raw');
+		$capcode = (bool)$param->get('capcode');
 
 		// Checks
 		if (!ctype_digit($parent)

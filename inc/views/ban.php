@@ -5,10 +5,12 @@
  */
 class View_Ban extends View {
 	protected function get($url, $boardname) {
+		global $app;
+
 		$user = do_login($url);
 		$board = new Board($boardname);
 
-		$id = param('id');
+		$id = $app['param']->get('id');
 		$post = $board->getPost($id);
 
 		if (!$post)
