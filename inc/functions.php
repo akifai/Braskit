@@ -183,6 +183,9 @@ function get_js() {
 // CSRF
 //
 
+/**
+ * @deprecated
+ */
 function do_csrf($url = false) {
 	global $app;
 
@@ -411,6 +414,8 @@ function create_ban_message($post) {
  * or returns false.
  *
  * Use this in page functions to check the login.
+ *
+ * @deprecated
  */
 function do_login($url = false) {
 	try {
@@ -431,6 +436,9 @@ function do_login($url = false) {
 	return false;
 }
 
+/**
+ * @deprecated
+ */
 function get_session_login() {
 	if (isset($_SESSION['login']) && $_SESSION['login'] !== false)
 		return unserialize($_SESSION['login']);
@@ -438,6 +446,9 @@ function get_session_login() {
 	return false;
 }
 
+/**
+ * @deprecated
+ */
 function redirect_after_login($goto = false) {
 	if ($goto) {
 		$goto = urldecode($goto);

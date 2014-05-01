@@ -1,10 +1,8 @@
 <?php
 
 class View_Users extends View {
-	protected function get($url, $username = false) {
-		global $app;
-
-		$user = do_login($url);
+	protected function get($app, $username = false) {
+		$user = do_login($app);
 
 		$vars = array(
 			'admin' => true,
@@ -22,10 +20,8 @@ class View_Users extends View {
 		return $this->render('users.html', $vars);
 	}
 
-	protected function post($url, $username = false) {
-		global $app;
-
-		$user = do_login($url);
+	protected function post($app, $username = false) {
+		$user = do_login($app);
 		do_csrf();
 
 		$param = $app['param'];

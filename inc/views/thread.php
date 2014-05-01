@@ -1,8 +1,8 @@
 <?php
 
 class View_Thread extends View {
-	protected function get($url, $boardname, $id) {
-		$user = do_login($url);
+	protected function get($app, $boardname, $id) {
+		$user = do_login($app);
 
 		$board = new Board($boardname);
 
@@ -14,13 +14,11 @@ class View_Thread extends View {
 			return;
 		}
 
-		$twig = $board->getTwig();
-
-		return $twig->render('thread.html', array(
+		return $board->render('thread.html', array(
 			'admin' => true,
 			'board' => $board,
 			'posts' => $posts,
 			'thread' => $id,
-		), $twig);
+		));
 	}
 }

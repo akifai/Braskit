@@ -1,7 +1,7 @@
 <?php
 
 class View_Install_Start extends View {
-	protected function get($url) {
+	protected function get($app) {
 		if (isset($_SESSION['install_config'])) {
 			diverge('/config');
 			return;
@@ -10,10 +10,10 @@ class View_Install_Start extends View {
 		return $this->render('install.html');
 	}
 
-	protected function post($url) {
+	protected function post($app) {
 		require('inc/config_template.php');
 
-		$param = $this->app['param'];
+		$param = $app['param'];
 
 		// set up config variables
 		$vars = array();

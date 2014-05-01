@@ -4,10 +4,8 @@
  * @todo Find domains and list them.
  */
 class View_Ban extends View {
-	protected function get($url, $boardname) {
-		global $app;
-
-		$user = do_login($url);
+	protected function get($app, $boardname) {
+		$user = do_login($app);
 		$board = new Board($boardname);
 
 		$id = $app['param']->get('id');

@@ -1,14 +1,12 @@
 <?php
 
 class View_Reports extends View {
-	protected function get($url) {
-		do_csrf($url);
+	protected function get($app) {
+		do_csrf($app);
 	}
 
-	protected function post($url) {
-		global $app;
-
-		do_csrf($url);
+	protected function post($app) {
+		do_csrf($app);
 		$user = do_login();
 
 		$param = $app['param']->flags(Param::S_DEFAULT|Param::T_ARRAY);

@@ -1,8 +1,8 @@
 <?php
 
 class View_BoardEdit extends View {
-	protected function get($url, $boardname) {
-		$user = do_login($url);
+	protected function get($app, $boardname) {
+		$user = do_login($app);
 
 		$board = new Board($boardname);
 
@@ -12,11 +12,11 @@ class View_BoardEdit extends View {
 		));
 	}
 
-	protected function post($url, $boardname) {
-		$user = do_login($url);
-		do_csrf($url);
+	protected function post($app, $boardname) {
+		$user = do_login($app);
+		do_csrf($app);
 
-		$param = $this->app['param'];
+		$param = $app['param'];
 
 		$board = new Board($boardname);
 

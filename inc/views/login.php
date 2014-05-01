@@ -1,9 +1,7 @@
 <?php
 
 class View_Login extends View {
-	protected function get($url) {
-		global $app;
-
+	protected function get($app) {
 		$error = false;
 
 		try {
@@ -32,9 +30,7 @@ class View_Login extends View {
 		));
 	}
 
-	protected function post($url) {
-		global $app;
-
+	protected function post($app) {
 		$param = $app['param']->flags(Param::T_STRING | Param::M_POST);
 
 		$username = $param->get('login_user');

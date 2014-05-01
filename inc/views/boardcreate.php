@@ -1,11 +1,11 @@
 <?php
 
 class View_BoardCreate extends View {
-	protected function post($url) {
+	protected function post($app) {
 		$user = do_login('/manage');
-		do_csrf($url);
+		do_csrf($app);
 
-		$param = $this->app['param'];
+		$param = $app['param'];
 
 		$boardname = $param->get('path');
 		$title = $param->get('title');

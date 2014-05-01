@@ -1,9 +1,7 @@
 <?php
 
 class View_Install_Download extends View {
-	protected function get($url) {
-		global $app;
-
+	protected function get($app) {
 		if (!isset($_SESSION['install_config'])) {
 			$param = $app['param']->flags(
 				Param::T_STRING |

@@ -1,13 +1,11 @@
 <?php
 
 class View_Delete extends View {
-	protected function get($url) {
-		do_csrf($url);
+	protected function get($app) {
+		do_csrf($app);
 	}
 
-	protected function post($url, $boardname) {
-		global $app;
-
+	protected function post($app, $boardname) {
 		$param = $app['param'];
 
 		$task = $param->get('task');
@@ -31,7 +29,7 @@ class View_Delete extends View {
 		}
 
 		if ($is_admin) {
-			do_csrf($url);
+			do_csrf($app);
 			$user = do_login();
 
 			$password = null;

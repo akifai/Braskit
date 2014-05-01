@@ -1,10 +1,8 @@
 <?php
 
 class View_Bans extends View {
-	protected function get($url) {
-		global $app;
-
-		$user = do_login($url);
+	protected function get($app) {
+		$user = do_login($app);
 
 		// TODO: Pagination
 		$bans = $app['db']->allBans();
@@ -18,10 +16,8 @@ class View_Bans extends View {
 		));
 	}
 
-	protected function post($url) {
-		global $app;
-
-		$user = do_login($url);
+	protected function post($app) {
+		$user = do_login($app);
 		do_csrf();
 
 		$param = $app['param'];

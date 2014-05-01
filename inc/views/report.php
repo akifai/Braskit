@@ -1,7 +1,7 @@
 <?php
 
 class View_Report extends View {
-	protected function get($url, $boardname) {
+	protected function get($app, $boardname) {
 		$board = new Board($boardname);
 		$config = $board->config;
 
@@ -22,10 +22,8 @@ class View_Report extends View {
 		));
 	}
 
-	protected function post($url, $boardname) {
-		global $app;
-
-		do_csrf($url);
+	protected function post($app, $boardname) {
+		do_csrf($app);
 
 		$board = new Board($boardname);
 		$config = $board->config;

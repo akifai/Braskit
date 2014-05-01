@@ -1,9 +1,7 @@
 <?php
 
 class View_Post extends View {
-	protected function post($url, $boardname) {
-		global $app;
-
+	protected function post($app, $boardname) {
 		// get the ip
 		$ip = $app['request']->ip;
 

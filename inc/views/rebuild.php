@@ -1,8 +1,8 @@
 <?php
 
 class View_Rebuild extends View {
-	protected function get($url, $boardname) {
-		$user = do_login($url);
+	protected function get($app, $boardname) {
+		$user = do_login($app);
 
 		$board = new Board($boardname);
 

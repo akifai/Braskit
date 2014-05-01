@@ -1,8 +1,8 @@
 <?php
 
 class View_Page extends View {
-	protected function get($url, $boardname, $page = 0) {
-		$user = do_login($url);
+	protected function get($app, $boardname, $page = 0) {
+		$user = do_login($app);
 
 		$board = new Board($boardname);
 
@@ -19,7 +19,7 @@ class View_Page extends View {
 			return;
 		}
 
-		return $this->render('page.html', array(
+		return $board->render('page.html', array(
 			'admin' => true,
 			'board' => $board,
 			'maxpage' => $maxpage,

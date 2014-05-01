@@ -34,7 +34,12 @@ abstract class View {
 			$this->methodNotAllowed();
 		}
 
-		$this->responseBody = call_user_func_array($method, $app['router']->matches);
+		$args = $app['router']->matches;
+
+		// set the first argument to $app
+		array_unshift($args, $app);
+
+		$this->responseBody = call_user_func_array($method, $args);
 	}
 
 	private function methodNotAllowed() {

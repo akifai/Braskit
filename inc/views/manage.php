@@ -1,10 +1,8 @@
 <?php
 
 class View_Manage extends View {
-	protected function get($url) {
-		global $app;
-
-		$user = do_login($url);
+	protected function get($app) {
+		$user = do_login($app);
 
 		$boards = array();
 

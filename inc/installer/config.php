@@ -1,7 +1,7 @@
 <?php
 
 class View_Install_Config extends View {
-	protected function get($url) {
+	protected function get($app) {
 		if (!isset($_SESSION['install_config'])) {
 			// we haven't even begun
 			diverge('/');

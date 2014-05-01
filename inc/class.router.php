@@ -59,6 +59,9 @@ abstract class Router {
 				$this->view = $view;
 				$this->matches = $matches;
 
+				// first "match" is always the subject string
+				array_shift($this->matches);
+
 				return;
 			}
 		}

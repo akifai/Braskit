@@ -1,10 +1,8 @@
 <?php
 
 class View_Config extends View {
-	protected function get($url, $boardname = false) {
-		global $app;
-
-		$user = do_login($url);
+	protected function get($app, $boardname = false) {
+		$user = do_login($app);
 
 		$template_vars = array('admin' => true);
 
@@ -20,10 +18,8 @@ class View_Config extends View {
 		return $this->render('config.html', $template_vars);
 	}
 
-	protected function post($url, $boardname = false) {
-		global $app;
-
-		$user = do_login($url);
+	protected function post($app, $boardname = false) {
+		$user = do_login($app);
 
 		do_csrf();
 
@@ -65,6 +61,6 @@ class View_Config extends View {
 		if ($values || $reset)
 			$instance->save();
 
-		diverge($url);
+		diverge($app);
 	}
 }
