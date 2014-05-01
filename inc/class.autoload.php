@@ -21,6 +21,7 @@ class AutoLoader {
 	);
 
 	protected $classes = array(
+		'App' => 'class.app.php',
 		'Ban' => 'class.ban.php',
 		'BanCreate' => 'class.ban.php',
 		'Board' => 'class.board.php',

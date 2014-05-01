@@ -59,7 +59,7 @@ if (get_magic_quotes_gpc()) {
 	set_magic_quotes_runtime(false);
 }
 
-$app = new Pimple();
+$app = new App();
 
 $app['request'] = function () {
 	return new Request();
@@ -71,7 +71,6 @@ $app['param'] = $app->factory(function () use ($app) {
 
 // Constants for debug
 define('DEBUG_NONE', 0);
-define('DEBUG_TEMPLATE', 2);
 define('DEBUG_JS', 4);
 define('DEBUG_LESS', 8);
 define('DEBUG_CACHE', 16);
@@ -92,6 +91,41 @@ $app['cache'] = function () {
 	}
 	
 	return new Cache_PHP();
+};
+
+// setting for enabling debug features
+$app['template.debug'] = false;
+
+// returns a filesystem loader for inc/templates
+$app['template.loader'] = function () {
+	return new PlainIB_Twig_Loader(TINYIB_ROOT.'/inc/templates');
+};
+
+// returns a new chain loader
+$app['template.chain'] = $app->factory(function () {
+	return new Twig_Loader_Chain();
+});
+
+$app['template.creator'] = $app->protect(function ($loader) use ($app) {
+	global $cache_dir;
+
+	$twig = new Twig_Environment($loader, array(
+		'cache' => $app['template.debug'] ? false : $cache_dir,
+		'debug' => $app['template.debug'],
+	));
+
+	$twig->addExtension(new PlainIB_Twig_Extension());
+
+	// Load debugger
+	if ($app['template.debug']) {
+		$twig->addExtension(new Twig_Extension_Debug());
+	}
+
+	return $twig;
+});
+
+$app['template'] = function () use ($app) {
+	return $app['template.creator']($app['template.loader']);
 };
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {

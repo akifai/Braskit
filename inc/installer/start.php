@@ -7,7 +7,7 @@ class View_Install_Start extends View {
 			return;
 		}
 
-		echo render('install.html');
+		return $this->render('install.html');
 	}
 
 	protected function post($url) {

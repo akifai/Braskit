@@ -9,8 +9,15 @@
 class Board {
 	const BOARD_RE = '[A-Za-z0-9]+';
 
-	public $title, $minlevel = 0, $config;
-	private $exists, $board;
+	public $config;
+
+	public $title;
+	public $minlevel = 0;
+
+	protected $exists;
+	protected $board;
+
+	protected $twig;
 
 	public static function validateName($board) {
 		// Check for blank board name
@@ -494,23 +501,35 @@ class Board {
 		return $file;
 	}
 
-	/**
-	 * Board-specific Twig instance
-	 */
-	public function getTwig() {
-		$dir = $this->board.'/templates';
+	protected function getTwig() {
+		global $app;
 
-		if (is_dir($dir))
-			return load_twig(array($dir));
+		if (isset($this->twig)) {
+			return $this->twig;
+		}
 
-		return load_twig();
+		$path = TINYIB_ROOT."/$this->board/templates";
+
+		if (!is_dir($path) || !is_readable($path)) {
+			// no template directory and/or bad permissions, so just
+			// use the global twig object
+			$this->twig = $app['template'];
+		} else {
+			$chain = $app['template.chain'];
+
+			$chain->addLoader(new PlainIB_Twig_Loader($path));
+			$chain->addLoader($app['template.loader']);
+
+			$this->twig = $app['template.creator']($chain);
+		}
+
+		return $this->twig;
 	}
 
 	public function render($template, $args = array()) {
-		if (!isset($this->twig))
-			$this->twig = $this->getTwig();
+		$twig = $this->getTwig();
 
-		return render($template, $args, $this->twig);
+		return $twig->render($template, $args);
 	}
 
 	/**

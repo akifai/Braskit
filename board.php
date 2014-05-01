@@ -31,7 +31,8 @@ $app['router'] = function () use ($app) {
 	return new Router_Main($app['path']->get());
 };
 
-$view = new $app['router']->view($app['router']);
+$view = new $app['router']->view($app);
+
 echo $view->responseBody;
 
 // print buffer
@@ -82,7 +83,7 @@ function make_error_page($e) {
 
 	try {
 		// Error messages using Twig
-		echo render($template, array(
+		echo $app['template']->render($template, array(
 			'exception' => $e,
 			'message' => $message,
 			'referrer' => $referrer,

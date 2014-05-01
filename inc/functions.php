@@ -117,48 +117,6 @@ function redirect($url) {
 }
 
 /**
- * @todo DI
- */
-function load_twig(array $dirs = array()) {
-	global $cache_dir;
-	global $debug;
-
-	$dirs[] = 'inc/templates';
-
-	$loader = new PlainIB_Twig_Loader($dirs);
-
-	$twig = new Twig_Environment($loader, array(
-		'cache' => ($debug & DEBUG_TEMPLATE) ? false : $cache_dir,
-		'debug' => (bool)($debug & DEBUG_TEMPLATE),
-	));
-
-	$twig->addExtension(new PlainIB_Twig_Extension());
-
-	// Load debugger
-	if ($debug & DEBUG_TEMPLATE)
-		$twig->addExtension(new Twig_Extension_Debug());
-
-	return $twig;
-}
-
-/**
- * @todo DI
- */
-function render($template, $args = array(), $twig = null) {
-	global $twig;
-
-	if ($twig === null) {
-		// Load Twig if necessary
-		if (!isset($twig))
-			$twig = load_twig();
-	}
-
-	$output = $twig->render($template, $args);
-
-	return $output;
-}
-
-/**
  * Minifies and combines the JavaScript files specified in the configuration
  * into one file and returns the path to it.
  *
@@ -239,7 +197,7 @@ function do_csrf($url = false) {
 	}
 
 	// this is a GET request - display a confirmation
-	echo render('csrf.html', array(
+	echo $app['template']->render('csrf.html', array(
 		'display_url' => $url ?: $request->server['REQUEST_URI'],
 		'token' => get_csrf_token(),
 		'url' => $request->server['REQUEST_URI'],

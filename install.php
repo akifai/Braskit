@@ -29,7 +29,7 @@ $app['router'] = function () use ($app) {
 	return new Router_Install($app['path']->get());
 };
 
-$view = new $app['router']->view($app['router']);
+$view = new $app['router']->view($app);
 echo $view->responseBody;
 
 /// Internal redirect

@@ -2,6 +2,11 @@
 
 abstract class View {
 	/**
+	 * App instance
+	 */
+	public $app;
+
+	/**
 	 * The request body.
 	 *
 	 * @var string
@@ -11,8 +16,10 @@ abstract class View {
 	/**
 	 * @todo Avoid globals.
 	 */
-	public function __construct(Router $router) {
+	public function __construct(App $app) {
 		global $app;
+
+		$this->app = $app;
 
 		$request = $app['request'];
 
@@ -27,7 +34,7 @@ abstract class View {
 			$this->methodNotAllowed();
 		}
 
-		$this->responseBody = call_user_func_array($method, $router->matches);
+		$this->responseBody = call_user_func_array($method, $app['router']->matches);
 	}
 
 	private function methodNotAllowed() {
@@ -35,10 +42,7 @@ abstract class View {
 		throw new Exception('Method not allowed.');
 	}
 
-	/**
-	 * @todo
-	 */
-	protected function render() {
-		echo call_user_func_array('render', func_get_args());
+	protected function render($template, $args = array()) {
+		return $this->app['template']->render($template, $args);
 	}
 }

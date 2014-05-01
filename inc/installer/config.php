@@ -15,7 +15,7 @@ class View_Install_Config extends View {
 			$session_name => $session_id
 		));
 
-		echo render('install_config.html', array(
+		return $this->render('install_config.html', array(
 			'config' => $_SESSION['install_config'],
 			'config_path' => $config_path,
 			'config_url' => get_url($config_path),
