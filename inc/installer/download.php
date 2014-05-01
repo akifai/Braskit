@@ -11,7 +11,7 @@ class View_Install_Download extends View {
 				Param::S_STRICT
 			);
 
-			$https = (bool)param('HTTPS');
+			$https = $param->get('HTTPS');
 
 			// No config stored
 			header('HTTP/1.1 404 Not Found');

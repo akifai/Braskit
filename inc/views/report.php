@@ -46,7 +46,7 @@ class View_Report extends View {
 		}
 
 		$posts = get_ids($board);
-		$reason = param('reason');
+		$reason = $app['param']->get('reason');
 
 		$board->report($posts, $app['request']->ip, $reason);
 

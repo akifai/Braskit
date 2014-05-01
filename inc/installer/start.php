@@ -13,6 +13,8 @@ class View_Install_Start extends View {
 	protected function post($url) {
 		require('inc/config_template.php');
 
+		$param = $this->app['param'];
+
 		// set up config variables
 		$vars = array();
 
@@ -25,7 +27,7 @@ class View_Install_Start extends View {
 			'username',
 			'password'
 		) as $name) {
-			$vars[$name] = param($name);
+			$vars[$name] = $param->get($name);
 		}
 
 		// generate a secret key

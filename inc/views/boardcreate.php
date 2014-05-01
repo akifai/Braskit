@@ -5,8 +5,10 @@ class View_BoardCreate extends View {
 		$user = do_login('/manage');
 		do_csrf($url);
 
-		$boardname = param('path');
-		$title = param('title');
+		$param = $this->app['param'];
+
+		$boardname = $param->get('path');
+		$title = $param->get('title');
 
 		$board = new Board($boardname, false);
 		$board->create($title);

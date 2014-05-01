@@ -16,12 +16,14 @@ class View_BoardEdit extends View {
 		$user = do_login($url);
 		do_csrf($url);
 
+		$param = $this->app['param'];
+
 		$board = new Board($boardname);
 
-		$name = param('name');
-		$title = param('title');
-		$minlevel = param('minlevel');
-		$rebuild = param('rebuild');
+		$name = $param->get('name');
+		$title = $param->get('title');
+		$minlevel = $param->get('minlevel');
+		$rebuild = $param->get('rebuild');
 
 		$board->editSettings($title, $minlevel);
 
