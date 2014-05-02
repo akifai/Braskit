@@ -53,20 +53,11 @@ $app['param'] = $app->factory(function () use ($app) {
 	return new Param($app['request']);
 });
 
-// Constants for debug
-define('DEBUG_NONE', 0);
-define('DEBUG_JS', 4);
-define('DEBUG_LESS', 8);
-define('DEBUG_CACHE', 16);
-define('DEBUG_ALL', ~0);
+$app['cache.debug'] = false;
 
-$debug = false;
-
-// Cache - TODO
-$app['cache'] = function () {
-	global $debug;
-
-	if ($debug & DEBUG_CACHE) {
+// Cache
+$app['cache'] = function () use ($app) {
+	if ($app['cache.debug']) {
 		return new Cache_Debug();
 	}
 
@@ -74,7 +65,7 @@ $app['cache'] = function () {
 		return new Cache_APC();
 	}
 	
-	return new Cache_PHP();
+	return new Cache_PHP($app['path.cache']);
 };
 
 // setting for enabling debug features
@@ -91,10 +82,8 @@ $app['template.chain'] = $app->factory(function () {
 });
 
 $app['template.creator'] = $app->protect(function ($loader) use ($app) {
-	global $cache_dir;
-
 	$twig = new Twig_Environment($loader, array(
-		'cache' => $app['template.debug'] ? false : $cache_dir,
+		'cache' => $app['template.debug'] ? false : $app['path.cache'],
 		'debug' => $app['template.debug'],
 	));
 
@@ -112,11 +101,35 @@ $app['template'] = function () use ($app) {
 	return $app['template.creator']($app['template.loader']);
 };
 
-if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
-	// temporary config variables needed for the installer
-	$temp_dir = sys_get_temp_dir();
-	$cache_dir = $temp_dir.'/plainib-cache';
+$app['js.debug'] = false;
 
+// bunch of stuff that was previously defined only in the generated config file
+$app['js.includes'] = array(
+	'jquery-1.9.0.min.js',
+	'jquery.cookie.js',
+	'bootstrap.min.js',
+	'spin.js',
+	'PlainIB.js',
+);
+
+$app['less.debug'] = false;
+
+$app['less.stylesheets'] = array(
+	'Burichan' => 'burichan',
+	'Futaba' => 'futaba',
+	'Tomorrow' => 'tomorrow',
+	'Yotsuba' => 'yotsuba',
+	'Yotsuba B' => 'yotsuba-b',
+);
+
+$app['less.default_style'] = 'Futaba';
+
+$app['thumb.method'] = 'gd';
+
+$app['path.tmp'] = sys_get_temp_dir();
+$app['path.cache'] = TINYIB_ROOT.'/cache';
+
+if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// we can't use a config or database for this entry point
 	return;
 }
@@ -130,16 +143,18 @@ if (file_exists(TINYIB_ROOT.'/config.php')) {
 	exit;
 }
 
-if ($debug === 1 || $debug === true)
-	$debug = DEBUG_ALL;
-
 // establish database connection
-$app['dbh'] = function () use ($db_name, $db_host, $db_username, $db_password) {
-	return new DBConnection($db_name, $db_host, $db_username, $db_password);
+$app['dbh'] = function () use ($app) {
+	return new DBConnection(
+		$app['db.name'],
+		$app['db.host'],
+		$app['db.username'],
+		$app['db.password']
+	);
 };
 
-$app['db'] = function () use ($app, $db_prefix) {
-	return new Database($app['dbh'], $db_prefix);
+$app['db'] = function () use ($app) {
+	return new Database($app['dbh'], $app['db.prefix']);
 };
 
 // Site configuration

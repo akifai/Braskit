@@ -124,7 +124,6 @@ function redirect($url) {
  */
 function get_js() {
 	global $app;
-	global $javascript_includes;
 
 	static $static_cache;
 
@@ -152,7 +151,7 @@ function get_js() {
 		throw new Exception("Cannot write to /static/js/.");
 	}
 
-	foreach ($javascript_includes as $filename) {
+	foreach ($app['js.includes'] as $filename) {
 		if (strpos($filename, '/') === false)
 			$filename = TINYIB_ROOT.'/static/js/'.$filename;
 
@@ -371,9 +370,9 @@ function make_name_tripcode($input, $tripkey = '!') {
 }
 
 function writePage($filename, $contents) {
-	global $temp_dir;
+	global $app;
 
-	$tempfile = tempnam($temp_dir, 'tmp'); /* Create the temporary file */
+	$tempfile = tempnam($app['path.tmp'], 'tmp'); /* Create the temporary file */
 	$fp = fopen($tempfile, 'w');
 	fwrite($fp, $contents);
 	fclose($fp);

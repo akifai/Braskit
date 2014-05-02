@@ -36,19 +36,18 @@ class Style {
 	}
 
 	public function __construct() {
-		global $stylesheets;
-		global $default_stylesheet;
+		global $app;
 
-		if (isset($stylesheets) && $stylesheets) {
-			$this->styles = $stylesheets;
+		if ($app['less.stylesheets']) {
+			$this->styles = $app['less.stylesheets'];
 		} else {
 			// # makes the <link> invalid, / prevents us from
 			// "expanding" the path
 			$this->styles = array('Default' => '#/');
 		}
 
-		if (isset($default_stylesheet)) {
-			$this->default = $default_stylesheet;
+		if ($app['less.default_style']) {
+			$this->default = $app['less.default_style'];
 		} else {
 			reset($this->styles);
 			$this->default = current($this->styles);
@@ -59,7 +58,7 @@ class Style {
 	 * Converts the style paths to web-accessible ones.
 	 */
 	protected function transformPaths() {
-		global $debug;
+		global $app;
 
 		if ($this->pathsAreTransformed)
 			return;
@@ -73,7 +72,7 @@ class Style {
 			// look for compiled LESS
 			$results = glob("$path/$style-*.css");
 
-			if ($results && !($debug & DEBUG_LESS)) {
+			if ($results && !$app['less.debug']) {
 				// get the newest file
 				$basename = basename(array_pop($results));
 			} else {
@@ -125,20 +124,21 @@ class Style {
 	 * @return bool  Whether or not the compilation was successful.
 	 */
 	public static function compileLess($input, $output) {
-		global $debug;
+		global $app;
 
 		$less = new lessc_fixed;
 
 		// strip whitespace if we aren't debugging
-		if (!($debug & DEBUG_LESS))
+		if (!$app['less.debug']) {
 			$less->setFormatter('compressed');
+		}
 
 		try {
 			$less->compileFile($input, $output);
 			return true;
 		} catch (Exception $e) {
 			// print to error log
-			if (!($debug & DEBUG_LESS)) {
+			if (!$app['less.debug']) {
 				file_put_contents(STDERR, "LESS: $message");
 				return;
 			}

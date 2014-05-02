@@ -31,7 +31,10 @@ class View_Install_Start extends View {
 		}
 
 		// generate a secret key
-		$_SESSION['installer_secret'] = $vars['secret'] = random_string(65);
+		$_SESSION['installer_secret'] = $vars['secret'] = random_string(60);
+
+		// unique identifier
+		$vars['unique'] = 'pib'.mt_rand(10, 99);
 
 		// note: we use sessions to store the config because we don't want
 		// other people to see the finished config!

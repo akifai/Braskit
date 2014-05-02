@@ -22,7 +22,7 @@ abstract class Thumb {
 	protected $image;
 
 	public function __construct($source, $image = false) {
-		global $temp_dir;
+		global $app;
 
 		if (!is_readable($source))
 			throw new Exception("Cannot read the image.");
@@ -39,7 +39,7 @@ abstract class Thumb {
 		}
 
 		$this->sourceFile = $source;
-		$this->tempnam = tempnam($temp_dir, 'plainib_');
+		$this->tempnam = tempnam($app['path.tmp'], 'plainib_');
 	}
 
 	public function setMax($width, $height) {
@@ -98,9 +98,11 @@ abstract class Thumb {
 	 *               method defined in the configuration.
 	 */
 	public static function getObject($src, $image) {
-		global $thumb_method;
+		global $app;
 
-		switch ($thumb_method) {
+		$method = $app['thumb.method'];
+
+		switch ($method) {
 		case 'convert':
 			$obj = new ThumbConvert($src, $image);
 			break;
@@ -115,10 +117,10 @@ abstract class Thumb {
 			$obj = new ThumbSips($src, $image);
 			break;
 		default:
-			if (class_exists($thumb_method))
-				$obj = new $thumb_method($src, $image);
+			if (class_exists($method))
+				$obj = new $method($src, $image);
 			else
-				throw new LogicException("Unknown thumbnail method '$thumb_method'.");
+				throw new LogicException("Unknown thumbnail method '$method'.");
 		}
 
 		return $obj;

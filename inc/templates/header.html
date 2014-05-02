@@ -20,7 +20,7 @@
       -
     {% endif %}
 
-    [<a href="{{ config.home_url }}" target="_top">Home</a>]
+    [<a href="{{ app.config.home_url }}" target="_top">Home</a>]
 
     {# Login link #}
     {% if not admin %}
@@ -43,7 +43,7 @@
           <a href="{{ board.path("edit", true) }}" class="board-edit">[Edit]</a>
         {% endif %}
       {% else %}
-        {{ config.site_name }}
+        {{ app.config.site_name }}
       {% endif %}
     </h1>
     {%- if subheader -%}

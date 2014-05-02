@@ -7,7 +7,7 @@
       {% if not title %}/{{ board }}/ - {% endif %}
       {{ board.title }}
     {% else %}
-      {{ config.site_name }}
+      {{ app.config.site_name }}
     {% endif %}
   </title>
 
@@ -42,8 +42,8 @@
     {% include "footer.html" %}
   </div>
 
-  {% if debug and debug b-and constant("DEBUG_JS") %}
-    {% for file in js %}
+  {% if app["js.debug"] %}
+    {% for file in app["js.includes"] %}
       {# TODO: absolute paths #}
       <script src="{{ path("static/js/"~file) }}"></script>
     {% endfor %}

@@ -12,7 +12,7 @@ class Cache_Debug implements Cache {
 		return false;
 	}
 
-	public function set($key, $value, $timeout = false) {
+	public function set($key, $value, $ttl = false) {
 		return false;
 	}
 
@@ -30,7 +30,7 @@ class Cache_APC implements Cache {
 		return apc_fetch($key);
 	}
 
-	public function set($key, $value, $timeout = false) {
+	public function set($key, $value, $ttl = false) {
 		return apc_add($key, $value, $ttl);
 	}
 
@@ -55,10 +55,12 @@ class Cache_APC implements Cache {
  * @todo Redo this.
  */
 class Cache_PHP implements Cache {
-	public function get($key) {
-		global $cache_dir;
+	public function __construct($cacheDir) {
+		$this->cacheDir = $cacheDir;
+	}
 
-		$filename = "$cache_dir/cache-{$key}.php";
+	public function get($key) {
+		$filename = "$this->cacheDir/cache-{$key}.php";
 
 		@include($filename);
 
@@ -72,9 +74,7 @@ class Cache_PHP implements Cache {
 	}
 
 	public function set($key, $value, $ttl = false) {
-		global $cache_dir;
-
-		@mkdir('cache'); // FIXME
+		@mkdir($this->cacheDir); // TODO ???
 
 		// Content of the cache file
 		$content = '<?php ';
@@ -90,29 +90,27 @@ class Cache_PHP implements Cache {
 		$dumped_data = var_export($value, true);
 		$content .= sprintf('$cache = %s;', $dumped_data);
 
-		writePage("$cache_dir/cache-$key.php", $content);
+		writePage("$this->cacheDir/cache-$key.php", $content);
 
 		return true;
 	}
 
 	public function delete($key) {
-		global $cache_dir;
-
-		return @unlink("$cache_dir/cache-$key.php");
+		return @unlink("$this->cacheDir/cache-$key.php");
 	}
 
 	public function purge() {
-		global $cache_dir;
-
 		// get list of cache files
-		$files = glob("$cache_dir/cache-*.php");
+		$files = glob("$this->cacheDir/cache-*.php");
 
 		// that didn't work for some reason
-		if (!is_array($files))
+		if (!is_array($files)) {
 			return false;
+		}
 
-		foreach ($files as $file)
-			unlink($file);
+		foreach ($files as $file) {
+			@unlink($file);
+		}
 
 		return true;
 	}

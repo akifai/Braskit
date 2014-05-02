@@ -6,7 +6,10 @@ function create_config($vars) {
 
 	echo "<?php\n";
 ?>
-defined('TINYIB') or exit;
+
+# protects against outsiders - don't remove
+isset($app) && $app instanceof App or exit;
+
 
 #
 # General
@@ -14,77 +17,33 @@ defined('TINYIB') or exit;
 
 # cryptographic secret - DO NOT LOSE OR EDIT THIS KEY. Logins will break and
 # secure tripcodes will be different!
-$secret = <?php var_export($vars['secret']) ?>;
+$app['secret'] = <?php var_export($vars['secret']) ?>;
+
+# A unique identifier for this install. It is used to avoid conflicts with
+# other software.
+$app['unique'] = <?php var_export($vars['unique']) ?>;
+
+
+#
+# Database
+#
 
 # name of database
-$db_name = <?php var_export($vars['db_name']) ?>;
+$app['db.name'] = <?php var_export($vars['db_name']) ?>;
 
 # database username
-$db_username = <?php var_export($vars['db_username']) ?>;
+$app['db.username'] = <?php var_export($vars['db_username']) ?>;
 
 # database password
-$db_password = <?php var_export($vars['db_password']) ?>;
+$app['db.password'] = <?php var_export($vars['db_password']) ?>;
 
 # database host - usually 'localhost', but may vary
-$db_host = <?php var_export($vars['db_host']) ?>;
+$app['db.host'] = <?php var_export($vars['db_host']) ?>;
 
 # table prefix - if you're sharing the database with another application (i.e.
 # mediawiki or another PlainIB install), then set this to something unique.
-$db_prefix = <?php var_export($vars['db_prefix']) ?>;
+$app['db.prefix'] = <?php var_export($vars['db_prefix']) ?>;
 
-
-#
-# File uploads
-#
-
-# What method is used to create thumbnails. Available methods are:
-#   - convert (recommended, but requires ImageMagick's command line utility)
-#   - gd (well-supported, but no transparency or animations)
-#   - imagick (not recommended, requires ImageMagick's PHP extension)
-#   - sips (OS X only, not recommended, sometimes fails whereas others don't)
-$thumb_method = 'gd';
-
-
-#
-# Paths
-#
-
-# Available stylesheets as a name => path associative array.
-$stylesheets = array(
-	'Burichan' => 'burichan',
-	'Futaba' => 'futaba',
-	'Tomorrow' => 'tomorrow',
-	'Yotsuba' => 'yotsuba',
-	'Yotsuba B' => 'yotsuba-b',
-);
-
-# Default stylesheet
-$default_stylesheet = 'Futaba';
-
-# JavaScript files to include - these will be minified, merged into one file and
-# included at the bottom of the page
-$javascript_includes = array(
-	'jquery-1.9.0.min.js',
-	'jquery.cookie.js',
-	'bootstrap.min.js',
-	'spin.js',
-	'PlainIB.js',
-);
-
-# cache directory - you should probably not change this
-$cache_dir = TINYIB_ROOT.'/cache';
-
-# temporary directory - you should probably not change this
-$temp_dir = sys_get_temp_dir();
-
-
-#
-# Tweaks
-#
-
-# enable debug mode - this will slow the board down considerably, but help with
-# debugging and development
-$debug = false;
 <?php
 	$output = ob_get_contents();
 	ob_end_clean();
