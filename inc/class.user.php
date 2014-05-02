@@ -182,7 +182,7 @@ class User {
 	 * @return string|bool password hash or false on failure
 	 */
 	protected static function hash($algorithm, $key) {
-		global $secret;
+		global $app;
 
 		$method = 'hash_'.$algorithm;
 
@@ -224,21 +224,21 @@ class User {
 	}
 
 	protected static function hash_sha1($key) {
-		global $secret;
+		global $app;
 
-		return sha1($key.$secret);
+		return sha1($key.$app['secret']);
 	}
 
 	protected static function hash_sha256($key) {
-		global $secret;
+		global $app;
 
 		// http://www.hardened-php.net/suhosin/a_feature_list.html
 		if (function_exists('sha256'))
-			return sha256($key.$secret);
+			return sha256($key.$app['secret']);
 
 		// php's documentation is really vague, so i'm going to assume
 		// that sha256 might not always be available
-		return @hash('sha256', $key.$secret);
+		return @hash('sha256', $key.$app['secret']);
 	}
 
 

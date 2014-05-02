@@ -330,7 +330,7 @@ function shorten_filename($filename) {
 }
 
 function make_name_tripcode($input, $tripkey = '!') {
-	global $secret;
+	global $app;
 
 	$tripcode = '';
 
@@ -361,7 +361,7 @@ function make_name_tripcode($input, $tripkey = '!') {
 
 	// Do secure tripcodes
 	if ($secure !== false) {
-		$hash = sha1($secure.$secret);
+		$hash = sha1($secure.$app['secret']);
 		$hash = substr(base64_encode($hash), 0, 10);
 		$tripcode .= $tripkey.$tripkey.$hash;
 	}
