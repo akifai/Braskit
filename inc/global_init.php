@@ -39,23 +39,7 @@ require(TINYIB_ROOT.'/inc/functions.php');
 if (defined('TINYIB_EXCEPTION_HANDLER'))
 	set_exception_handler(TINYIB_EXCEPTION_HANDLER);
 
-// Unescape magic quotes
 if (get_magic_quotes_gpc()) {
-	$process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
-	while (list($key, $val) = each($process)) {
-		foreach ($val as $k => $v) {
-			unset($process[$key][$k]);
-			if (is_array($v)) {
-				$process[$key][stripslashes($k)] = $v;
-				$process[] = &$process[$key][stripslashes($k)];
-				continue;
-			}
-
-			$process[$key][stripslashes($k)] = stripslashes($v);
-		}
-	}
-	unset($process);
-
 	set_magic_quotes_runtime(false);
 }
 
