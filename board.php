@@ -6,8 +6,6 @@
  * See LICENSE for terms and conditions of use.
  */
 
-$start_time = microtime(true);
-
 // this is a valid entry point
 define('TINYIB', null);
 
@@ -98,7 +96,7 @@ function make_error_page($e) {
 }
 
 function ob_callback($buffer) {
-	global $app, $start_time;
+	global $app;
 
 	// We don't want to modify non-html responses
 	if (!in_array('Content-Type: text/html; charset=UTF-8', headers_list()))
@@ -112,7 +110,7 @@ function ob_callback($buffer) {
 	// first part of the new buffer
 	$newbuf = substr($buffer, 0, $ins);
 
-	$total_time = microtime(true) - $start_time;
+	$total_time = microtime(true) - $app['request']->microtime;
 	$query_time = round(100 / $total_time * $app['dbh']->time);
 
 	// Append debug text
