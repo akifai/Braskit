@@ -1,74 +1,23 @@
 <?php
 /*
- * Copyright (C) 2013 plainboards.org
- * Based on TinyIB, copyright (C) 2009(?)-2012 Trevor Slocum.
+ * Copyright (C) 2013, 2014 Frank Usrs
  *
  * See LICENSE for terms and conditions of use.
  */
 
-define('TINYIB', null);
+require(dirname(__FILE__).'/inc/class.autoload.php');
+AutoLoader::register();
 
-// never let PHP print errors - this fucks up the JSON
-ini_set('display_errors', 0);
+$app = new App();
 
-define('TINYIB_EXCEPTION_HANDLER', 'ajax_exception_handler');
-define('TINYIB_BASE_TEMPLATE', 'ajax_base.html');
+$app['controller'] = new Controller_Ajax($app);
 
-require('./inc/global_init.php');
+$app->run();
 
-header('Content-Type: application/json; charset=UTF-8', true);
-
-$ajax = array('error' => false);
-
-ob_start('ob_ajax_callback');
-
-$app['path'] = function () use ($app) {
-	return new Path_QueryString($app['request']);
-};
-
-$app['router'] = function () use ($app) {
-	return new Router_Main($app['path']->get());
-};
-
-$view = new $app['router']->view($app);
-echo $view->responseBody;
-
-// print buffer
-ob_end_flush();
-
-
-//
-// functions specific to ajax.php
-//
-
+// TODO
 function diverge($dest, $args = array()) {
 	global $ajax;
 
 	$ajax['diverge'] = $dest;
 	$ajax['divergeArgs'] = $args;
-}
-
-function ajax_exception_handler($e) {
-	ob_end_clean();
-
-	header('HTTP/1.1 403 Forbidden');
-
-	echo json_encode(array(
-		'error' => true,
-		'errorMsg' => $e->getMessage(),
-	));
-
-	exit;
-}
-
-function ob_ajax_callback($output) {
-	global $ajax;
-
-	$vars = array('page' => $output);
-
-	foreach ($ajax as $key => $value) {
-		$vars[$key] = $value;
-	}
-
-	return json_encode($vars);
 }
