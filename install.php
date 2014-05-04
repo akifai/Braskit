@@ -10,7 +10,10 @@ ini_set('session.use_only_cookies', false);
 
 require('inc/global_init.php');
 
-if (file_exists(TINYIB_ROOT.'/config.php') && !isset($_SESSION['installer'])) {
+if (
+	file_exists(TINYIB_ROOT.'/config.php') &&
+	!isset($app['session']['installer'])
+) {
 	header('HTTP/1.1 403 Forbidden');
 
 	echo 'PlainIB is already installed. ',
@@ -19,7 +22,7 @@ if (file_exists(TINYIB_ROOT.'/config.php') && !isset($_SESSION['installer'])) {
 	exit;
 }
 
-$_SESSION['installer'] = true;
+$app['session']['installer'] = true;
 
 $app['path'] = function () use ($app) {
 	return new Path_QueryString($app['request']);

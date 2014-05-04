@@ -222,15 +222,22 @@ function check_csrf() {
 }
 
 function get_csrf_token() {
-	if (isset($_SESSION['csrf_token']))
-		return $_SESSION['csrf_token'];
+	global $app;
+
+	$token = $app['session']['csrf_token'];
+
+	if ($token) {
+		return $token;
+	}
 
 	// no token set
-	return $_SESSION['csrf_token'] = random_string(48);
+	return $app['session']['csrf_token'] = random_string(48);
 }
 
 function unset_csrf_token() {
-	unset($_SESSION['csrf_token']);
+	global $app;
+
+	unset($app['session']['csrf_token']);
 }
 
 
@@ -439,8 +446,13 @@ function do_login($url = false) {
  * @deprecated
  */
 function get_session_login() {
-	if (isset($_SESSION['login']) && $_SESSION['login'] !== false)
-		return unserialize($_SESSION['login']);
+	global $app;
+
+	$session = $app['session'];
+
+	if (isset($session['login']) && $session['login'] !== false) {
+		return unserialize($session['login']);
+	}
 
 	return false;
 }

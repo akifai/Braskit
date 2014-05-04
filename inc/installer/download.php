@@ -2,7 +2,7 @@
 
 class View_Install_Download extends View {
 	protected function get($app) {
-		if (!isset($_SESSION['install_config'])) {
+		if (!isset($app['session']['install_config'])) {
 			$param = $app['param']->flags(
 				Param::T_STRING |
 				Param::M_SERVER |
@@ -27,6 +27,6 @@ class View_Install_Download extends View {
 
 		// offer the config as a download
 		header('Content-Disposition: attachment; filename=config.php');
-		echo $_SESSION['install_config'];
+		echo $app['session']['install_config'];
 	}
 }

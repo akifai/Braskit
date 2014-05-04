@@ -2,7 +2,7 @@
 
 class View_Install_Start extends View {
 	protected function get($app) {
-		if (isset($_SESSION['install_config'])) {
+		if (isset($app['session']['install_config'])) {
 			diverge('/config');
 			return;
 		}
@@ -31,18 +31,19 @@ class View_Install_Start extends View {
 		}
 
 		// generate a secret key
-		$_SESSION['installer_secret'] = $vars['secret'] = random_string(60);
+		$vars['secret'] = random_string(60);
+		$app['session']['installer_secret'] = $vars['secret'];
 
 		// unique identifier
 		$vars['unique'] = 'pib'.mt_rand(10, 99);
 
 		// note: we use sessions to store the config because we don't want
 		// other people to see the finished config!
-		$_SESSION['install_config'] = @create_config($vars);
+		$app['session']['install_config'] = @create_config($vars);
 
 		// we need these for the last step
-		$_SESSION['installer_user'] = $vars['username'];
-		$_SESSION['installer_pass'] = $vars['password'];
+		$app['session']['installer_user'] = $vars['username'];
+		$app['session']['installer_pass'] = $vars['password'];
 
 		diverge('/config');
 	}

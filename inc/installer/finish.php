@@ -4,7 +4,7 @@ class View_Install_Finish extends View {
 	protected function get($app) {
 		// we don't belong here yet
 		if (!file_exists(TINYIB_ROOT.'/config.php')) {
-			if (!isset($_SESSION['installer_secret'])) {
+			if (!isset($app['session']['installer_secret'])) {
 				diverge('/');
 			} else {
 				diverge('/config');
@@ -13,14 +13,12 @@ class View_Install_Finish extends View {
 			return;
 		}
 
-		$app = new App();
-
 		// load config
 		require(TINYIB_ROOT.'/config.php');
 
 		// this makes sure that the person who placed config.php in the
 		// root dir is the same person finishing the install
-		if ($_SESSION['installer_secret'] !== $app['secret']) {
+		if ($app['session']['installer_secret'] !== $app['secret']) {
 			throw new Exception('Fuck off.');
 		}
 
@@ -41,8 +39,8 @@ class View_Install_Finish extends View {
 		// create our user account
 		$user = new UserAdmin();
 
-		$u = $user->create($_SESSION['installer_user']);
-		$u->setPassword($_SESSION['installer_pass']);
+		$u = $user->create($app['session']['installer_user']);
+		$u->setPassword($app['session']['installer_pass']);
 		$u->setLevel(9999);
 		$u->commit();
 
@@ -50,7 +48,8 @@ class View_Install_Finish extends View {
 		$app['dbh']->commit();
 
 		// and we're done! clear our session and redirect
-		$_SESSION = array();
+		$app['session']->clean();
+
 		redirect('board.php?/login');
 	}
 }

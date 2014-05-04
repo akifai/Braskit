@@ -65,6 +65,7 @@ class AutoLoader {
 		'Router' => 'class.router.php',
 		'Router_Install' => 'class.router.php',
 		'Router_Main' => 'class.router.php',
+		'Session' => 'class.session.php',
 		'Spam' => 'class.spam.php',
 		'Style' => 'class.less.php',
 		'Thumb' => 'class.thumb.php',

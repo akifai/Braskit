@@ -17,12 +17,6 @@ defined('TINYIB') or exit;
 
 ignore_user_abort(true);
 
-// sessions
-if (!defined('TINYIB_NO_SESSIONS') || TINYIB_NO_SESSIONS) {
-	session_name('TINYIB');
-	session_start();
-}
-
 date_default_timezone_set('Europe/Berlin');
 
 // some constants
@@ -128,6 +122,10 @@ $app['thumb.method'] = 'gd';
 
 $app['path.tmp'] = sys_get_temp_dir();
 $app['path.cache'] = TINYIB_ROOT.'/cache';
+
+$app['session'] = function () {
+	return new Session('TINYIB');
+};
 
 if (defined('TINYIB_INSTALLER') && TINYIB_INSTALLER) {
 	// we can't use a config or database for this entry point
