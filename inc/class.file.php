@@ -11,7 +11,7 @@
  *   $upload = $request->getUpload('file');
  *
  *   // Throws an exception if the upload exists but is not valid.
- *   $upload = new File($upload, "/path/to/file/directory");
+ *   $file = new File($upload, "/path/to/file/directory");
  *
  *   // Doesn't throw exceptions
  *   $thumb = $file->thumb("/path/to/thumb/dir", 200, 200);
