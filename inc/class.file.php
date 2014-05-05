@@ -1,16 +1,20 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 /*
  * Usage:
  *
+ *   $upload = $request->getUpload('file');
+ *
  *   // Throws an exception if the upload exists but is not valid.
- *   $file = new File("file", "/path/to/file/directory");
+ *   $upload = new File($upload, "/path/to/file/directory");
  *
  *   // Doesn't throw exceptions
  *   $thumb = $file->thumb("/path/to/thumb/dir", 200, 200);
- *
- *   if (!$file->exists)
- *       throw new Exception("File not uploaded, etc.");
  *
  *   echo $file->filename;     // Destination file path
  *   echo $file->width;        // Image width
@@ -41,10 +45,7 @@ class FileMetaData {
 }
 
 class File extends FileMetaData {
-	// whether or not an uploaded file exists
-	public $exists = false;
-
-	protected $file;
+	public $exists = true;
 
 	// destination directories
 	protected $dest;
@@ -71,21 +72,17 @@ class File extends FileMetaData {
 	/**
 	 * @todo
 	 */
-	public function __construct($name, $dest) {
-		// check if upload exists, or return silently
-		if (!$this->hasUpload($name))
+	public function __construct($upload, $dest) {
+		if (!is_array($upload)) {
+			$this->exists = false;
 			return;
-
-		// check if upload is valid - if not, throws an exception
-		$this->validateUpload($name);
-
-		$this->exists = true;
+		}
 
 		// store arguments as properties
 		$this->dest = $dest;
 
 		// for convenience
-		$this->tmp = &$_FILES[$name]['tmp_name'];
+		$this->tmp = $upload['tmp_name'];
 
 		// analyses the file, sets the file type, etc
 		$this->analyse();
@@ -96,11 +93,11 @@ class File extends FileMetaData {
 
 		$this->width = $this->driver->width;
 		$this->height = $this->driver->height;
-		$this->size = $_FILES[$name]['size'];
+		$this->size = $upload['size'];
 		$this->prettysize = make_size($this->size);
-		$this->origname = basename($_FILES[$name]['name']);
+		$this->origname = basename($upload['name']);
 		$this->shortname = shorten_filename($this->origname);
-		$this->md5 = md5_file($_FILES[$name]['tmp_name']);
+		$this->md5 = md5_file($upload['tmp_name']);
 	}
 
 	/**
@@ -172,9 +169,9 @@ class File extends FileMetaData {
 		return true;
 	}
 
-
 	/**
 	 * Detects a filetype.
+	 *
 	 * @throws Exception if the file type is invalid
 	 */
 	protected function analyse() {
@@ -199,57 +196,6 @@ class File extends FileMetaData {
 
 		// thumbnail name (extension comes later)
 		$this->t_filename = "{$tim}s.";
-	}
-
-
-	//
-	// Utilities
-	//
-
-	public static function hasUpload($name) {
-		return isset($_FILES[$name]['name'])
-			&& $_FILES[$name]['name'] !== '';
-	}
-
-	public static function validateUpload($name) {
-		$msg = false;
-
-		// Detect tampering through register_globals
-		if (!isset($_FILES[$name]['error']))
-			throw new Exception('Abnormal post.');
-
-		switch ($_FILES[$name]['error']) {
-		case UPLOAD_ERR_OK:
-			// The upload is seemingly okay - now let's be sure the
-			// file actually did originate from an upload and not
-			// through tampering with register_globals
-			if (!isset($_FILES[$name]['tmp_name'])
-			|| !is_uploaded_file($_FILES[$name]['tmp_name']))
-				throw new Exception('Abnormal post.');
-
-			// We're done.
-			return;
-		case UPLOAD_ERR_FORM_SIZE:
-		case UPLOAD_ERR_INI_SIZE:
-			$msg = 'The file is too large.';
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			$msg = 'The file was only partially uploaded.';
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			$msg = 'No file was uploaded.';
-			break;
-		case UPLOAD_ERR_NO_TMP_DIR:
-			$msg = 'Missing a temporary folder.';
-			break;
-		case UPLOAD_ERR_CANT_WRITE:
-			$msg = 'Failed to write file to disk.';
-			break;
-		default:
-			$msg = 'Unable to save the uploaded file.';
-		}
-
-		throw new Exception("Error: $msg");
 	}
 }
 

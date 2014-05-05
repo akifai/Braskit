@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Post extends View {
 	protected function post($app, $boardname) {
@@ -138,7 +143,9 @@ class View_Post extends View {
 
 		// Do file uploads
 		// TODO: check if uploads are allowed
-		$file = $board->handleUpload('file');
+		$upload = $app['request']->getUpload('file');
+
+		$file = $board->handleUpload($upload);
 
 		if (!$parent) {
 			if ($board->config->allow_thread_textonly) {

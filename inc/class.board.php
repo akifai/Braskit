@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 /**
  * @todo This thing is a huge pile of shit and needs to be redone and
@@ -474,20 +479,23 @@ class Board {
 		throw new HTMLException(sprintf($message, $link));
 	}
 
-	public function handleUpload($name) {
+	public function handleUpload($upload) {
 		$root = TINYIB_ROOT.'/'.$this->board;
-		$file = new File("file", "$root/src");
 
-		if (!$file->exists)
+		$file = new File($upload, "$root/src");
+
+		if (!$file->exists) {
 			return $file;
+		}
 
 		// because the whole thing is too long to type, and because
 		// dynamic properties have a lot of overhead...
 		$max_kb = $this->config->max_kb;
 
 		// Check file size
-		if ($max_kb > 0 && $file->size > $max_kb * 1024)
+		if ($max_kb > 0 && $file->size > $max_kb * 1024) {
 			throw new Exception("The file cannot be larger than $max_kb KB.");
+		}
 
 		// check for duplicate upload
 		$this->checkDuplicateImage($file->md5);
