@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_BoardEdit extends View {
 	protected function get($app, $boardname) {
@@ -14,7 +19,8 @@ class View_BoardEdit extends View {
 
 	protected function post($app, $boardname) {
 		$user = do_login($app);
-		do_csrf($app);
+
+		$app['csrf']->check();
 
 		$param = $app['param'];
 

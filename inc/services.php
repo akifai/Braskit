@@ -173,6 +173,10 @@ $app['config'] = function () {
     return new GlobalConfig();
 };
 
+$app['csrf'] = function () use ($app) {
+    return new CSRF($app['param'], $app['session']);
+};
+
 $app['db'] = function () use ($app) {
     return new Database($app['dbh'], $app['db.prefix']);
 };

@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 abstract class View {
 	/**
@@ -40,6 +45,10 @@ abstract class View {
 		array_unshift($args, $app);
 
 		$this->responseBody = call_user_func_array($method, $args);
+	}
+
+	protected function csrfScreen() {
+		return $this->render('csrf.html');
 	}
 
 	private function methodNotAllowed() {

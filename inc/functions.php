@@ -1,5 +1,9 @@
 <?php
-defined('TINYIB') or exit;
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 function expand_path($filename, $internal = false) {
 	global $app; // TODO
@@ -175,69 +179,6 @@ function get_js() {
 	$app['cache']->set('js_cache', $web_path);
 
 	return $web_path;
-}
-
-
-//
-// CSRF
-//
-
-/**
- * @deprecated
- */
-function do_csrf($url = false) {
-	global $app;
-
-	$request = $app['request'];
-
-	// Only POST requests can validate our CSRF token
-	if ($request->method === 'POST') {
-		if (check_csrf())
-			return; // success
-
-		throw new Exception('Invalid CSRF token.');
-	}
-
-	// this is a GET request - display a confirmation
-	echo $app['template']->render('csrf.html', array(
-		'display_url' => $url ?: $request->server['REQUEST_URI'],
-		'token' => get_csrf_token(),
-		'url' => $request->server['REQUEST_URI'],
-	));
-
-	exit;
-}
-
-function check_csrf() {
-	global $app;
-
-	$sent = $app['param']->get('csrf', Param::T_STRING | Param::M_POST);
-
-	if ($sent === get_csrf_token()) {
-		unset_csrf_token();
-		return true; // success
-	}
-
-	return false;
-}
-
-function get_csrf_token() {
-	global $app;
-
-	$token = $app['session']['csrf_token'];
-
-	if ($token) {
-		return $token;
-	}
-
-	// no token set
-	return $app['session']['csrf_token'] = random_string(48);
-}
-
-function unset_csrf_token() {
-	global $app;
-
-	unset($app['session']['csrf_token']);
 }
 
 

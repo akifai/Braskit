@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 /**
  * @todo Find domains and list them.

@@ -11,7 +11,7 @@
 
     {# note to self: this form will be shared with create_board #}
     <form action="{{ board.path("edit", true) }}" method="post" class="rowform">
-      <input type="hidden" name="csrf" value="{{ csrf() }}">
+      <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
       <div class="row">
         <label for="name">Short name</label>
@@ -55,7 +55,7 @@
         associated with the board. If you want to remove public access to the
         board, you can change the user level above instead.</p>
 
-      <input type="hidden" name="csrf" value="{{ csrf() }}">
+      <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
       <div class="row">
         <label for="delete">Delete files</label>

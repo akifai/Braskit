@@ -33,7 +33,7 @@
     })();
   </script>
 </head>
-<body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}{% if not static %} data-csrf="{{ csrf() }}"{% endif %}>
+<body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}{% if not static %} data-csrf="{{ app.csrf.getToken() }}"{% endif %}>
   <div id="wrapper">
     {% include "header.html" %}
 

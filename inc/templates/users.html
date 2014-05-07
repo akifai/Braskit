@@ -43,7 +43,7 @@
   {% endif %}
 
   <form action="{{ path("users" ~ (editing ? ("/" ~ target) : ""), true) }}" method="post" class="userform">
-    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
     {% if not editing %}
       <div class="theader">Add User Account</div>

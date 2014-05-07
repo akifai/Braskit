@@ -8,7 +8,7 @@
   </div>
 
   <form action="{{ board.path("report", true) }}" method="post" class="report-screen">
-    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
     {% for post in posts %}
       <input type="hidden" name="id[]" value="{{ post.id }}">

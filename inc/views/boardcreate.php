@@ -1,9 +1,15 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_BoardCreate extends View {
 	protected function post($app) {
 		$user = do_login('/manage');
-		do_csrf($app);
+
+		$app['csrf']->check();
 
 		$param = $app['param'];
 

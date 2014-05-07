@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Users extends View {
 	protected function get($app, $username = false) {
@@ -22,7 +27,8 @@ class View_Users extends View {
 
 	protected function post($app, $username = false) {
 		$user = do_login($app);
-		do_csrf();
+
+		$app['csrf']->check();
 
 		$param = $app['param'];
 

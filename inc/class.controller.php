@@ -106,9 +106,16 @@ class Controller_Web extends Controller {
         if (!($e instanceof HTMLException)) {
             // escape HTML
             $message = Parser::escape($message);
-        } elseif ($e instanceof BanException) {
+        }
+
+        if ($e instanceof BanException) {
             // show the ban screen
             $template = 'banned.html';
+        }
+
+        if (!($e instanceof CSRFException)) {
+            // prevent CSRF errors on resubmission
+            $this->app['csrf']->rollback();
         }
 
         try {

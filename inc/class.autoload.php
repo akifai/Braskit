@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class AutoLoader {
 	protected $includeDir = '';
@@ -35,6 +40,7 @@ class AutoLoader {
 		'Controller_Ajax' => 'class.controller.php',
 		'Controller_Install' => 'class.controller.php',
 		'Controller_Web' => 'class.controller.php',
+		'CSRF' => 'class.csrf.php',
 		'Database' => 'class.db.php',
 		'DBConnection' => 'class.dbh.php',
 		'DBStatement' => 'class.dbh.php',

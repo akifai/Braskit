@@ -13,7 +13,7 @@
   <div class="theader">{{ title }}</div>
 
   <form action="{{ board ? board.path("config", true) : path("config", true) }}" method="post" class="configform">
-    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
     <table>
       <thead>
         <tr>

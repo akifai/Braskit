@@ -1,10 +1,14 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class PlainIB_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {
 		$functions = array(
 			new Twig_SimpleFunction('js', 'get_js'),
-			new Twig_SimpleFunction('csrf', 'get_csrf_token'),
 			new Twig_SimpleFunction('path', 'expand_path'),
 			new Twig_SimpleFunction('apipath', 'expand_api_path'),
 		);

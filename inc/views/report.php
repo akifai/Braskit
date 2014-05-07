@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Report extends View {
 	protected function get($app, $boardname) {
@@ -23,7 +28,7 @@ class View_Report extends View {
 	}
 
 	protected function post($app, $boardname) {
-		do_csrf($app);
+		$app['csrf']->check();
 
 		$board = new Board($boardname);
 		$config = $board->config;

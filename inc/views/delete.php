@@ -1,8 +1,13 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Delete extends View {
 	protected function get($app) {
-		do_csrf($app);
+		return $this->csrfScreen();
 	}
 
 	protected function post($app, $boardname) {
@@ -29,7 +34,7 @@ class View_Delete extends View {
 		}
 
 		if ($is_admin) {
-			do_csrf($app);
+			$app['csrf']->check();
 			$user = do_login();
 
 			$password = null;

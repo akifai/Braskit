@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Config extends View {
 	protected function get($app, $boardname = false) {
@@ -21,7 +26,7 @@ class View_Config extends View {
 	protected function post($app, $boardname = false) {
 		$user = do_login($app);
 
-		do_csrf();
+		$app['csrf']->check();
 
 		if ($boardname !== false) {
 			$board = new Board($boardname);
