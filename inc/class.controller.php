@@ -140,6 +140,8 @@ class Controller_Web extends Controller {
      * @return string
      */
     public function obHandler($buffer) {
+        $app = $this->app;
+
         if (!in_array(self::CONTENT_TYPE, headers_list())) {
             // non-standard content-type - don't modify the output
             return $buffer;
@@ -149,20 +151,25 @@ class Controller_Web extends Controller {
         $ins = strrpos($buffer, self::INSERT_STR);
 
         if ($ins === false) {
-            // no where to insert the debug string
+            // nowhere to insert the debug string
             return $buffer;
         }
 
         // first part of the new buffer
         $newbuf = substr($buffer, 0, $ins);
 
-        $total_time = microtime(true) - $this->app['request']->microtime;
-        $query_time = round(100 / $total_time * $this->app['dbh']->time);
+        $total_time = microtime(true) - $app['request']->microtime;
 
         // Append debug text
-        $newbuf .= sprintf('<br>Page generated in %0.4f seconds,'.
-        ' of which %d%% was spent running %d database queries.',
-            $total_time, $query_time, $app['dbh']->queries);
+        $newbuf .= sprintf('<br>Page generated in %0.4f seconds.', $total_time);
+
+        if ($app['counter']->dbQueries) {
+            $query_time = round(100 / $total_time * $app['counter']->dbTime);
+
+            $newbuf .= sprintf(' %d%% was spent running %d database queries.',
+                $query_time, $app['counter']->dbQueries
+            );
+        }
 
         // the rest of the buffer
         $newbuf .= substr($buffer, $ins);

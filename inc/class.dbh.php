@@ -1,22 +1,26 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class DBConnection extends PDO {
-	public $time = 0;
-	public $queries = 0;
+	protected $counter;
 
-	protected $driver;
-	protected $name;
-	protected $host;
-	protected $user;
-	protected $pass;
+	protected $name = '';
+	protected $host = '';
+	protected $user = '';
+	protected $pass = '';
+	protected $dsn = '';
 
-	protected $dsn;
-
-	public function __construct($name, $host, $user, $pass, $dsn = false) {
+	public function __construct($name, $host, $user, $pass, $counter, $dsn = '') {
 		$this->name = $name;
 		$this->host = $host;
 		$this->user = $user;
 		$this->pass = $pass;
+
+		$this->counter = $counter;
 
 		if ($this->dsn) {
 			$this->dsn = $dsn;
@@ -33,8 +37,8 @@ class DBConnection extends PDO {
 		$sth = parent::query($query);
 
 		// update the timer/counter
-		$this->time += microtime(true) - $time;
-		$this->queries++;
+		$this->counter->dbTime += microtime(true) - $time;
+		$this->counter->dbQueries++;
 
 		return $sth;
 	}
@@ -59,7 +63,9 @@ class DBConnection extends PDO {
 		$options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
 
 		// use our custom class when creating statement handles
-		$options[PDO::ATTR_STATEMENT_CLASS] = array('DBStatement', array($this));
+		$options[PDO::ATTR_STATEMENT_CLASS] = array('DBStatement',
+			array($this, $this->counter)
+		);
 
 		// return associative arrays when fetch()ing
 		$options[PDO::ATTR_DEFAULT_FETCH_MODE] = PDO::FETCH_ASSOC;
@@ -67,15 +73,22 @@ class DBConnection extends PDO {
 		// use real prepared statements
 		$options[PDO::ATTR_EMULATE_PREPARES] = false;
 
-		return parent::__construct($this->dsn, $this->user, $this->pass, $options);
+		return parent::__construct(
+			$this->dsn,
+			$this->user,
+			$this->pass,
+			$options
+		);
 	}
 }
 
 class DBStatement extends PDOStatement {
+	protected $counter;
 	protected $dbh;
 
-	protected function __construct($dbh) {
+	protected function __construct($dbh, $counter) {
 		$this->dbh = $dbh;
+		$this->counter = $counter;
 	}
 
 	public function execute($params = null) {
@@ -84,8 +97,8 @@ class DBStatement extends PDOStatement {
 		$sth = parent::execute($params);
 
 		// update the timer/counter
-		$this->dbh->time += microtime(true) - $time;
-		$this->dbh->queries++;
+		$this->counter->dbTime += microtime(true) - $time;
+		$this->counter->dbQueries++;
 
 		return $sth;
 	}

@@ -173,6 +173,10 @@ $app['config'] = function () {
     return new GlobalConfig();
 };
 
+$app['counter'] = function () use ($app) {
+    return new StdClass();
+};
+
 $app['csrf'] = function () use ($app) {
     return new CSRF($app['param'], $app['session']);
 };
@@ -186,7 +190,8 @@ $app['dbh'] = function () use ($app) {
         $app['db.name'],
         $app['db.host'],
         $app['db.username'],
-        $app['db.password']
+        $app['db.password'],
+        $app['counter']
     );
 };
 
