@@ -1,6 +1,14 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class Image extends FileDriver {
+	public $width = 0;
+	public $height = 0;
+
 	public static function detect($filename) {
 		$size = getimagesize($filename);
 
@@ -27,7 +35,7 @@ class Image extends FileDriver {
 		return $obj;
 	}
 
-	public function getImagePath() {
+	public function getPath() {
 		return $this->fileName;
 	}
 }

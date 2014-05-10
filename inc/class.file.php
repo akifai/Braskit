@@ -30,6 +30,9 @@
  *   $file->move();
  */
 
+/**
+ * A representation of a file's metadata, the way it appears in the database.
+ */
 class FileMetaData {
 	public $filename = '';
 	public $width = 0;
@@ -143,24 +146,29 @@ class File extends FileMetaData {
 	 * Creates a thumbnail.
 	 */
 	public function thumb($dest, $max_w, $max_h) {
+		global $app;
+
 		$this->t_dest = $dest;
 
-		if (!$this->exists)
-			return false;
-
-		$path = $this->driver->getImagePath();
-
-		if ($path === false)
-			return false;
-
-		// create thumbnail and store temporary path
-		$thumb = Thumb::getObject($path, $this->driver);
-
-		$this->t_tmp = $thumb->setMax($max_w, $max_h)->create();
-
-		if ($this->t_tmp === false) {
+		if (!$this->exists) {
 			return false;
 		}
+
+		$path = $this->driver->getPath();
+
+		if ($path === false) {
+			return false;
+		}
+
+		try {
+			// create thumbnail
+			$thumb = $app['thumb']->create($this->driver);
+		} catch (ThumbException $e) {
+			// thumbnail couldn't be created
+			return false;
+		}
+
+		$this->t_tmp = $thumb->tmpfile;
 
 		$this->t_width = $thumb->width;
 		$this->t_height = $thumb->height;
@@ -225,5 +233,5 @@ abstract class FileDriver {
 	 *
 	 * @return string|boolean Path of image to thumbnail, or false if none.
 	 */
-	abstract public function getImagePath();
+	abstract public function getPath();
 }

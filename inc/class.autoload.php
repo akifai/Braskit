@@ -21,6 +21,7 @@ class AutoLoader {
 	}
 
 	protected $prefixes = array(
+		'Thumb' => 'thumb/',
 		'View' => 'views/',
 		'View_Install' => 'installer/',
 	);
@@ -80,10 +81,8 @@ class AutoLoader {
 		'Spam' => 'class.spam.php',
 		'Style' => 'class.less.php',
 		'Thumb' => 'class.thumb.php',
-		'ThumbConvert' => 'class.thumb.php',
-		'ThumbGD' => 'class.thumb.php',
-		'ThumbImagick' => 'class.thumb.php',
-		'ThumbSips' => 'class.thumb.php',
+		'ThumbData' => 'class.thumb.php',
+		'ThumbException' => 'class.thumb.php',
 		'User' => 'class.user.php',
 		'UserAdmin' => 'class.user.php',
 		'UserCreate' => 'class.user.php',

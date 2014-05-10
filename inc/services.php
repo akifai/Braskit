@@ -60,6 +60,10 @@ $app['template.debug'] = false;
 
 $app['thumb.method'] = 'gd';
 
+$app['thumb.quality'] = 75;
+
+$app['thumb.convert_path'] = 'convert';
+
 $app['timezone'] = 'UTC';
 
 $app['unique'] = 'pib';
@@ -223,6 +227,29 @@ $app['template.chain'] = $app->factory(function () {
 $app['template.loader'] = function () use ($app) {
     // returns a filesystem loader for inc/templates
     return new PlainIB_Twig_Loader($app['path.tpldir']);
+};
+
+$app['thumb'] = function () use ($app) {
+    $method = $app['thumb.method'];
+
+    switch ($method) {
+    case 'convert':
+        return new Thumb_Convert($app['path.tmp'], array(
+            'convert_path' => $app['thumb.convert_path'],
+            'quality' => $app['thumb.quality'],
+        ));
+    case 'gd':
+        return new Thumb_GD($app['path.tmp'], array(
+            'quality' => $app['thumb.quality'],
+        ));
+    #case 'imagemagick':
+    #case 'imagick':
+    #    return new Thumb_Imagick($app['path.tmp']);
+    case 'sips':
+        return new Thumb_Sips($app['path.tmp']);
+    }
+
+    throw new LogicException("Unknown thumbnail method '$method'.");
 };
 
 $app['view'] = function () use ($app) {
