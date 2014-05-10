@@ -251,7 +251,7 @@ BEGIN
                 ) AS fnord
             UNION ALL
                 SELECT p.* FROM /*_*/posts AS p
-                    JOIN cte AS c ON (p.parent = c.id)
+                    JOIN cte AS c ON (p.board = c.board AND p.parent = c.id)
             )
         SELECT * FROM cte
     LOOP
