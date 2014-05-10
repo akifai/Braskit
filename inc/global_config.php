@@ -10,7 +10,7 @@ defined('TINYIB') or exit;
  */
 
 $this->config['site_name'] = array(
-	'value' => 'PlainIB Imageboard',
+	'value' => 'Braskit Imageboard',
 	'type' => 'string',
 	'description' => 'The name of the site.',
 );

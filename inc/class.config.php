@@ -83,14 +83,14 @@ abstract class Config implements Iterator {
 
 	// we don't use __destruct() because it can't handle thrown exceptions
 	public function save() {
-		global $app, $cache;
+		global $app;
 
 		// no changes made
 		if (!$this->changes && !$this->deletions)
 			return;
 
 		// cache will be regenerated on next instance
-		$cache->delete($this->cache_key);
+		$app['cache']->delete($this->cache_key);
 
 		// make an assoc array with the updated values
 		$values = array();

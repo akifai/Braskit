@@ -1,5 +1,5 @@
 /*
- * PlainIB.js - Copyright (c) 2013 Plainboards.org
+ * braskit.js - Copyright (c) 2013, 2014 Frank Usrs
  *
  * This program is free software. It comes without any warranty, to
  * the extent permitted by applicable law. You can redistribute it

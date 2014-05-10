@@ -7,7 +7,7 @@ thumbs.db
 *.bak
 .htaccess
 
-## PlainIB-specific
+## Braskit-specific
 /config.php
 *.sql
 

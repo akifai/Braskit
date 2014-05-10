@@ -41,7 +41,7 @@ $app['db.password'] = <?php var_export($vars['db_password']) ?>;
 $app['db.host'] = <?php var_export($vars['db_host']) ?>;
 
 # table prefix - if you're sharing the database with another application (i.e.
-# mediawiki or another PlainIB install), then set this to something unique.
+# mediawiki or another Braskit install), then set this to something unique.
 $app['db.prefix'] = <?php var_export($vars['db_prefix']) ?>;
 
 <?php

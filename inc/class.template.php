@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class PlainIB_Twig_Extension extends Twig_Extension {
+class Braskit_Twig_Extension extends Twig_Extension {
 	public function getFunctions() {
 		$functions = array(
 			new Twig_SimpleFunction('js', 'get_js'),
@@ -42,11 +42,11 @@ class PlainIB_Twig_Extension extends Twig_Extension {
 	}
 
 	public function getName() {
-		return 'plainib';
+		return 'braskit';
 	}
 }
 
-class PlainIB_Twig_Loader extends Twig_Loader_Filesystem {
+class Braskit_Twig_Loader extends Twig_Loader_Filesystem {
 	// https://developer.mozilla.org/en-US/docs/HTML/Block-level_elements
 	protected static $no_whitespace_elements = array(
 		// <head> elements

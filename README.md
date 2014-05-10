@@ -1,8 +1,6 @@
-# PlainIB
+# Braskit
 
-Lightweight [imageboard](http://en.wikipedia.org/wiki/Imageboard) script written
-in PHP, based on [TinyIB](https://github.com/tslocum/TinyIB/). The script has
-been largely rewritten and hardly resembles TinyIB now.
+Lightweight imageboard script written in PHP with a PostgreSQL backend.
 
 **Do not use this software. It is still in early beta and is not yet ready for
 production use. Contributors are welcome.**
@@ -28,7 +26,7 @@ request with details about your changes.
 
 ## Licence/copyrights
 
-All of PlainIB is licensed under the GNU GPL version 3. PlainIB also makes use
+All of Braskit is licensed under the GNU GPL version 3. Braskit also makes use
 of many third-party libraries, all of which are licensed under various BSD-style
 licences:
 

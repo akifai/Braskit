@@ -525,7 +525,7 @@ class Board {
 		} else {
 			$chain = $app['template.chain'];
 
-			$chain->addLoader(new PlainIB_Twig_Loader($path));
+			$chain->addLoader(new Braskit_Twig_Loader($path));
 			$chain->addLoader($app['template.loader']);
 
 			$this->twig = $app['template.creator']($chain);

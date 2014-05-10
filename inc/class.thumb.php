@@ -75,7 +75,7 @@ abstract class Thumb {
         $thumb->height = $size['height'];
 
         // get output filename
-        $thumb->tmpfile = tempnam($this->tmp, 'pib');
+        $thumb->tmpfile = tempnam($this->tmp, 'bs');
 
         // assumption
         $thumb->ext = $image->ext;

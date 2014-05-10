@@ -35,7 +35,7 @@ class View_Install_Start extends View {
 		$app['session']['installer_secret'] = $vars['secret'];
 
 		// unique identifier
-		$vars['unique'] = 'pib'.mt_rand(10, 99);
+		$vars['unique'] = 'bs'.mt_rand(10, 99);
 
 		// note: we use sessions to store the config because we don't want
 		// other people to see the finished config!

@@ -1,4 +1,4 @@
--- PostgreSQL schema for PlainIB.
+-- PostgreSQL schema for Braskit.
 -- /*_*/ indicates the database prefix.
 
 CREATE TABLE /*_*/boards (

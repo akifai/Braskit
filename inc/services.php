@@ -37,7 +37,7 @@ $app['js.includes'] = array(
     'jquery.cookie.js',
     'bootstrap.min.js',
     'spin.js',
-    'PlainIB.js',
+    'braskit.js',
 );
 
 $app['less.debug'] = false;
@@ -66,7 +66,7 @@ $app['thumb.convert_path'] = 'convert';
 
 $app['timezone'] = 'UTC';
 
-$app['unique'] = 'pib';
+$app['unique'] = 'bs';
 
 
 //
@@ -226,7 +226,7 @@ $app['template.chain'] = $app->factory(function () {
 
 $app['template.loader'] = function () use ($app) {
     // returns a filesystem loader for inc/templates
-    return new PlainIB_Twig_Loader($app['path.tpldir']);
+    return new Braskit_Twig_Loader($app['path.tpldir']);
 };
 
 $app['thumb'] = function () use ($app) {
@@ -267,7 +267,7 @@ $app['template.creator'] = $app->protect(function ($loader) use ($app) {
         'debug' => $app['template.debug'],
     ));
 
-    $twig->addExtension(new PlainIB_Twig_Extension());
+    $twig->addExtension(new Braskit_Twig_Extension());
 
     // Load debugger
     if ($app['template.debug']) {
