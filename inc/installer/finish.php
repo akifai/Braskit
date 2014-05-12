@@ -27,7 +27,8 @@ class View_Install_Finish extends View {
 			$app['db.name'],
 			$app['db.host'],
 			$app['db.username'],
-			$app['db.password']
+			$app['db.password'],
+			$app['counter']
 		);
 
 		$app['db'] = new Database($app['dbh'], $app['db.prefix']);
