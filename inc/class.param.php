@@ -7,10 +7,6 @@
 
 class ParamException extends LogicException {}
 
-/**
- * @todo Make this thing accept strings as flags. Using class constants makes
- *       calls to get()/flags() look horrendous.
- */
 class Param {
     const T_STRING = 1; // can be string
     const T_ARRAY = 2; // can be array
