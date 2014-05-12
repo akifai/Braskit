@@ -35,7 +35,7 @@ class View_Config extends View {
 			$instance = $app['config'];
 		}
 
-		$param = $app['param']->flags(Param::S_DEFAULT|Param::T_ARRAY);
+		$param = $app['param']->flags('string array');
 		$values = $param->get('config');
 		$reset = $param->get('reset');
 

@@ -61,11 +61,7 @@ function get_url($path = false) {
 		return $url;
 	}
 
-	$param = $app['param']->flags(
-		Param::M_SERVER |
-		Param::T_STRING |
-		Param::S_STRICT
-	);
+	$param = $app['param']->flags('server strict');
 
 	if ($path === false) {
 		$path = $param->get('REQUEST_URI');

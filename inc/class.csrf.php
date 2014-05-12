@@ -62,9 +62,7 @@ class CSRF {
     }
 
     protected function getTokenParam() {
-        $param = $this->param->flags(Param::M_POST | Param::T_STRING);
-
-        return $param->get(self::PARAM_KEY);
+        return $this->param->get(self::PARAM_KEY, 'post');
     }
 }
 

@@ -16,11 +16,11 @@ class View_Delete extends View {
 		$task = $param->get('task');
 		$is_admin = $param->get('admin');
 
-		$ids = $param->get('id', Param::S_DEFAULT | Param::T_ARRAY);
+		$ids = $param->get('id', 'string array');
 
 		// passwords from POST and cookie, respectively
-		$password = $param->get('password', Param::T_STRING | Param::M_POST);
-		$cookie_pw = $param->get('password', Param::T_STRING | Param::M_COOKIE);
+		$password = $param->get('password', 'post');
+		$cookie_pw = $param->get('password', 'cookie');
 
 		$board = new Board($boardname);
 

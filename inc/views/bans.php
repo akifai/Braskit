@@ -42,7 +42,7 @@ class View_Bans extends View {
 		}
 
 		// lifting bans
-		$lifts = $param->get('lift', Param::S_DEFAULT | Param::T_ARRAY);
+		$lifts = $param->get('lift', 'string array');
 
 		if ($lifts && !is_array($lifts)) {
 			$lifts = array($lifts);

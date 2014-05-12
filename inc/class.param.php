@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class ParamException extends LogicException {}
 
@@ -18,6 +23,11 @@ class Param {
     const S_STRICT = 64; // returns false if parameter is missing
     const S_DEFAULT = 13; // string|get|post
 
+    const TYPE_FLAGS = 3; // string|array
+    const METHOD_FLAGS = 60; // get|post|cookie|server
+    const DEFAULT_TYPE_FLAGS = 1; // string
+    const DEFAULT_METHOD_FLAGS = 12; // get|post
+
     /**
      * @var Request
      */
@@ -36,7 +46,11 @@ class Param {
      * Set the flags to use for flagless get()
      */
     public function flags($flags) {
-        $this->checkFlags($flags);
+        if (is_string($flags)) {
+            $flags = $this->parseStringFlags($flags);
+        } else {
+            $this->checkFlags($flags);
+        }
 
         $this->flags = $flags;
 
@@ -48,6 +62,8 @@ class Param {
         if ($flags === false) {
             // use the currently set flags
             $flags = $this->flags;
+        } elseif (is_string($flags)) {
+            $flags = $this->parseStringFlags($flags);
         } else {
             $this->checkFlags($flags);
         }
@@ -98,25 +114,79 @@ class Param {
     }
 
     /**
+     * Parses flags in a string.
+     *
+     * @param string $flags
+     * @return integer
+     */
+    public function parseStringFlags($flags) {
+        $parts = preg_split('/\s+/', $flags, -1, PREG_SPLIT_NO_EMPTY);
+        $newflags = 0;
+
+        foreach ($parts as $part) {
+            switch ($part) {
+            case 'string':
+                $newflags |= self::T_STRING;
+                break;
+            case 'array':
+                $newflags |= self::T_ARRAY;
+                break;
+            case 'get':
+                $newflags |= self::M_GET;
+                break;
+            case 'post':
+                $newflags |= self::M_POST;
+                break;
+            case 'cookie':
+                $newflags |= self::M_COOKIE;
+                break;
+            case 'server':
+                $newflags |= self::M_SERVER;
+                break;
+            case 'strict':
+                $newflags |= self::S_STRICT;
+                break;
+            case 'default':
+                $newflags |= self::S_DEFAULT;
+                break;
+            default:
+                throw new ParamException("Invalid flag '$part'.");
+            }
+        }
+
+        if (!($newflags & self::TYPE_FLAGS)) {
+            // inherit default type flags if no type flags are set
+            $newflags |= self::DEFAULT_TYPE_FLAGS;
+        }
+
+        if (!($newflags & self::METHOD_FLAGS)) {
+            // inherit default method flags if no methods are set
+            $newflags |= self::DEFAULT_METHOD_FLAGS;
+        }
+
+        $this->checkFlags($newflags);
+
+        return $newflags;
+    }
+
+    /**
      * Check a flag value.
      *
      * @param integer $flags
      * @throws ParamException if the flags are invalid
      */
-    public static function checkFlags($flags) {
+    protected function checkFlags($flags) {
         if (!$flags) {
             // no flags
             throw new ParamException('No flags provided.');
         }
 
-        if (!($flags & (self::T_STRING | self::T_ARRAY))) {
+        if (!($flags & self::TYPE_FLAGS)) {
             // missing type flag(s)
-            throw new ParamException("No type flag provided. $flags");
+            throw new ParamException('No type flag provided.');
         }
 
-        if (!($flags &
-            (self::M_GET | self::M_POST | self::M_COOKIE | self::M_SERVER)
-        )) {
+        if (!($flags & self::METHOD_FLAGS)) {
             // missing method flag(s)
             throw new ParamException('No method flag provided.');
         }

@@ -1,13 +1,14 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 class View_Install_Download extends View {
 	protected function get($app) {
 		if (!isset($app['session']['install_config'])) {
-			$param = $app['param']->flags(
-				Param::T_STRING |
-				Param::M_SERVER |
-				Param::S_STRICT
-			);
+			$param = $app['param']->flags('server strict');
 
 			$https = $param->get('HTTPS');
 

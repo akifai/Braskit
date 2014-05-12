@@ -63,7 +63,7 @@ function get_ids($board) {
 	global $app;
 
 	$posts = array();
-	$ids = $app['param']->get('id', Param::S_DEFAULT | Param::T_ARRAY);
+	$ids = $app['param']->get('id', 'string array');
 
 	if (!is_array($ids))
 		$ids = array($ids);

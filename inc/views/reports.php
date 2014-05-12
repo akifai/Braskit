@@ -15,8 +15,7 @@ class View_Reports extends View {
 
 		$app['csrf']->check();
 
-		$param = $app['param']->flags(Param::S_DEFAULT|Param::T_ARRAY);
-		$dismiss = $param->get('dismiss');
+		$dismiss = $app['param']->get('dismiss', 'string array');
 
 		if (!is_array($dismiss)) {
 			$dismiss = array($dismiss);

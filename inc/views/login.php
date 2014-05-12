@@ -36,7 +36,7 @@ class View_Login extends View {
 	}
 
 	protected function post($app) {
-		$param = $app['param']->flags(Param::T_STRING | Param::M_POST);
+		$param = $app['param']->flags('post');
 
 		$username = $param->get('login_user');
 		$password = $param->get('login_pass');
@@ -57,7 +57,7 @@ class View_Login extends View {
 		}
 
 		if ($loggedin) {
-			$goto = $param->get('goto', Param::S_DEFAULT);
+			$goto = $param->get('goto', 'default');
 			redirect_after_login($goto);
 
 			exit;

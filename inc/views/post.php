@@ -17,7 +17,7 @@ class View_Post extends View {
 		$referrer = $app['request']->referrer;
 
 		// set default param flags; don't accept GET values
-		$param = $app['param']->flags(Param::S_DEFAULT & ~Param::M_GET);
+		$param = $app['param']->flags('post');
 
 		// POST values
 		$parent = $param->get('parent');
@@ -30,7 +30,7 @@ class View_Post extends View {
 		$sage = (bool)$param->get('sage');
 
 		// We get the password from cookies
-		$password = $param->get('password', Param::M_COOKIE | PARAM::T_STRING);
+		$password = $param->get('password', 'cookie');
 
 		// Moderator options
 		$raw = (bool)$param->get('raw');
