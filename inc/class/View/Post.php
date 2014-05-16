@@ -76,7 +76,7 @@ class View_Post extends View {
 
 		if (!$raw) {
 			// format the comment
-			$parser = new Parser_Wakabamark($comment, array($format_cb));
+			$parser = new Parser_WakabaMark($comment, array($format_cb));
 			$formatted_comment = $parser->parsed;
 		} else {
 			$formatted_comment = Parser::normaliseInput($comment);
