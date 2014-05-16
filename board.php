@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-require(dirname(__FILE__).'/inc/class.autoload.php');
+require(dirname(__FILE__).'/inc/autoload.php');
 AutoLoader::register();
 
 $app = new App();

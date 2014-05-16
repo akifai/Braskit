@@ -12,7 +12,7 @@ class App extends Pimple {
         $app = $this;
 
         // load default services
-        require(dirname(__FILE__).'/services.php');
+        require(dirname(__FILE__).'/../services.php');
     }
 
     /**
