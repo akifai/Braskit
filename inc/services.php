@@ -263,7 +263,7 @@ $app['view'] = function () use ($app) {
 
 $app['template.creator'] = $app->protect(function ($loader) use ($app) {
     $twig = new Twig_Environment($loader, array(
-        'cache' => $app['template.debug'] ? false : $app['path.cache'],
+        'cache' => $app['template.debug'] ? false : $app['path.cache.tpl'],
         'debug' => $app['template.debug'],
     ));
 
