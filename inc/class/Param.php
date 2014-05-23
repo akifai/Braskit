@@ -10,19 +10,17 @@ class ParamException extends LogicException {}
 class Param {
     const T_STRING = 1; // can be string
     const T_ARRAY = 2; // can be array
+    const TYPE_FLAGS = 3; // string|array
+    const DEFAULT_TYPE_FLAGS = 1; // string
 
     const M_GET = 4; // can be GET value
     const M_POST = 8; // can be POST value
     const M_COOKIE = 16; // can be cookie value
-    const M_SERVER = 32; // can be server var
-
-    const S_STRICT = 64; // returns false if parameter is missing
-    const S_DEFAULT = 13; // string|get|post
-
-    const TYPE_FLAGS = 3; // string|array
-    const METHOD_FLAGS = 60; // get|post|cookie|server
-    const DEFAULT_TYPE_FLAGS = 1; // string
+    const METHOD_FLAGS = 28; // get|post|cookie
     const DEFAULT_METHOD_FLAGS = 12; // get|post
+
+    const S_STRICT = 32; // return false if parameter is missing
+    const S_DEFAULT = 13; // string|get|post
 
     /**
      * @var Request
@@ -87,9 +85,6 @@ class Param {
         } elseif (($flags & self::M_COOKIE) && isset($request->cookie[$name])) {
             // COOKIE values
             $value = $request->cookie[$name];
-        } elseif (($flags & self::M_SERVER) && isset($request->server[$name])) {
-            // Server variables
-            $value = $request->server[$name];
         } else {
             // no parameter found
             return $default;
@@ -135,9 +130,6 @@ class Param {
                 break;
             case 'cookie':
                 $newflags |= self::M_COOKIE;
-                break;
-            case 'server':
-                $newflags |= self::M_SERVER;
                 break;
             case 'strict':
                 $newflags |= self::S_STRICT;

@@ -5,29 +5,29 @@
  * See LICENSE for terms and conditions of use.
  */
 
+/**
+ * @deprecated
+ */
 function expand_path($filename, $internal = false) {
 	global $app; // TODO
 
 	if ($internal) {
-		return get_script_name().
-			$app['path']->create("/$filename", $internal);
+		return $app['request']->getScriptName().
+			$app['url']->create("/$filename", $internal);
 	}
 
-	$dirname = dirname(get_script_name());
-
-	// avoid double slashes
-	if ($dirname === '/')
-		return "/$filename";
+	$dirname = preg_replace('!/[^/]*$!', '', $app['request']->getScriptName());
 
 	return "$dirname/$filename";
 }
 
+/**
+ * @deprecated
+ */
 function expand_script_path($script, $dest, $vars = array()) {
-	$dirname = dirname(get_script_name());
+	global $app;
 
-	// avoid double slashes
-	if ($dirname === '/')
-		$dirname = '';
+	$dirname = $app['request']->getScriptName();
 
 	$url = "$dirname/$script?/$dest";
 
@@ -37,77 +37,11 @@ function expand_script_path($script, $dest, $vars = array()) {
 	return $url;
 }
 
+/**
+ * @deprecated
+ */
 function expand_api_path($path, $vars) {
 	return expand_script_path('ajax.php', $path, $vars);
-}
-
-function get_script_name() {
-	global $app;
-
-	return $app['request']->server['SCRIPT_NAME'];
-}
-
-
-/*
- * this is like some sort of reverse parse_url() for the current request.
- * of course, it all depends on a correct server setup, which might not be the
- * case with a sloppy reverse proxy setups.
- */
-function get_url($path = false) {
-	global $app;
-	static $url;
-
-	if (isset($url)) {
-		return $url;
-	}
-
-	$param = $app['param']->flags('server strict');
-
-	if ($path === false) {
-		$path = $param->get('REQUEST_URI');
-	}
-
-	$https = $param->get('HTTPS');
-	$user = $param->get('PHP_AUTH_USER');
-	$pass = $param->get('PHP_AUTH_PW');
-	$host = $param->get('HTTP_HOST')
-		?: $param->get('SERVER_NAME')
-		?: 'localhost';
-	$port = $param->get('SERVER_PORT');
-
-	$url = 'http';
-
-	// https
-	if ($https) {
-		$url .= 's';
-	}
-
-	$url .= '://';
-
-	// authentication
-	if ($user !== false && $user !== '') {
-		$url .= $user;
-
-		if ($pass !== false && $pass !== '')
-			$url .= ':'.$pass;
-
-		$url .= '@';
-	}
-
-	// hostname, might include port number
-	$url .= $host;
-
-	// port number
-	// SERVER_NAME might include one, so we have to check the host variable
-	if (!preg_match('/:\d+$/', $host)
-	&& ($https && $port != 443 || !$https && $port != 80)) {
-		$url .= ":$port";
-	}
-
-	// path
-	$url .= $path;
-
-	return $url;
 }
 
 function redirect($url) {

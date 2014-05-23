@@ -38,7 +38,7 @@ class Controller_Web extends Controller {
     }
 
     public function getRouter() {
-        return new Router_Main($this->app['path']->get());
+        return new Router_Main($this->app['url']->get());
     }
 
     public function exceptionHandler(Exception $e) {

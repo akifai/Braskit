@@ -23,5 +23,5 @@ function diverge($dest, $args = array()) {
 		$dest = "/$goto";
 	}
 
-	redirect($app['path']->create($dest, $args));
+	redirect($app['url']->create($dest, $args));
 }

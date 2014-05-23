@@ -30,7 +30,7 @@ class Braskit_Twig_Extension extends Twig_Extension {
 		$globals = array(
 			'app' => $app,
 			'_base' => 'base.html',
-			'self' => get_script_name(),
+			'self' => $app['request']->getScriptName(),
 			'style' => Style::getObject(),
 		);
 

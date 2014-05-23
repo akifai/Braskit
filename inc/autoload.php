@@ -44,11 +44,7 @@ class AutoLoader {
 		'ImagePNG' => 'class/Image.php',
 		'lessc_fixed' => 'class/Style.php',
 		'ParamException' => 'class/Param.php',
-		'Path' => 'class/Router.php',
-		'Path_QueryString' => 'class/Router.php',
 		'RequestException' => 'class/Request.php',
-		'Router_Install' => 'class/Router.php',
-		'Router_Main' => 'class/Router.php',
 		'ThumbData' => 'class/Thumb.php',
 		'ThumbException' => 'class/Thumb.php',
 		'UserAdmin' => 'class/User.php',
@@ -71,6 +67,11 @@ class AutoLoader {
 			require $this->includeDir.'/'.$this->classes[$class];
 
 			return;
+		}
+
+		// strip Braskit namespace for classes that have that
+		if (strpos($class, 'Braskit\\') === 0) {
+			$class = substr($class, 8);
 		}
 
 		// find the thing in the filesystem

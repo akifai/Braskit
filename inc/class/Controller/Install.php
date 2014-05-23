@@ -42,7 +42,7 @@ class Controller_Install extends Controller {
     }
 
     public function getRouter() {
-        return new Router_Install($this->app['path']->get());
+        return new Router_Install($this->app['url']->get());
     }
 
     public function exceptionHandler(Exception $e) {

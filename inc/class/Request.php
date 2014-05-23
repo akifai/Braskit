@@ -21,6 +21,11 @@ class Request {
     public $referrer = false;
     public $method = false;
 
+    protected $protocol = '';
+    protected $httpAuth = null;
+    protected $hostname = '';
+    protected $url = '';
+
     public function __construct() {
         if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
             // available since php 5.4
@@ -54,6 +59,133 @@ class Request {
         if (get_magic_quotes_gpc()) {
             $this->unescapeMagicQuotes();
         }
+    }
+
+    /**
+     * Retrieves a variable from the $_SERVER array.
+     *
+     * @return mixed The variable, or null if it doesn't exist.
+     */
+    public function getServerVar($key) {
+        if (isset($this->server[$key])) {
+            return $this->server[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the protocol for the current request.
+     *
+     * @return string
+     */
+    public function getProtocol() {
+        if ($this->protocol) {
+            // do nothing
+        } elseif ($this->getServerVar('HTTPS')) {
+            $this->protocol = 'https';
+        } else {
+            $this->protocol = 'http';
+        }
+
+        return $this->protocol;
+    }
+
+    /**
+     * Returns the HTTP Authentication information.
+     *
+     * @param boolean $getArray Return a null-padded array with the credentials?
+     *
+     * @return string|array Credentials
+     */
+    public function getHttpAuth($getArray = false) {
+        if ($this->httpAuth === null) {
+            $user = $this->getServerVar('PHP_AUTH_USER');
+            $pass = $this->getServerVar('PHP_AUTH_PW');
+
+            $auth = array();
+
+            // username
+            if (strlen($user)) {
+                $auth[] = $user;
+
+                // password
+                if (strlen($pass)) {
+                    $auth[] = $pass;
+                }
+            }
+
+            $this->httpAuth = $auth;
+        }
+
+        if ($getArray) {
+            return array_pad($this->httpAuth, 2, false);
+        }
+
+        return implode(':', $this->httpAuth);
+    }
+
+    /**
+     * Gets the hostname for the current request. If the request port is
+     * non-standard, that gets tacked on too.
+     *
+     * @return string Hostname
+     */
+    public function getHostName() {
+        if (!$this->hostname) {
+            $host = $this->getServerVar('HTTP_HOST')
+                ?: $this->getServerVar('SERVER_NAME')
+                ?: 'localhost';
+
+            $this->hostname = $host;
+
+            $proto = $this->getProtocol();
+            $port = $this->getServerVar('SERVER_PORT');
+
+            // tack on the port number if applicable
+            if (
+                !preg_match('/:\d+$/', $host) && (
+                    $proto === 'https' && $port != 443 ||
+                    $proto === 'http' && $port != 80
+                )
+            ) {
+                $this->hostname = ":$port";
+            }
+        }
+
+        return $this->hostname;
+    }
+
+    /**
+     * Returns the script name.
+     *
+     * @deprecated
+     * @return string
+     */
+    public function getScriptName() {
+        $scriptname = $this->getServerVar('SCRIPT_NAME');
+
+        return (string)$scriptname;
+    }
+
+    /**
+     * @return string URL of the current request.
+     */
+    public function getUrl() {
+        if (!$this->url) {
+            $protocol = $this->getProtocol();
+            $auth = $this->getHttpAuth();
+            $host = $this->getHostName();
+            $uri = $this->getServerVar('REQUEST_URI');
+
+            if (strlen($auth)) {
+                $auth .= '@';
+            }
+
+            $this->url = "$protocol://{$auth}{$host}{$uri}";
+        }
+
+        return $this->url;
     }
 
     /**

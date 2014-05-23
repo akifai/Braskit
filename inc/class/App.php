@@ -19,7 +19,7 @@ class App extends Pimple {
      * @deprecated
      */
     public function __toString() {
-        return $this['path']->get();
+        return $this['url']->get();
     }
 
     public function run() {

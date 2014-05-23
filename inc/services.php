@@ -203,10 +203,6 @@ $app['param'] = $app->factory(function () use ($app) {
     return new Param($app['request']);
 });
 
-$app['path'] = function () use ($app) {
-    return new Path_QueryString($app['request']);
-};
-
 $app['request'] = function () use ($app) {
     return new Request();
 };
@@ -250,6 +246,10 @@ $app['thumb'] = function () use ($app) {
     }
 
     throw new LogicException("Unknown thumbnail method '$method'.");
+};
+
+$app['url'] = function () use ($app) {
+    return new Braskit\UrlHandler_QueryString($app['request']);
 };
 
 $app['view'] = function () use ($app) {
