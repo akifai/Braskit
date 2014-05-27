@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>
+      {% if title %}{{ title }} - {% endif %}
+      {% if board %}
+        {% if not title %}/{{ board }}/ - {% endif %}
+        {{ board.title }}
+      {% else %}
+        {{ app.config.site_name }}
+      {% endif %}
+    </title>
+
+    <link rel="stylesheet" id="sitestyle" href="{{ style.getDefault() }}">
+
+    <script>
+      var styles = {{ style.getJSON()|raw }};
+
+      function changeStyle(name) {
+        var linkEl = document.getElementById("sitestyle");
+
+        if (linkEl)
+          linkEl.href = styles[name];
+      }
+
+      (function () {
+        var match = document.cookie.match(/(?:^|;\s+)style=(.*?)(?:;|$)/);
+
+        if (!match || match.length < 2)
+          return;
+
+        changeStyle(unescape(match[1]));
+      })();
+    </script>
+  </head>
+
+  <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}{% if not static %} data-csrf="{{ app.csrf.getToken() }}"{% endif %}>
+    <div id="wrapper">
+      {% include "includes/header.html" %}
+
+      {% block content %}{% endblock %}
+
+      {% include "includes/footer.html" %}
+    </div>
+
+    {% if app["js.debug"] %}
+      {% for file in app["js.includes"] %}
+        {# TODO: absolute paths #}
+        <script src="{{ path("static/js/"~file) }}"></script>
+      {% endfor %}
+    {% else %}
+      <script src="{{ js() }}"></script>
+    {% endif %}
+  </body>
+</html>

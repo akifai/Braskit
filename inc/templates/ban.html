@@ -1,6 +1,6 @@
 {% extends _base %}
 {% set title = "Moderating %s No.%d"|format(post.parent ? "reply" : "thread", post.id) %}
-{% import "post_macros.html" as m %}
+{% import "includes/macros.html" as m %}
 
 {% block content %}
   <div class="no-ajax">

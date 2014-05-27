@@ -1,5 +1,5 @@
 {% extends _base %}
-{% import "post_macros.html" as m %}
+{% import "includes/macros.html" as m %}
 
 {% set js_callbacks = ["doReplyPage"] %}
 {% set title = posts[0]["subject"] ?: "Thread No."~thread %}
@@ -7,7 +7,7 @@
 {% block content %}
 	{{ m.returnlink(_context) }}
 	<div class="theader">Posting mode: Reply</div>
-  {% include "postform.html" %}
+  {% include "includes/postform.html" %}
 	<hr>
 	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">

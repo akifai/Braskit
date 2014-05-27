@@ -26,7 +26,7 @@ class Controller_Ajax extends Controller {
 
         ob_start(array($this, 'obHandler'));
 
-        define('TINYIB_BASE_TEMPLATE', 'ajax_base.html'); // TODO
+        define('TINYIB_BASE_TEMPLATE', 'base/ajax.html'); // TODO
 
         $hasConfig = $this->app->loadConfig();
 

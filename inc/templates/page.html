@@ -1,8 +1,8 @@
 {% extends _base %}
-{% import "post_macros.html" as m %}
+{% import "includes/macros.html" as m %}
 
 {% block content %}
-  {% include "postform.html" %}
+  {% include "includes/postform.html" %}
 	<hr>
 	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
