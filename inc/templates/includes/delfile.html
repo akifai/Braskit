@@ -1,0 +1,11 @@
+<div class="delete-file">
+  <label>[<input type="checkbox" name="delfile" value="on"> File Only]</label>
+
+  <input type="submit" name="task" value="Delete">
+
+  {% if not admin %}
+    <input type="submit" name="task" value="Report">
+  {% else %}
+    <input type="submit" name="task" value="Ban">
+  {% endif %}
+</div>

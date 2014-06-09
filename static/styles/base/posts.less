@@ -1,0 +1,186 @@
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
+
+//
+// Post attributes
+//
+// These classes are intended to be applied to any element, anywhere.
+//
+
+.post-info {
+  // remove h2 styling
+  .normalize-block;
+}
+
+.post-name {
+  color: @post-name-color;
+  font-weight: bold;
+}
+
+.post-trip {
+  color: @post-trip-color;
+}
+
+.post-subject {
+  color: @post-subject-color;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.post-comment {
+  margin: 1em 40px;
+
+  .board-link:not(:hover) {
+    color: @post-board-link-color;
+  }
+
+  .cite-link:not(:hover) {
+    color: @post-cite-link-color;
+  }
+
+  .spoiler {
+    background: @post-spoiler-color;
+    color: @post-spoiler-color;
+
+    &:hover {
+      color: @post-spoiler-hover-color;
+    }
+  }
+
+  blockquote {
+    color: @post-quote-color;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.post-omitted,
+.post-modinfo {
+  color: @post-omit-color;
+}
+
+.post-omitted {
+  margin-bottom: 0;
+}
+
+.post-file {
+  .normalize-block;
+}
+
+.post-mod {
+  font-size: small;
+  margin-left: 0.5em;
+
+  a {
+    margin: 0 2px;
+  }
+}
+
+
+//
+// Non-global post stuff
+//
+
+.post {
+  .ref-link {
+    text-decoration: none;
+
+    &:not(:hover) {
+      color: inherit;
+    }
+  }
+
+  .reply-link {
+    margin-left: 0.5em;
+  }
+
+  .thumb {
+    float: left;
+    margin: 2px 20px;
+  }
+
+  .no-thumb {
+    display: inline-block;
+  }
+
+  .mod-controls {
+    font-size: 9px;
+    margin-left: .25em;
+
+    a {
+      margin: 0 1px;
+    }
+  }
+}
+
+//
+// Threads
+//
+
+.thread {
+  .clear-fix;
+}
+
+
+//
+// Replies
+//
+
+.reply {
+  .table;
+
+  .post-file {
+    margin: 0 20px;
+  }
+
+  .post-footer {
+    margin: 0 40px;
+  }
+
+  .post-comment,
+  .post-comment > :last-child {
+    // remove bottom margin from post, like wakaba does
+    margin-bottom: 0;
+  }
+}
+
+.reply-indent {
+  .table-cell(@vertical-align: top);
+}
+
+.reply-inner {
+  .table-cell;
+
+  background: @reply-background-color;
+
+  .reply.highlighted & {
+    background: @block-background-color;
+  }
+}
+
+
+//
+// Inline reports
+//
+
+.post-reports {
+  .clear-fix;
+  display: table;
+
+  font-size: small;
+  
+  ul,
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    border-top: dotted 1px;
+    padding: 1px 0;
+  }
+}

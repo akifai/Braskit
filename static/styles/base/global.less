@@ -1,0 +1,27 @@
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
+
+body {
+  background-color: @background-color;
+  color: @text-color;
+  font-family: @text-font;
+  margin: 0;
+}
+
+a {
+  background-color: transparent;
+  color: @link-color;
+
+  &:hover {
+    color: @link-hover-color;
+  }
+
+  text-decoration: underline;
+}
+
+img {
+  border: none;
+}

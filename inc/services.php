@@ -35,7 +35,6 @@ $app['js.debug'] = false;
 $app['js.includes'] = array(
     'jquery-1.9.0.min.js',
     'jquery.cookie.js',
-    'bootstrap.min.js',
     'spin.js',
     'braskit.js',
 );

@@ -48,7 +48,7 @@ class Braskit_Twig_Extension extends Twig_Extension {
 
 class Braskit_Twig_Loader extends Twig_Loader_Filesystem {
 	// https://developer.mozilla.org/en-US/docs/HTML/Block-level_elements
-	protected static $no_whitespace_elements = array(
+	protected $noWhiteSpaceElements = array(
 		// <head> elements
 		// no <script> because that could be used inline and affect
 		// whitespace which is intended to be there
@@ -67,24 +67,34 @@ class Braskit_Twig_Loader extends Twig_Loader_Filesystem {
 
 		// HTML5
 		'article', 'aside', 'audio', 'canvas', 'figcaption', 'figure',
-		'footer', 'header', 'hgroup',  'output', 'section', 'video',
+		'footer', 'header', 'hgroup', 'output', 'section', 'video',
 	);
 
-	protected static $whitespace_chars = array("\r", "\n", "\t");
+	protected $whiteSpaceChars = array("\r", "\n", "\t");
 
-	protected static function compileWhitespaceRegex() {
-		$joined = implode('|', self::$no_whitespace_elements);
+	protected function getWhitespaceRegex() {
+		$joined = implode('|', $this->noWhiteSpaceElements);
 		$regex = '@\s*(</?(?:'.$joined.')(?: .*?)?>)\s*@';
 
 		return $regex;
 	}
 
 	public function getSource($name) {
-		$regex = self::compileWhitespaceRegex();
-		$source = file_get_contents($this->findTemplate($name));
+		$name = $this->findTemplate($name);
+		$source = file_get_contents($name);
+
+		if (strrpos($name, '.html') === strlen($name)-5) {
+			$source = $this->trimHTMLWhiteSpace($source);
+		}
+
+		return $source;
+	}
+
+	public function trimHTMLWhiteSpace($source) {
+		$regex = $this->getWhiteSpaceRegex();
 
 		// replace newlines and tabs with spaces
-		$source = str_replace(self::$whitespace_chars, ' ', $source);
+		$source = str_replace($this->whiteSpaceChars, ' ', $source);
 
 		// remove whitespace before and after block elements
 		$source = preg_replace($regex, '\1', $source);

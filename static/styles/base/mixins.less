@@ -1,0 +1,63 @@
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
+
+// inspired by http://nicolasgallagher.com/micro-clearfix-hack/
+// we don't give a shit about IE <9, though.
+.clear-fix() {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+}
+
+.center-block() {
+  display: table;
+  margin: 0 auto;
+}
+
+.normalize-block() {
+  margin: 0;
+  font-size: 1em;
+  font-weight: normal;
+}
+
+
+//
+// CSS table behaviour emulation
+//
+
+.table() {
+  //border-collapse: separate;
+  border-spacing: 2px;
+  display: table;
+}
+
+.table-cell(@padding: 1px; @vertical-align: middle) {
+  display: table-cell;
+  padding: @padding;
+  vertical-align: @vertical-align;
+}
+
+.table-border(@width: 1px) {
+  border: solid @width;
+  border-left-color: #808080;
+  border-top-color: #808080;
+  border-right-color: #2c2c2c;
+  border-bottom-color: #2c2c2c;
+}
+
+.table-cell-border(@width: 1px) {
+  border: solid @width;
+  border-left-color: #2c2c2c;
+  border-top-color: #2c2c2c;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+}

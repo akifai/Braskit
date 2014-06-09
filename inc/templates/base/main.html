@@ -1,46 +1,47 @@
+{% from "includes/macros.html" import returnlink -%}
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
     <title>
-      {% if title %}{{ title }} - {% endif %}
-      {% if board %}
-        {% if not title %}/{{ board }}/ - {% endif %}
-        {{ board.title }}
-      {% else %}
-        {{ app.config.site_name }}
-      {% endif %}
+      {%- if title %}{{ title }} - {% endif -%}
+      {%- if board -%}
+        {%- if not title -%}/{{ board }}/ - {% endif -%}
+        {{- board.title -}}
+      {%- else -%}
+        {{ app.config.site_name -}}
+      {%- endif -%}
     </title>
 
     <link rel="stylesheet" id="sitestyle" href="{{ style.getDefault() }}">
 
-    <script>
-      var styles = {{ style.getJSON()|raw }};
-
-      function changeStyle(name) {
-        var linkEl = document.getElementById("sitestyle");
-
-        if (linkEl)
-          linkEl.href = styles[name];
-      }
-
-      (function () {
-        var match = document.cookie.match(/(?:^|;\s+)style=(.*?)(?:;|$)/);
-
-        if (!match || match.length < 2)
-          return;
-
-        changeStyle(unescape(match[1]));
-      })();
-    </script>
+    <script>{% include "includes/head.js" %}</script>
   </head>
 
   <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}{% if not static %} data-csrf="{{ app.csrf.getToken() }}"{% endif %}>
-    <div id="wrapper">
+    <div class="site-wrapper">
       {% include "includes/header.html" %}
 
-      {% block content %}{% endblock %}
+      <div class="page-content">
+        {% if not hide_title and title %}
+          <nav class="page-nav">
+            {{ returnlink(_context) }}
+          </nav>
+
+          <h1 class="page-title">{% block title %}{{ title }}{% endblock %}</h1>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
+
+      {% block page_foot %}
+        <hr>
+      {% endblock %}
 
       {% include "includes/footer.html" %}
     </div>

@@ -626,7 +626,7 @@ class Board {
 		$url = $board->linkToPost($post);
 
 		return sprintf(
-			'<a href="%s" class="postref">&gt;&gt;%s%s</a>',
+			'<a href="%s" class="cite-link">&gt;&gt;%s%s</a>',
 			Parser::escape($url),
 			$matches[1],
 			$post->id

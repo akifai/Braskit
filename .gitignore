@@ -19,9 +19,7 @@ thumbs.db
 # ignore non-standard style directories
 /static/styles/*/
 
-!/static/styles/bootstrap/
-!/static/styles/img/
-
+!/static/styles/base/
 !/static/styles/burichan/
 !/static/styles/futaba/
 !/static/styles/tomorrow/

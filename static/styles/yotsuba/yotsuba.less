@@ -1,104 +1,208 @@
-@import "../base.less";
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
 
-@background: #ffffee;
-@blockBackground: #ea8;
-@replyBackground: #f0e0d6;
-@textColour: #800000;
-@textFont: @sansSerif;
-@textSize: 10pt;
-@linkColour: #00e;
-@linkHoverColour: #d00;
-@postSubjectColour: #cc1105;
-@postNameColour: #117743;
-@postTripColour: #228854;
-@postQuoteColour: #789922;
-@postOmitColour: #707070;
-@modeBackground: #e04000;
-@modeTextColour: #fff;
+@import "../base/base.less";
+
+@background-color: #ffe;
+@text-color: #800000;
+@text-font: @sans-serif;
+
+@block-background-color: #ea8;
+
+@link-color: #00e;
+@link-hover-color: #d00;
+
+@post-subject-color: #cc1105;
+@post-name-color: #117743;
+@post-trip-color: #228854;
+@post-cite-link-color: #000080;
+@post-quote-color: #789922;
+@post-omit-color: #707070;
+@reply-background-color: #f0e0d6;
+
+@title-background-color: #e04000;
+@title-color: #fff;
+
+@yotsuba-background-image: linear-gradient(to bottom, #fed6af, #ffe 200px);
+@yotsuba-input-color: #000;
+@yotsuba-input-border-color: #aaa;
+@yotsuba-input-disabled-background-color: #ddd;
+@yotsuba-input-disabled-color: #808080;
+@yotsuba-nav-color: #b86;
+@yotsuba-nav-link-color: @text-color;
+@yotsuba-reply-border-color: #d9bfb7;
+@yotsuba-reply-indent-color: #b86;
+@yotsuba-board-paginator-background-color: @reply-background-color;
+@yotsuba-board-paginator-border-color: @yotsuba-reply-border-color;
+@yotsuba-board-paginator-color: #b86;
+@yotsuba-hr-color: #f0e0d6;
+@yotsuba-input-background-color: #fff;
+@yotsuba-th-border-color: #800000;
+
+
+//
+// Site/page elements
+//
+
+.site-nav {
+  color: @yotsuba-nav-color;
+  font-size: 9pt;
+
+  a {
+    text-decoration: none;
+
+    &:not(:hover) {
+      color: @yotsuba-nav-link-color;
+    }
+  }
+}
+
+.site-header {
+  h1 {
+    font-family: tahoma, @sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+    letter-spacing: -2px;
+  }
+
+  .admin-link {
+    font-weight: normal;
+    letter-spacing: 0;
+  }
+}
+
+.site-footer {
+  font-size: x-small;
+}
+
+
+.page-title {
+  font-size: larger;
+  font-weight: bold;
+  padding: 2px;
+}
+
+
+//
+// Posts
+//
+
+.reply-indent {
+  color: @yotsuba-reply-indent-color;
+}
+
+.reply-inner {
+  border: solid @yotsuba-reply-border-color;
+  border-width: 0 1px 1px 0;
+}
+
+
+//
+// Paginator
+//
+
+.board-paginator {
+  background: @yotsuba-board-paginator-background-color;
+  border: solid @yotsuba-board-paginator-border-color;
+  border-width: 0 1px 1px 0;
+  color: @yotsuba-board-paginator-color;
+  padding: 3px 7px;
+
+  a {
+    text-decoration: none;
+  }
+
+  .cell {
+    border: none;
+  }
+
+  .active {
+    color: @text-color;
+  }
+}
+
+
+//
+// Forms, tables, paginator
+//
+
+.form-table {
+  border-spacing: 1px;
+
+  td {
+    padding: 0;
+  }
+
+  th {
+    border: solid 1px @yotsuba-th-border-color;
+    padding: 0 5px;
+  }
+}
+
+.post-form .rules {
+  font-size: 10px;
+
+  ul,
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul li:before {
+    content: "\2022 \20";
+  }
+}
+
+
+//
+// Global element styles
+//
+
+html {
+  // prevent gradient clipping
+  min-height: 200px;
+}
 
 body {
-	background-image: linear-gradient(top, #fed6af, #ffe 200px);
-	background-image: -o-linear-gradient(top, #fed6af, #ffe 200px);
-	background-image: -ms-linear-gradient(top, #fed6af, #ffe 200px);
-	background-image: -moz-linear-gradient(top, #fed6af, #ffe 200px);
-	background-image: -webkit-linear-gradient(top, #fed6af, #ffe 200px);
-	background-repeat: repeat-x;
+  background-image: @yotsuba-background-image;
+  background-repeat: repeat-x;
+  font-size: 10pt;
+
+  // prevent gradient clipping
+  min-height: 200px;
 }
-#header {
-	font-family: tahoma, @sansSerif;
-	font-weight: bold;
-	font-size: 28px;
-	letter-spacing: -2px;
+
+hr {
+  border: solid @yotsuba-hr-color;
+  border-width: 1px 0 0;
 }
-.board-edit {
-	font-weight: normal;
-	letter-spacing: 0;
-}
-.theader {
-	font-size: larger;
-	font-weight: bold;
-	padding: 2px;
-}
-.postarea td {
-	padding: 0;
-}
-.postblock {
-	border: solid 1px #111;
-	padding: 0 5px;
-}
+
+input:not([type]),
 input[type="text"],
 input[type="password"],
 input[type="email"],
 input[type="number"],
 textarea {
-	border: solid 1px #aaa;
-	background: #fff;
-	color: #000;
-	font-family: arial, helvetica, sans-serif;
-	font-size: 13px;
-	outline: none;
-	padding: 2px 4px 3px;
+  border: solid 1px @yotsuba-input-border-color;
+  background: @yotsuba-input-background-color;
+  color: @yotsuba-input-color;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  margin: 0;
+  outline: none;
+  padding: 2px 4px 3px;
 }
+
 input[disabled] {
-	background: #ddd;
-	color: #808080;
+  background: @yotsuba-input-disabled-background-color;
+  color: @yotsuba-input-disabled-color;
 }
-.doubledash {
-	color: #e0bfb7;
-}
-.reply, .pages {
-	border: solid #d9bfb7;
-	border-width: 0 1px 1px 0;
-}
-.pages {
-	background: @replyBackground;
-	color: #b86;
-	padding: 3px 7px;
 
-	& div {
-		border: none;
-	}
-
-	strong {
-		color: @textColour;
-	}
-}
-.rules {
-	font-size: 10px;
-}
-.rules ul,
-.rules li {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-.rules li:before {
-	content: "\2022 \20";
-}
-hr {
-	border: solid @replyBackground;
-	border-width: 1px 0 0;
-}
-p.footer {
-	font-size: x-small;
+textarea {
+  // kills an ugly margin beneath the textarea
+  vertical-align: bottom;
 }

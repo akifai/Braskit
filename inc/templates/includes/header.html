@@ -1,10 +1,11 @@
 {#
  # Top menu
  #}
-<div id="topmenu" class="boardmenu">
-  <div class="rightmenu">
+
+<nav class="site-nav">
+  <span class="admin-nav">
     {# Style selector #}
-    <span class="noscreen ss-unhide"><span class="ss-list"></span> -</span>
+    <span class="style-unhide"><span class="style-list"></span> -</span>
 
     {# Admin links #}
     {% if admin %}
@@ -25,30 +26,32 @@
     {% if not admin %}
       [<a href="{{ path("login", true) }}">Manage</a>]
     {% endif %}
-  </div>
-</div>
+  </span>
+</nav>
 
 
 {#
  # Page header
  #}
 
-<div id="logo">
-  {%- block header -%}
-    <h1 id="header">
+<header class="site-header">
+  {% block header %}
+    <h1>
       {% if board %}
         /{{ board }}/ - {{ board.title }}
-        {%- if admin -%}
-          <a href="{{ board.path("edit", true) }}" class="board-edit">[Edit]</a>
+
+        {% if admin %}
+          <a href="{{ board.path("edit", true) }}" class="admin-link">[Edit]</a>
         {% endif %}
       {% else %}
         {{ app.config.site_name }}
       {% endif %}
     </h1>
-    {%- if subheader -%}
-      <div id="subheader">{{ subheader }}</div>
-    {%- endif -%}
-  {%- endblock -%}
-</div>
+
+    {% if subtitle %}
+      <p class="subtitle">{{ subtitle }}</div>
+    {% endif %}
+  {% endblock %}
+</header>
 
 <hr>

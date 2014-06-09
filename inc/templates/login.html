@@ -3,30 +3,28 @@
 {% set title = "Log in" %}
 
 {% block content %}
-  {{ m.returnlink() }}
-
-  <div class="theader">{{ title }}</div>
-  <form action="{{ path("login", true) }}" method="post" class="loginform">
+  <form action="{{ path("login", true) }}" method="post" class="block-form">
     <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
+
     {% if goto %}
       <input type="hidden" name="goto" value="{{ goto }}">
     {% endif %}
 
     {% if error %}
-      <p class="notice">{{ error }}</p>
+      <p class="notice-text">{{ error }}</p>
     {% endif %}
 
-    <table>
+    <table class="form-table">
       <tbody>
 
         <tr>
-          <th><label for="login_user">Username</label></th>
-          <td><input type="text" name="login_user" id="login_user" size="16" autocomplete="off"></td>
+          <th><label for="login-user">Username</label></th>
+          <td><input type="text" name="login_user" id="login-user" size="16" autocomplete="off"></td>
         </tr>
 
         <tr>
-          <th><label for="login_pass">Password</label></th>
-          <td><input type="password" name="login_pass" id="login_pass" size="16" autocomplete="off"></td>
+          <th><label for="login-pass">Password</label></th>
+          <td><input type="password" name="login_pass" id="login-pass" size="16" autocomplete="off"></td>
         </tr>
 
         <tr>
@@ -37,6 +35,4 @@
       </tbody>
     </table>
   </form>
-
-  <hr>
 {% endblock %}

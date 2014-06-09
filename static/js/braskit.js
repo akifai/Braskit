@@ -158,27 +158,18 @@ function runCallbacks() {
 }
 
 function doStyleSwitchers() {
-    var ss = createStyleSwitcher();
+    var styleSelector = createStyleSwitcher();
 
-    if (!ss) {
+    if (!styleSelector) {
         // no styles to switch between
         return;
     }
 
-    $('.ss-list').html(ss);
-    $('.ss-unhide').removeClass('noscreen');
+    $('.style-list').html(styleSelector);
+    $('.style-unhide').removeClass('no-screen');
 }
 
 function doConfig() {
-    // use bootstrap's tooltips
-    $('.configform label[title]').tooltip({
-        placement: 'top',
-        delay: {
-            show: 0,
-            hide: 0
-        }
-    });
-
     // toggle default value
     $('.toggle-reset').change(function () {
         var key = 'config_' + this.name.match(/\[(.*)\]/)[1];
@@ -217,12 +208,12 @@ function highlightPost(num) {
 function doReplyPage() {
     var textarea = $('#postform textarea[name=field4]');
 
-    $('.reflink .no').click(function () {
+    $('.ref-link.no').click(function () {
         var num = $(this).data('num');
         highlightPost(num);
     });
 
-    $('.reflink .val').click(function () {
+    $('.ref-link.val').click(function () {
         var num = $(this).data('num');
         textarea.addToInput('>>' + num + '\n');
         textarea.focus();
@@ -230,8 +221,9 @@ function doReplyPage() {
 
     var matches = window.location.hash.match(/^#(i)?(\d+)$/);
 
-    if (!matches)
+    if (!matches) {
         return;
+    }
 
     var doInsert = typeof matches[1] != 'undefined';
     var num = matches[2];
@@ -251,8 +243,9 @@ function doReplyPage() {
 function delformSubmit() {
     var cookie = $.cookie('password');
 
-    if (cookie === undefined)
+    if (cookie === undefined) {
         cookie = '';
+    }
 
     var password = $('<input>', {
         type: 'hidden',
@@ -278,7 +271,7 @@ function getCSRF(success) {
 function doReportDismissal(event, url) {
     var link = $(this);
     var listItem = link.parents('li');
-    var reportList = listItem.parents('.postreports');
+    var reportList = listItem.parents('.post-reports');
 
     getCSRF(function (csrf) {
         $.post(url, { 'csrf': csrf }, function (data) {
@@ -354,7 +347,7 @@ Dialogue.prototype.createScreen = function () {
     });
 
     $(this.container)
-        .addClass('dl-container')
+        .addClass('ajax-modal-container')
         .append(this.screen);
 
     $('#wrapper').after(this.container);

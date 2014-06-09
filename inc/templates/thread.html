@@ -1,24 +1,33 @@
 {% extends _base %}
+
 {% import "includes/macros.html" as m %}
 
 {% set js_callbacks = ["doReplyPage"] %}
 {% set title = posts[0]["subject"] ?: "Thread No."~thread %}
 
+{% block title %}Posting mode: Reply{% endblock %}
+
 {% block content %}
-	{{ m.returnlink(_context) }}
-	<div class="theader">Posting mode: Reply</div>
   {% include "includes/postform.html" %}
 	<hr>
+
 	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
 		<input type="hidden" name="board" value="{{ board }}">
     <input type="hidden" name="admin" value="{{ admin ? "on" : "" }}">
+    
 		{% if admin %}
       <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 			<input type="hidden" name="nexttask" value="manage">
 		{% endif %}
+
 		{{ m.thread(_context, posts) }}
+
 		<hr>
+
 		{{ m.returnlink(_context) }}
-		{{ m.delfile(_context) }}
+
+    {% include "includes/delfile.html" %}
 	</form>
 {% endblock %}
+
+{% block page_foot %}{% endblock %}

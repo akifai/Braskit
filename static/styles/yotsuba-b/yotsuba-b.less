@@ -1,103 +1,33 @@
-@import "../base.less";
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
 
-@background: #eef2ff;
-@blockBackground: #98e;
-@replyBackground: #d6daf0;
-@textColour: #000;
-@textFont: @sansSerif;
-@textSize: 10pt;
-@linkColour: #34345c;
-@linkHoverColour: #d00;
-@postSubjectColour: #0f0c5d;
-@postNameColour: #117743;
-@postTripColour: #228854;
-@postQuoteColour: #789922;
-@postOmitColour: #707070;
-@modeBackground: #0010e0;
-@modeTextColour: #fff;
+@import "../yotsuba/yotsuba.less";
 
-body {
-	background-image: linear-gradient(top, #d1d5ee, #eef2ff 200px);
-	background-image: -o-linear-gradient(top, #d1d5ee, #eef2ff 200px);
-	background-image: -ms-linear-gradient(top, #d1d5ee, #eef2ff 200px);
-	background-image: -moz-linear-gradient(top, #d1d5ee, #eef2ff 200px);
-	background-image: -webkit-linear-gradient(top, #d1d5ee, #eef2ff 200px);
-	background-repeat: repeat-x;
-}
-#header {
-	color: #af0a0f;
-	font-family: tahoma, @sansSerif;
-	font-weight: bold;
-	font-size: 28px;
-	letter-spacing: -2px;
-}
-.board-edit {
-	font-weight: normal;
-	letter-spacing: 0;
-}
-.theader {
-	font-size: larger;
-	font-weight: bold;
-	padding: 2px;
-}
-.postarea td {
-	padding: 0;
-}
-.postblock {
-	border: solid 1px #111;
-	padding: 0 5px;
-}
-input[type="text"],
-input[type="password"],
-textarea {
-	border: solid 1px #aaa;
-	background: #fff;
-	color: #000;
-	font-family: arial, helvetica, sans-serif;
-	font-size: 13px;
-	outline: none;
-	padding: 2px 4px 3px;
-}
-input[disabled] {
-	background: #ddd;
-	color: #808080;
-}
-.doubledash {
-	color: #b7c5d9;
-}
-.reply, .pages {
-	border: solid #b7c5d9;
-	border-width: 0 1px 1px 0;
-}
-.pages {
-	background: @replyBackground;
-	color: #89a;
-	padding: 3px 7px;
+@background-color: #eef2ff;
+@text-color: #000;
 
-	& div {
-		border: none;
-	}
+@block-background-color: #98e;
 
-	strong {
-		color: @textColour;
-	}
-}
-.rules {
-	font-size: 10px;
-}
-.rules ul,
-.rules li {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-.rules li:before {
-	content: "\2022 \20";
-}
-hr {
-	border: solid @replyBackground;
-	border-width: 1px 0 0;
-}
-p.footer {
-	font-size: x-small;
-}
+@header-color: #af0a0f;
+
+@link-color: #34345c;
+@link-hover-color: #d00;
+
+@post-subject-color: #0f0c5d;
+@post-cite-link-color: #d00;
+@reply-background-color: #d6daf0;
+
+@title-background-color: #0010e0;
+
+
+@yotsuba-background-image: linear-gradient(to bottom, #d1d5ee, #eef2ff 200px);
+@yotsuba-nav-color: #89a;
+@yotsuba-hr-color: #b7c5d9;
+@yotsuba-board-paginator-color: #89a;
+@yotsuba-board-paginator-border-color: #b7c5d9;
+@yotsuba-reply-border-color: #b7c5d9;
+@yotsuba-reply-indent-color: #b7c5d9;
+@yotsuba-th-border-color: #000;

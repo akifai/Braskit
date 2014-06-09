@@ -4,33 +4,33 @@
 {% block content %}
   {% include "includes/postform.html" %}
 	<hr>
-	<form action="{{ board.path("delete", true) }}" method="post" name="delform">
+
+	<form action="{{ board.path("delete", true) }}" method="post" class="delete-form">
 		<input type="hidden" name="board" value="{{ board }}">
     <input type="hidden" name="admin" value="{{ admin ? "on" : "" }}">
+
 		{% if admin %}
       <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 			<input type="hidden" name="nexttask" value="manage">
 		{% endif %}
+
 		{% for thread in threads %}
 			{{ m.thread(loop.parent, thread) }}
+
 			<hr>
 		{% endfor %}
-		{{ m.delfile(_context) }}
+
+		{% include "includes/delfile.html" %}
 	</form>
 
   {% if board.config.threads_per_page %}
-    <div class="pages">
-      <div class="previous">
-        {% if not pagenum %}
-          Previous
-        {% else %}
-          {{ m.make_previous_page_button(_context) }}
-        {% endif %}
-      </div>
-      <div class="pagenums">
+    <nav class="board-paginator">
+      {{ m.make_previous_page_button(_context) }}
+
+      <div class="cell">
         {% for i in range(0, maxpage) %}
           {% if i == pagenum %}
-            [<strong>{{ i }}</strong>]
+            [<strong class="active">{{ i }}</strong>]
           {% elseif i == 0 %}
             [<a href="{{ board.path("index.html", admin) }}">{{ i }}</a>]
           {% else %}
@@ -38,13 +38,10 @@
           {% endif %}
         {% endfor %}
       </div>
-      <div class="next">
-        {% if pagenum == maxpage %}
-          Next
-        {% else %}
-          {{ m.make_next_page_button(_context) }}
-        {% endif %}
-      </div>
-    </div>
+
+      {{ m.make_next_page_button(_context) }}
+    </nav>
   {% endif %}
 {% endblock %}
+
+{% block page_foot %}{% endblock %}

@@ -2,7 +2,8 @@
 {% import "includes/macros.html" as m %}
 
 {% block content %}
-	<p class="error">{{ message|raw }}</p>
-	<p class="error">{{ m.returnlink(_context, referrer) }}</p>
-	<hr>
+  <div class="error-page">
+    <p>{{ message|raw }}</p>
+    <p>{{ m.returnlink(_context, referrer) }}</p>
+  </div>
 {% endblock %}

@@ -1,91 +1,44 @@
-@import "../base.less";
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
 
-@background: #1d1f21;
-@blockBackground: @replyBackground;
-@replyBackground: #282a2e;
-@textColour: #c5c8c6;
-@textFont: @sansSerif;
-@textSize: 10pt;
-@linkColour: #81a2be;
-@linkHoverColour: #5f89ac;
-@postSubjectColour: #b294bb;
-@postNameColour: #c5c8c6;
-@postTripColour: @postNameColour;
-@postQuoteColour: #b5bd68;
-@modeBackground: @replyBackground;
-@modeTextColour: #fff;
+@import "../yotsuba/yotsuba.less";
 
-#header {
-	font-family: tahoma, @sansSerif;
-	font-weight: bold;
-	font-size: 28px;
-	letter-spacing: -2px;
+@background-color: #1d1f21;
+@block-background-color: @reply-background-color;
+@reply-background-color: #282a2e;
+@text-color: #c5c8c6;
+@text-font: @sans-serif;
+@text-size: 10pt;
+
+@link-color: #81a2be;
+@link-hover-color: #5f89ac;
+
+@post-subject-color: #b294bb;
+@post-name-color: #c5c8c6;
+@post-trip-color: @post-name-color;
+@post-cite-link-color: #81a2be;
+@post-quote-color: #b5bd68;
+
+@title-background-color: @reply-background-color;
+@title-text-color: #fff;
+
+@yotsuba-reply-indent-color: #c5c8c6;
+@yotsuba-background-image: none;
+@yotsuba-nav-color: @text-color;
+@yotsuba-reply-border-color: @reply-background-color;
+@yotsuba-hr-color: #282a2e;
+@yotsuba-title-border: none;
+@yotsuba-board-paginator-color: @text-color;
+@yotsuba-board-paginator-border-color: #000;
+@yotsuba-th-border-color: #000;
+
+.page-title {
+  border: solid 1px #111;
 }
-.board-edit {
-	font-weight: normal;
-	letter-spacing: 0;
-}
-.theader {
-	border: solid 1px #111;
-	font-size: larger;
-	font-weight: bold;
-	padding: 1px;
-}
-.postarea td {
-	padding: 0;
-}
-.postblock {
-	border: solid 1px #111;
-	padding: 0 5px;
-}
-input[type="text"],
-input[type="password"],
-textarea {
-	border: solid 1px #aaa;
-	background: #fff;
-	color: #000;
-	font-family: arial, helvetica, sans-serif;
-	font-size: 13px;
-	outline: none;
-	padding: 2px 4px 3px;
-}
-input[disabled] {
-	background: #ddd;
-	color: #808080;
-}
-.reply {
-	border: 1px solid #282a2e;
-}
-.reflink a {
-	color: @linkColour;
-}
-.reflink a:hover {
-	color: @linkHoverColour;
-}
-.rules {
-	font-size: 10px;
-}
-.rules ul,
-.rules li {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-.rules li:before {
-	content: "\2022 \20";
-}
-hr {
-	border: solid @replyBackground;
-	border-width: 1px 0 0;
-}
-.pages {
-	background: @replyBackground;
-	border: solid 1px #111;
-	padding: 3px 7px;
-}
-.pages div {
-	border: none;
-}
-#footer {
-	font-size: x-small;
+
+.board-paginator {
+  border-width: 1px;
 }

@@ -1,20 +1,25 @@
 {% extends _base %}
 {% import "includes/macros.html" as m %}
 
+{% set title = "Dashboard" %}
+{% set hide_title = true %}
+
 {# Show info in post bodies #}
 {% set showinfo = true %}
 
 {% block content %}
-  <div class="theader">Latest posts across all boards</div>
+  <h1 class="page-title">Latest posts across all boards</h1>
 
-  {% for p in posts %}
-    {% if board is defined and (board != p.board or not posts[loop.index - 1].parent or posts[loop.index - 1].parent != p.parent) %}
-      <hr>
-    {% endif %}
+    {% for p in posts %}
+      {% if board is defined and (board != p.board or not posts[loop.index - 1].parent or posts[loop.index - 1].parent != p.parent) %}
+        <hr>
+      {% endif %}
 
-    {% set board = p.board %}
-    {{ m.reply(_context, p, true) }}
-  {% endfor %}
+      {% set board = p.board %}
+      {{ m.reply(_context, p, true) }}
+    {% endfor %}
 
   <hr>
 {% endblock %}
+
+{% block page_foot %}{% endblock %}

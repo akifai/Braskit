@@ -1,17 +1,15 @@
 {% extends _base %}
 {% import "includes/macros.html" as m %}
+
 {% set title = "Editing board: /%s/"|format(board) %}
 
 {% block content %}
-  {{ m.returnlink(_context) }}
-  <div class="theader">{{ title }}</div>
-
-  <div class="modpage">
-    <h2>Board information</h2>
-
+  <div class="group-container">
     {# note to self: this form will be shared with create_board #}
-    <form action="{{ board.path("edit", true) }}" method="post" class="rowform">
+    <form action="{{ board.path("edit", true) }}" method="post" class="row-form">
       <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
+
+      <h2>Board information</h2>
 
       <div class="row">
         <label for="name">Short name</label>
@@ -38,19 +36,21 @@
           board.</p>
       </div>
 
-      <div class="meta">
+      <p class="form-controls">
         <input type="submit" value="Edit Board">
         <label><input type="checkbox" name="rebuild" id="rebuild" value="on"> Rebuild</label>
-      </div>
+      </p>
     </form>
 
-    <h2>Configuration</h2>
+    <div class="row-form">
+      <h2>Configuration</h2>
 
-    <p>[<a href="{{ board.path("config", true) }}">Edit configuration</a>]</p>
+      <input type="submit" value="Edit configuration">
+    </div>
 
-    <h2>Delete board</h2>
+    <form action="{{ board.path("delete_board", true) }}" method="post" class="row-form">
+      <h2>Delete board</h2>
 
-    <form action="{{ board.path("delete_board", true) }}" method="post" class="rowform">
       <p><strong>Warning:</strong> This will irrecoverably delete all data
         associated with the board. If you want to remove public access to the
         board, you can change the user level above instead.</p>
@@ -66,11 +66,7 @@
         </p>
       </div>
 
-      <div class="meta">
-        <input type="submit" value="Delete Board">
-      </div>
+      <p class="form-controls"><input type="submit" value="Delete Board"></p>
     </form>
   </div>
-
-  <hr>
 {% endblock %}

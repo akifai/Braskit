@@ -2,17 +2,15 @@
 {% set title = "Bans" %}
 
 {% block content %}
-  <div class="theader">{{ title }}</div>
-
-  <form action="{{ path("bans", true) }}" method="post" class="banform">
+  <form action="{{ path("bans", true) }}" method="post" class="block-form">
     <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
-    <table>
+    <table class="form-table">
       <tbody>
         <tr>
           <th><label for="ip">IP address</label></th>
           <td>
-            <input type="text" name="ip" id="ip" size="22" tabindex="1" value="{{ ip }}">
+            <input type="text" name="ip" id="ip" size="22" tabindex="1" value="{{ ip }}" class="focus">
             <input type="submit" value="Add" tabindex="4">
           </td>
         </tr>
@@ -41,9 +39,10 @@
   {% if bans %}
     <hr>
 
-    <form action="{{ path("bans", true) }}" method="post" class="bantable">
+    <form action="{{ path("bans", true) }}" method="post" class="block-form">
       <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
-      <table>
+
+      <table class="list-table">
         <thead>
           <tr>
             <th class="minimal">{# Checkbox #}</th>
@@ -58,22 +57,12 @@
 
         <tbody>
           {% for ban in bans %}
-            {% set classes = [] %}
-
-            {% if not loop.index % 2 %}
-              {% set classes = classes|merge(["alt"]) %}
-            {% endif %}
-
-            {% if ban.range %}
-              {% set classes = classes|merge(["range"]) %}
-            {% endif %}
-
-            <tr{% if classes %} class="{{ classes|join(" ") }}"{% endif %}>
+            <tr{% if ban.range %} class="is-range-ban"{% endif %}>
               {# Checkbox #}
-              <td class="minimal"><input type="checkbox" name="lift[]" id="ban{{ ban.id }}" value="{{ ban.id }}"></td>
+              <td class="minimal"><input type="checkbox" name="lift[]" id="ban-{{ ban.id }}" value="{{ ban.id }}"></td>
 
               {# IP address #}
-              <td class="minimal"><label for="ban{{ ban.id }}">{{ ban.host }}</label></td>
+              <td class="minimal"><label for="ban-{{ ban.id }}">{{ ban.host }}</label></td>
 
               {# CIDR #}
               <td class="minimal">{% if ban.range %}{{ ban.cidr }}{% endif %}</td>
@@ -94,11 +83,9 @@
         </tbody>
       </table>
 
-      <div class="buttons">
+      <p class="form-controls">
         <input type="submit" value="Lift">
-      </div>
+      </p>
     </form>
   {% endif %}
-
-  <hr>
 {% endblock %}

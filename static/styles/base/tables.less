@@ -1,0 +1,42 @@
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
+
+// Class to be used for tables whose purpose is to hold form controls
+.form-table {
+  th {
+    background-color: @block-background-color;
+    text-align: left;
+  }
+}
+
+// Class to be used for tables that list stuff
+.list-table {
+  .form-table;
+
+  .minimal {
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  // zebra stripes
+  tbody tr:nth-child(even) > td {
+    @dark-color: saturate(lighten(@background-color, 2%), 5%);
+    @light-color: desaturate(darken(@background-color, 2%), 50%);
+
+    background-color: contrast(@background-color, @light-color, @dark-color);
+  }
+
+  tbody tr:hover > td {
+    @dark-color: saturate(lighten(@background-color, 7%), 5%);
+    @light-color: desaturate(darken(@background-color, 7%), 50%);
+
+    background-color: contrast(@background-color, @light-color, @dark-color);
+  }
+}

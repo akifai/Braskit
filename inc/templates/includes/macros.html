@@ -1,67 +1,81 @@
-{# TODO: The management panel needs its own set of links. #}
-
 {#
  # Thread macros
  #}
 
 {% macro thread(context, posts) %}
-	{% import _self as post -%}
+	{% from _self import fileinfo, thumb, head, body, reply -%}
 
-	<div class="thread" id="{{ posts[0].id }}">
+	<article class="post thread" id="{{ posts[0].id }}">
 		{% for p in posts %}
 			{% if not p.parent %}
-				{{ post.op(context, p) }}
+        {% if p.file %}
+          {{ fileinfo(context, p) }}
+          {{ thumb(context, p) }}
+        {% endif %}
+
+        {{ head(context, p) }}
+        {{ body(context, p) }}
+
 				{% if p.omitted %}
-					<div class="omitted">{{ p.omitted|raw }} posts omitted. Click Reply to view.</div>
+					<p class="post-omitted">{{ p.omitted|raw }} posts omitted. Click Reply to view.</p>
 				{% endif %}
 			{% else %}
-				{{ post.reply(context, p) }}
+				{{ reply(context, p) }}
 			{% endif %}
 		{% endfor %}
-	</div>
+	</article>
 {% endmacro %}
 
 {% macro head(context, p) -%}
-	{% import _self as m -%}
-
-	<h2 class="posthead">
+	<h2 class="post-info">
 		<label>
+      {# Checkbox #}
 			<input type="checkbox" name="id[]" value="{{ p.id|raw }}">
+
+      {# Post subject #}
 			{% if p.subject %}
-				<em class="posttitle">{{ p.subject|raw }}</em>
+				<span class="post-subject">{{ p.subject|raw }}</span>
 			{% endif %}
 
+      {# Poster's name/email/trip #}
       {% if p.email %}
-        <span class="postname"><a href="{{ p.email|raw }}">{{ p.name|raw }}</a></span>
-        {%- if p.tripcode %}<span class="posttrip"><a href="{{ p.email|raw }}"> {{ p.tripcode|raw }}</a></span>{% endif %}
+        <span class="post-name"><a href="{{ p.email|raw }}">{{ p.name|raw }}</a></span>
+
+        {%- if p.tripcode -%}
+          <span class="post-trip"><a href="{{ p.email|raw }}"> {{ p.tripcode|raw }}</a></span>
+        {% endif %}
       {% else %}
-        <span class="postname">{{ p.name|raw }}</span>
+        <span class="post-name">{{ p.name|raw }}</span>
+
         {% if p.tripcode %}
-          <span class="posttrip">{{ p.tripcode|raw }}</span>
+          <span class="post-trip">{{ p.tripcode|raw }}</span>
         {% endif %}
       {% endif %}
 
+      {# Show IP for moderators #}
 			{% if context.admin %}
-				<span class="postip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip|raw }}</a>)</span>
+				<span class="post-ip">(<a href="{{ path("IP/"~p.ip, true) }}">{{ p.ip|raw }}</a>)</span>
 			{% endif %}
-			<span class="postdate">{{ p.date|raw }}</span>
+
+			<span class="post-date">{{ p.date|raw }}</span>
 		</label>
-		{%- spaceless %}
-			<span class="reflink">
-				{% if not context.thread %}
-					<a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="no" data-num="{{ p.id|raw }}">No.</a>
-					<a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="val" data-num="{{ p.id|raw }}">{{ p.id|raw }}</a>
-				{% else %}
-					<a href="#{{ p.id|raw }}" class="no" data-num="{{ p.id|raw }}">No.</a>
-					<a href="#i{{ p.id|raw }}" class="val" data-num="{{ p.id|raw }}">{{ p.id }}</a>
-				{% endif %}
-			</span>
-		{% endspaceless -%}
+
+		{% spaceless %}
+      {% if not context.thread %}
+        <a href="{{ context.board.linkToPost(p, false, context.admin) }}" class="ref-link no" data-num="{{ p.id|raw }}">No.</a>
+        <a href="{{ context.board.linkToPost(p, true, context.admin) }}" class="ref-link val" data-num="{{ p.id|raw }}">{{ p.id|raw }}</a>
+      {% else %}
+        <a href="#{{ p.id|raw }}" class="ref-link no" data-num="{{ p.id|raw }}">No.</a>
+        <a href="#i{{ p.id|raw }}" class="ref-link val" data-num="{{ p.id|raw }}">{{ p.id }}</a>
+      {% endif %}
+		{% endspaceless %}
+
 		{% if not p.parent and not context.thread %}
-			<span class="replylink">[<a href="{{ context.board.path("res/"~p.id~".html", context.admin) }}">Reply</a>]</span>
+			<span class="reply-link">[<a href="{{ context.board.path("res/"~p.id~".html", context.admin) }}">Reply</a>]</span>
 		{% endif %}
+
     {% if context.admin %}
-      <span class="modcontrols">
+      <span class="post-mod">
         <a href="{{ context.board.path("delete", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id}) }}" title="Delete">D</a>
         <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id, "ban": 1}) }}" title="Ban & Delete">&</a>
         <a href="{{ context.board.path("ban", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("ban", {"id": p.id}) }}" title="Ban">B</a>
@@ -71,7 +85,7 @@
 {% endmacro %}
 
 {% macro fileinfo(context, p) %}
-	<div class="imginfo">
+	<p class="post-file">
 		File: <a href="{{ context.board.path("src/"~p.file) }}" target="_blank">{{ p.file }}</a>
 		<em>(
 			{{- p.prettysize|raw }}, {{ p.width|raw }}x{{ p.height|raw -}}
@@ -79,84 +93,82 @@
 				<span title="{{ p.origname }}">{{ p.shortname }}</span>
 			{%- endif -%}
 		)</em>
-	</div>
+	</p>
 {% endmacro %}
 
 {% macro thumb(context, p) %}
 	{% import _self as m %}
 
 	{% if p.t_width and p.t_height %}
-		<a href="{{ context.board.path("src/"~p.file) }}" class="thumblink" target="_blank">
+		<a href="{{ context.board.path("src/"~p.file) }}" class="thumb-link" target="_blank">
 			<img src="{{ context.board.path("thumb/"~p.thumb) }}" alt="" class="thumb" width="{{ p.t_width|raw }}" height="{{ p.t_height|raw }}">
 		</a>
 	{% else %}
-		<a href="{{ context.board.path("src/"~p.file) }}" class="nothumb">(No thumbnail)</a>
+		<a href="{{ context.board.path("src/"~p.file) }}" class="no-thumb">(No thumbnail)</a>
 	{% endif %}
 {% endmacro %}
 
 {% macro reports(reports) %}
-  <div class="postreports">
-    <div class="inner">
-      <h4>This post has pending report(s)</h4>
-      <ul>
-        {% for report in reports|json_decode(true) %}
-          <li>
-            <a href="{{ path("reports", {"dismiss": report.id}) }}" data-ajax="{{ apipath("reports", {"dismiss": report.id}) }}" data-handler="doReportDismissal" title="Dismiss" class="dismiss">&times;</a>
-            Reported by <a href="{{ path("ip/"~report.ip, true) }}">{{ report.ip }}</a>: <strong>{{ report.reason }}</strong>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
+  <div class="post-reports">
+    <ul>
+      {% for report in reports|json_decode(true) %}
+        <li>
+          Reported by <a href="{{ path("ip/"~report.ip, true) }}">{{ report.ip }}</a>: <strong class="reason">{{ report.reason }}</strong>
+          <span class="dismiss">(<a href="{{ path("reports", {"dismiss": report.id}) }}" data-ajax="{{ apipath("reports", {"dismiss": report.id}) }}" data-handler="doReportDismissal" title="Dismiss">Dismiss</a>)</span>
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% endmacro %}
 
 {% macro body(context, p) %}
 	{% import _self as m %}
 
-	<div class="postbody">
-		<div class="posttext">
-			{{- p.comment|raw -}}
-			{% if p.abbrev %}
-				<div class="abbrev">Comment too long. Click <a href="">here</a>
-				to view the full text.</div>
-			{% endif %}
-      {% if context.showinfo %}
-        <div class="modinfo">
-          Board: <strong>/{{ context.board|raw }}/</strong>{% if p.parent %}, thread: <strong>{{ p.parent|raw }}</strong></li>{% endif %}
-        </div>
+  <div class="post-body">
+    <div class="post-comment">
+      {{- p.comment|raw -}}
+    </div>
+
+    <footer class="post-footer">
+      {% if p.abbrev %}
+        <p class="post-abbr">Comment too long. Click <a href="">here</a> to view the full text.</p>
       {% endif %}
+
+      {% if context.showinfo %}
+        <p class="post-modinfo">
+          Board: <strong>/{{ context.board|raw }}/</strong>{% if p.parent %}, thread: <strong>{{ p.parent|raw }}</strong></li>{% endif %}
+        </p>
+      {% endif %}
+
       {% if p.reports %}
         {{ m.reports(p.reports) }}
       {% endif %}
-		</div>
-	</div>
+    </footer>
+  </div>
 {% endmacro %}
 
 {% macro op(context, p) %}
 	{% import _self as m -%}
 
-	{% if p.file %}
-		{{ m.fileinfo(context, p) }}
-		{{ m.thumb(context, p) }}
-	{% endif %}
-	{{ m.head(context, p) }}
-	{{ m.body(context, p) }}
 {% endmacro %}
 
 {% macro reply(context, p) %}
 	{% import _self as m -%}
 
-	<div class="replywrap">
-		<div class="doubledash">&gt;&gt;</div>
-		<div class="reply" id="{{ p.id|raw }}">
+	<article class="post reply" id="{{ p.id|raw }}">
+		<div class="reply-indent">&gt;&gt;</div>
+
+		<div class="reply-inner">
 			{{ m.head(context, p) }}
+
 			{% if p.file %}
 				{{ m.fileinfo(context, p) }}
 				{{ m.thumb(context, p) }}
 			{% endif %}
+
 			{{ m.body(context, p) }}
 		</div>
-	</div>
+	</article>
 {% endmacro %}
 
 
@@ -165,47 +177,45 @@
  #}
 
 {% macro make_previous_page_button(context) -%}
-	{%- import _self as m -%}
-	{% spaceless %}
-		{% if not context.admin %}
-      <form action="{{ context.board.path(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html", context.admin) }}" method="get">
-        <input type="submit" value="Previous">
-      </form>
-		{% else %}
-      <a href="{{ context.board.path((context.pagenum - 1)~".html", true) }}">Previous</a>
-    {% endif %}
-	{% endspaceless %}
-{%- endmacro %}
+	{% import _self as m %}
 
-{% macro make_next_page_button(context) -%}
-	{%- import _self as m -%}
-	{% spaceless %}
-		{% if not context.admin %}
-      <form action="{{ context.board.path((context.pagenum + 1)~".html") }}" method="get">
-        <input type="submit" value="Next">
+  {% if not context.pagenum %}
+    <div class="cell previous disabled">Previous</div>
+  {% else %}
+    {% if not context.admin %}
+      <form action="{{ context.board.path(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html", context.admin) }}" method="get" class="cell previous">
+        <input type="submit" value="Previous" onclick="window.location='{{ context.board.path(context.pagenum == 1 ? "index.html" : (context.pagenum - 1)~".html", context.admin) }}';return false">
       </form>
-		{% else %}
-      <a href="{{ context.board.path((context.pagenum + 1)~".html", true) }}">Next</a>
+    {% else %}
+      <div class="cell previous">
+        <a href="{{ context.board.path((context.pagenum - 1)~".html", true) }}">Previous</a>
+      </div>
     {% endif %}
-	{% endspaceless %}
-{%- endmacro %}
+  {% endif %}
+{% endmacro %}
+
+{% macro make_next_page_button(context) %}
+	{% import _self as m %}
+
+  {% if context.pagenum == context.maxpage %}
+    <div class="cell next disabled">Next</div>
+  {% else %}
+    {% if not context.admin %}
+      <form action="{{ context.board.path((context.pagenum + 1)~".html") }}" method="get" class="cell next">
+        <input type="submit" value="Next" onclick="window.location='{{ context.board.path((context.pagenum + 1)~".html") }}';return false">
+      </form>
+    {% else %}
+      <div class="cell next">
+        <a href="{{ context.board.path((context.pagenum + 1)~".html", true) }}">Next</a>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endmacro %}
 
 
 {#
  # Various
  #}
-
-{% macro delfile(context) %}
-	<div class="deletefile">
-		<label>[<input type="checkbox" name="delfile" value="on"> File Only]</label>
-		<input type="submit" name="task" value="Delete">
-		{% if not context.admin %}
-			<input type="submit" name="task" value="Report">
-		{% else %}
-			<input type="submit" name="task" value="Ban">
-		{% endif %}
-	</div>
-{% endmacro %}
 
 {% macro returnlink(context, dest="") -%}
 	{% if dest %}

@@ -1,7 +1,8 @@
-<div class="postarea">
-  <form action="{{ board.path("post", true) }}" method="post" enctype="multipart/form-data" name="postform" id="postform">
-    <input type="hidden" name="parent" value="{{ thread ? thread|raw : 0 }}">
-    <table><tbody>
+<form action="{{ board.path("post", true) }}" method="post" enctype="multipart/form-data" class="post-form" id="postform">
+  <input type="hidden" name="parent" value="{{ thread ? thread|raw : 0 }}">
+
+  <table class="form-table">
+    <tbody>
       {% if not board.config.forced_anon %}
         <tr>
           <th>Name</th>
@@ -54,13 +55,13 @@
         <tr>
           <th>Options</th>
           <td>
-            <div><label><input type="checkbox" name="raw" value="on"> Post with raw HTML</label></div>
-            <div><label><input type="checkbox" name="capcode" value="on"> Post with capcode</label></div>
+            <p class="option"><label><input type="checkbox" name="raw" value="on"> Post with raw HTML</label></p>
+            <p class="option"><label><input type="checkbox" name="capcode" value="on"> Post with capcode</label></p>
           </td>
         </tr>
       {% endif %}
-    </tbody></table>
+    </tbody>
+  </table>
 
-    <div class="rules">{% include "includes/rules.html" %}</div>
-  </form>
-</div>
+  <div class="rules">{% include "includes/rules.html" %}</div>
+</form>

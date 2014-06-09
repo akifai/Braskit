@@ -1,0 +1,41 @@
+//
+// Copyright (C) 2014 Frank Usrs
+//
+// See the LICENSE file for terms and conditions of use.
+//
+
+//
+// AJAX modal dialogues
+//
+
+.ajax-modal-screen {
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 9000;
+}
+
+.ajax-modal-window {
+  @border-width: 2px;
+  @height: 300px;
+  @padding: 20px;
+  @width: 520px;
+
+  border: solid 2px @reply-background-color;
+  background: @background-color;
+  box-shadow: 0 0 15px #000;
+  display: table;
+  height: @height;
+  left: 50%;
+  margin-left: -((@border-width * 2 + @padding * 2 + @width) / 2);
+  margin-top: -((@border-width * 2 + @padding * 2 + @height) / 2);
+  padding: @padding;
+  position: fixed;
+  top: 50%;
+  width: @width;
+  z-index: 9001;
+}

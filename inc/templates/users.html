@@ -1,55 +1,48 @@
 {% extends _base %}
+
+{% import "includes/macros.html" as m %}
+
 {% if editing %}
   {% set title = "Editing user '"~target~"'" %}
 {% else %}
   {% set title = "User Accounts" %}
 {% endif %}
 
-{% import "includes/macros.html" as m %}
-
 {% block content %}
-  {% if editing %}
-  	{{ m.returnlink(_context, path("users", true)) }}
-  {% endif %}
-
   {% if users %}
-    <div class="theader">User Accounts</div>
-
-    <table class="usertable">
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Level</th>
-          <th>Email</th>
-          <th>Last seen</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for u in users %}
+    <div class="block-form">
+      <table class="list-table">
+        <thead>
           <tr>
-            <td>{% if u.username == user %}<strong>{% endif %}<a href="{{ path("users/"~u.username, true) }}">{{ u.username }}</a>{% if u.username == user %}</strong>{% endif %}</td>
-            <td>{{ u.level }}</td>
-            <td>{% if u.email %}{{ u.email }}{% else %}-{% endif %}</td>
-            <td>{{ u.lastlogin ?: "Never" }}</td>
+            <th>Username</th>
+            <th>Level</th>
+            <th>Email</th>
+            <th>Last seen</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {% for u in users %}
+            <tr>
+              <td>{% if u.username == user %}<strong>{% endif %}<a href="{{ path("users/"~u.username, true) }}">{{ u.username }}</a>{% if u.username == user %}</strong>{% endif %}</td>
+              <td>{{ u.level }}</td>
+              <td>{% if u.email %}{{ u.email }}{% else %}-{% endif %}</td>
+              <td>{{ u.lastlogin ?: "Never" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
 
-  {% if editing %}
-    <div class="theader">Editing user <em>{{ target }}</em></div>
-  {% endif %}
-
-  <form action="{{ path("users" ~ (editing ? ("/" ~ target) : ""), true) }}" method="post" class="userform">
+  <form action="{{ path("users" ~ (editing ? ("/" ~ target) : ""), true) }}" method="post" class="block-form">
     <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
     {% if not editing %}
-      <div class="theader">Add User Account</div>
+      <h2 class="page-title">Add User Account</h2>
     {% endif %}
 
-    <table>
+    <table class="form-table">
       <tbody>
         <tr>
           <th>Username</th>
@@ -76,10 +69,8 @@
       </tbody>
     </table>
 
-    <div class="controls">
+    <p class="form-controls">
       <input type="submit" value="{% if editing %}Edit User{% else %}Add User{% endif %}">
-    </div>
+    </p>
   </form>
-
-  <hr>
 {% endblock %}

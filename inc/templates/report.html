@@ -1,35 +1,31 @@
 {% extends _base %}
 {% import "includes/macros.html" as m %}
+
 {% set title = "Post Reporting" %}
 
 {% block content %}
-  <div class="no-ajax">
-    {{ m.returnlink(_context) }}
-  </div>
+  <div class="group-container">
+    <form action="{{ board.path("report", true) }}" method="post" class="row-form">
+      <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
-  <form action="{{ board.path("report", true) }}" method="post" class="report-screen">
-    <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
-
-    {% for post in posts %}
-      <input type="hidden" name="id[]" value="{{ post.id }}">
-    {% endfor %}
-
-    <p class="title">You are reporting the following posts:</p>
-    <p>
       {% for post in posts %}
-        <a href="{{ board.linkToPost(post) }}">{{ post.id }}</a>{% if loop.index != loop.length %},{% endif %}
+        <input type="hidden" name="id[]" value="{{ post.id }}">
       {% endfor %}
-    </p>
 
-    <div class="row">
-      <label for="reason">Please enter a report reason:</label>
-      <textarea type="text" name="reason" id="reason" cols="48" rows="4" autocomplete="off"></textarea>
-    </div>
+      <h2>You are reporting the following posts:
+        {% for post in posts %}
+          <a href="{{ board.linkToPost(post) }}">{{ post.id }}</a>{% if loop.index != loop.length %},{% endif %}
+        {% endfor %}
+      </h2>
 
-    <div class="row">
-      <input type="submit" value="Report">
-    </div>
-  </form>
+      <div class="row">
+        <label for="reason">Report reason</label>
+        <textarea type="text" name="reason" id="reason" cols="48" rows="4" autocomplete="off"></textarea>
+      </div>
 
-  <hr class="no-ajax">
+      <div class="row">
+        <input type="submit" value="Report">
+      </div>
+    </form>
+  </div>
 {% endblock %}

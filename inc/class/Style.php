@@ -126,7 +126,7 @@ class Style {
 	public static function compileLess($input, $output) {
 		global $app;
 
-		$less = new lessc_fixed;
+		$less = new lessc_fixed();
 
 		// strip whitespace if we aren't debugging
 		if (!$app['less.debug']) {
