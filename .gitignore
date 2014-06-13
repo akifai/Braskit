@@ -3,7 +3,7 @@
 thumbs.db
 ._*
 *~
-*.swp
+*.sw[op]
 *.bak
 .htaccess
 
@@ -31,3 +31,7 @@ thumbs.db
 
 # minified JS
 /static/js/cache-*.js
+
+# Composer
+/vendor/
+composer.phar
