@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class CSRFException extends Exception {}
+namespace Braskit;
 
 class CSRF {
     const PARAM_KEY = 'csrf';
@@ -16,7 +16,7 @@ class CSRF {
 
     protected $oldToken = false;
 
-    public function __construct(Param $param, Session $session) {
+    public function __construct(\Param $param, \Session $session) {
         $this->param = $param;
         $this->session = $session;
     }
@@ -24,7 +24,7 @@ class CSRF {
     /**
      * Checks if a CSRF token was sent and that it's valid.
      *
-     * @throws CSRFException if the tokens did not match
+     * @throws Error_CSRF if the tokens did not match
      */
     public function check() {
         $success = $this->getToken() === $this->getTokenParam();
@@ -34,7 +34,7 @@ class CSRF {
 
             unset($this->session[self::SESSION_KEY]);
         } else {
-            throw new CSRFException('Invalid CSRF token.');
+            throw new Error_CSRF('Invalid CSRF token.');
         }
     }
 

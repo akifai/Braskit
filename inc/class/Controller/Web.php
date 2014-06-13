@@ -59,7 +59,7 @@ class Controller_Web extends Controller {
             $template = 'banned.html';
         }
 
-        if (!($e instanceof CSRFException)) {
+        if (!($e instanceof Braskit\Error_CSRF)) {
             // prevent CSRF errors on resubmission
             $this->app['csrf']->rollback();
         }

@@ -181,7 +181,7 @@ $app['counter'] = function () use ($app) {
 };
 
 $app['csrf'] = function () use ($app) {
-    return new CSRF($app['param'], $app['session']);
+    return new Braskit\CSRF($app['param'], $app['session']);
 };
 
 $app['db'] = function () use ($app) {
