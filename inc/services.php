@@ -159,16 +159,16 @@ $app['path.tmp'] = function () {
 
 $app['cache'] = function () use ($app) {
     if ($app['cache.debug']) {
-        return new Cache_Debug();
+        return new Braskit\Cache_Debug();
     }
 
     switch ($app['cache.type']) {
     case 'apc':
-        return new Cache_APC();
+        return new Braskit\Cache_APC();
     case 'php':
-        return new Cache_PHP($app['path.cache']);
+        return new Braskit\Cache_PHP($app['path.cache']);
     default:
-        return new Cache_Debug();
+        return new Braskit\Cache_Debug();
     }
 };
 
