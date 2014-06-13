@@ -1,23 +1,26 @@
 # Braskit
 
-Lightweight imageboard script written in PHP with a PostgreSQL backend.
+Braskit is an imageboard script written in PHP with a PostgreSQL storage
+backend. It attempts to do right where other imageboards fail.
 
-**Do not use this software. It is still in early beta and is not yet ready for
-production use. Contributors are welcome.**
+**This software is in an early development phase and is not suitable for running
+on live, public sites yet.**
 
 ## Requirements
 
-* Some webserver
-* PHP >= 5.3
+* Some web server
+* PHP >= 5.3.7
 * PostgreSQL >= 9.2
-* GD (library) or Imagemagick (CLI/library)
+* [PHP GD][php-gd] or [Imagemagick][imagemagick]'s `convert` utility for
+  thumbnailing
 
-MySQL will not work. Period. Don't even try.
+Debian 6 includes PHP 5.3.3 which does not meet the requirements. You can either
+use [Dotdeb][dotdeb] repositories or suck it up and upgrade to Wheezy.
 
-## Project goal
+Both Debian 6 & 7 fail to meet the version requirement for PostgreSQL. Luckily,
+[official PostgreSQL packages][debian-postgres] for Debian are available.
 
-Create a scalable, extendable and easily configurable imageboard script which is
-capable of powering multiple high-traffic imageboard sites on a single server.
+And no, MySQL will not work. Period. Don't even try.
 
 ## Contributing
 
@@ -26,13 +29,10 @@ request with details about your changes.
 
 ## Licence/copyrights
 
-All of Braskit is licensed under the GNU GPL version 3. Braskit also makes use
-of many third-party libraries, all of which are licensed under various BSD-style
-licences:
+Braskit is open source. It is licensed under the GNU GPL version 3. See the
+included LICENSE file for details.
 
-* [Bootstrap](http://twitter.github.io/bootstrap/)
-* [jQuery](http://jquery.com/); https://jquery.org/license/
-* [JSMin+](http://crisp.tweakblogs.net/blog/cat/716)
-* [lessphp](http://leafo.net/lessphp/)
-* [Pimple](http://pimple.sensiolabs.org/)
-* [Twig](http://twig.sensiolabs.org/)
+[php-gd]: http://www.php.net/manual/en/book.image.php
+[imagemagick]: http://www.imagemagick.org/
+[dotdeb]: http://www.dotdeb.org/
+[debian-postgres]: http://www.postgresql.org/download/linux/debian/
