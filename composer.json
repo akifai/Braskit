@@ -11,7 +11,8 @@
         "php": ">=5.3.7",
         "twig/twig": "v1.15.1",
         "pimple/pimple": "v2.0.0",
-        "leafo/lessphp": "v0.4.0"
+        "leafo/lessphp": "v0.4.0",
+        "ircmaxell/password-compat": "dev-master"
     },
     "autoload": {
         "classmap": ["inc/class/"],

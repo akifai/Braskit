@@ -86,9 +86,8 @@ CREATE TABLE /*_*/reports (
 );
 
 CREATE TABLE /*_*/users (
-    username text PRIMARY KEY CHECK (username ~ '^\w{1,20}$'),
-    password text NOT NULL CHECK (password <> ''),
-    hashtype text NOT NULL,
+    username text PRIMARY KEY CHECK (username ~ '^\w+$'),
+    password text NOT NULL,
     lastlogin timestamp,
     level integer NOT NULL,
     email text NOT NULL,

@@ -541,10 +541,9 @@ class Database {
 	}
 
 	public function insertUser(User $user) {
-		$sth = $this->dbh->prepare("INSERT INTO {$this->prefix}users (username, password, hashtype, level, email, capcode) VALUES (:username, :password, :hashtype, :level, :email, :capcode)");
+		$sth = $this->dbh->prepare("INSERT INTO {$this->prefix}users (username, password, level, email, capcode) VALUES (:username, :password, :level, :email, :capcode)");
 		$sth->bindParam(':username', $user->username, PDO::PARAM_STR);
 		$sth->bindParam(':password', $user->password, PDO::PARAM_STR);
-		$sth->bindParam(':hashtype', $user->hashtype, PDO::PARAM_STR);
 		$sth->bindParam(':level', $user->level, PDO::PARAM_INT);
 		$sth->bindParam(':email', $user->email, PDO::PARAM_STR);
 		$sth->bindParam(':capcode', $user->capcode, PDO::PARAM_STR);
@@ -553,10 +552,9 @@ class Database {
 	}
 
 	public function modifyUser(User $user) {
-		$sth = $this->dbh->prepare("UPDATE {$this->prefix}users SET username = :newusername, password = :password, hashtype = :hashtype, level = :level, email = :email, capcode = :capcode WHERE username = :username");
+		$sth = $this->dbh->prepare("UPDATE {$this->prefix}users SET username = :newusername, password = :password, level = :level, email = :email, capcode = :capcode WHERE username = :username");
 		$sth->bindParam(':newusername', $user->newUsername, PDO::PARAM_STR);
 		$sth->bindParam(':password', $user->password, PDO::PARAM_STR);
-		$sth->bindParam(':hashtype', $user->hashtype, PDO::PARAM_STR);
 		$sth->bindParam(':level', $user->level, PDO::PARAM_INT);
 		$sth->bindParam(':email', $user->email, PDO::PARAM_STR);
 		$sth->bindParam(':capcode', $user->capcode, PDO::PARAM_STR);

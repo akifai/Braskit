@@ -28,12 +28,10 @@
  */
 
 class User {
-	protected $changes = false;
-	protected $hashed = false;
+	protected $changes = array();
 
 	public $username = false;
 	public $password = false;
-	public $hashtype = false;
 	public $lastlogin = 0;
 	public $level = 0;
 	public $email = '';
@@ -76,7 +74,7 @@ class User {
 			throw new UserException('Invalid email address.');
 
 		$this->email = $email;
-		$this->changes = true;
+		$this->changes[] = 'email';
 	}
 
 	public function setCapcode($capcode) {
@@ -86,7 +84,7 @@ class User {
 		// TODO: Restrict to a subset of HTML
 
 		$this->capcode = $capcode;
-		$this->changes = true;
+		$this->changes[] = 'capcode';
 	}
 
 	public function setLevel($level) {
@@ -94,20 +92,40 @@ class User {
 			return;
 
 		$this->level = (int)$level;
-		$this->changes = true;
+		$this->changes[] = 'level';
 	}
 
 	public function setPassword($password) {
-		if (!strlen($password))
+		if (!strlen($password)) {
 			return;
+		}
 
-		// we're going to assume this is failsafe
-		$bits = $this->generateHash($password);
+		$this->password = password_hash($password, PASSWORD_DEFAULT);
+		$this->changes[] = 'password';
+	}
 
-		$this->hashtype = $bits[0];
-		$this->password = $bits[1];
+	public function commit() {
+		global $app;
 
-		$this->changes = true;
+		if (!$this->changes) {
+			return; // nothing to do
+		}
+
+		try {
+			$app['db']->modifyUser($this);
+		} catch (PDOException $e) {
+			$err = $e->getCode();
+
+			switch ($err) {
+			case PgError::UNIQUE_VIOLATION:
+				// Username collision
+				throw new UserException("A user with that name already exists.");
+				break;
+			default:
+				// Unknown error
+				throw $e;
+			}
+		}
 	}
 
 
@@ -143,102 +161,30 @@ class User {
 
 		$this->username = $row->username;
 		$this->password = $row->password;
-		$this->hashtype = $row->hashtype ?: 'plaintext';
 		$this->lastlogin = $row->lastlogin;
 		$this->level = $row->level;
 		$this->email = $row->email;
 		$this->capcode = $row->capcode;
 	}
 
-	protected function checkPassword($key = false) {
-		if ($this->password === false || $this->hashtype === false) {
-			// shitty wording lol - this shouldn't happen anyway
-			throw new LogicException('Password not loaded.');
-		}
-
-		$hashed = $this->hash($this->hashtype, $key);
-
-		if ($this->password === $hashed) {
-			// store the hash so we can validate it in __wakeup
-			$this->hashed = $hashed;
-
-			return true;
-		}
-
-		return false;
-	}
-
 
 	//
 	// Cryptography
 	//
-	// Neither one of these hash functions are particularly good for hashing
-	// passwords. Something using crypt() would be nice, but that's overkill
-	// imho.
-	//
 
-	/**
-	 * Hashes a password based on a certain algorithm
-	 * @return string|bool password hash or false on failure
-	 */
-	protected static function hash($algorithm, $key) {
-		global $app;
+	protected function checkPassword($password) {
+		$hash = $this->password;
 
-		$method = 'hash_'.$algorithm;
-
-		if (!method_exists(__CLASS__, $method))
-			return false; // unknown algorith - die silently
-
-		return call_user_func(__CLASS__.'::'.$method, $key);
-	}
-
-	/**
-	 * Order in which to try hash functions when generating a password.
-	 */
-	protected static $hash_functions = array(
-		'sha256',
-		'sha1',
-		'plaintext',
-	);
-
-	/**
-	 * Generate a hash based on a plaintext key.
-	 * @param string Key in plaintext.
-	 * @return array Array consisting of the hash function used and the
-	 *               hashed key.
-	 */
-	protected static function generateHash($key) {
-		foreach (self::$hash_functions as $function) {
-			$hashed = self::hash($function, $key);
-
-			if ($hashed !== false)
-				return array($function, $hashed);
+		if (!password_verify($password, $hash)) {
+			return false;
 		}
 
-		// should never, ever happen
-		throw new LogicException("Couldn't generate password.");
-	}
+		if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+			$this->setPassword($password);
+			$this->commit();
+		}
 
-	protected static function hash_plaintext($key) {
-		return (string)$key; // loool
-	}
-
-	protected static function hash_sha1($key) {
-		global $app;
-
-		return sha1($key.$app['secret']);
-	}
-
-	protected static function hash_sha256($key) {
-		global $app;
-
-		// http://www.hardened-php.net/suhosin/a_feature_list.html
-		if (function_exists('sha256'))
-			return sha256($key.$app['secret']);
-
-		// php's documentation is really vague, so i'm going to assume
-		// that sha256 might not always be available
-		return @hash('sha256', $key.$app['secret']);
+		return true;
 	}
 
 
@@ -267,23 +213,30 @@ class UserLogin extends User {
 			throw new UserException('Invalid login.');
 		}
 
-		if (!$this->checkPassword($password))
+		if (!$this->checkPassword($password)) {
 			throw new UserException('Invalid login.');
+		}
 
 		$this->checkSuspension();
 	}
 
 	public function __wakeup() {
+		$hash = $this->password;
+
 		// Things might change between requests. Reload everything.
 		$this->load($this->username);
 
 		// Just in case...
-		if ($this->hashed === false || $this->password === false)
-			throw new LogicException('Cannot restore user session.');
+		// remember, $this->load() replaces $this->password, so $hash
+		// and $this->password aren't necessarily equal
+		if (!$hash || !$this->password) {
+			throw new RuntimeException('Cannot restore user session.');
+		}
 
-		// Validate password
-		if ($this->hashed !== $this->password)
-			throw new UserException('Invalid password.');
+		// Validate session password with database password
+		if ($hash !== $this->password) {
+			throw new UserException('Invalid login.');
+		}
 
 		$this->checkSuspension();
 	}
@@ -346,29 +299,6 @@ class UserEdit extends User {
 
 		$this->newUsername = $username;
 
-		$this->changes = true;
-	}
-
-	public function commit() {
-		global $app;
-
-		if (!$this->changes)
-			return; // nothing to do
-
-		try {
-			$app['db']->modifyUser($this);
-		} catch (PDOException $e) {
-			$err = $e->getCode();
-
-			switch ($err) {
-			case PgError::UNIQUE_VIOLATION:
-				// Username collision
-				throw new Exception("A user with that name already exists.");
-				break;
-			default:
-				// Unknown error
-				throw $e;
-			}
-		}
+		$this->changes[] = 'username';
 	}
 }
