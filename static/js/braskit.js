@@ -123,7 +123,7 @@ function createStyleSwitcher() {
 
         // If this is the current style, make it selected
         if (style == selected)
-            $(option).attr('selected', 'selected');
+            $(option).prop('selected', true);
 
         switcher.append(option);
     }

@@ -33,9 +33,10 @@ $app['cache.type'] = function () {
 $app['js.debug'] = false;
 
 $app['js.includes'] = array(
-    'jquery-1.9.0.min.js',
-    'jquery.cookie.js',
-    'spin.js',
+    'vendor/jquery-2.1.1.min.js',
+    'vendor/jquery.cookie.js',
+    'vendor/spin.js',
+
     'braskit.js',
 );
 
