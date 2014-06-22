@@ -23,7 +23,7 @@ class View_Install_Finish extends View {
 		}
 
 		// connect to database
-		$app['dbh'] = new DBConnection(
+		$app['dbh'] = new Braskit\Database_Connection(
 			$app['db.name'],
 			$app['db.host'],
 			$app['db.username'],
@@ -31,7 +31,7 @@ class View_Install_Finish extends View {
 			$app['counter']
 		);
 
-		$app['db'] = new Database($app['dbh'], $app['db.prefix']);
+		$app['db'] = new Braskit\Database($app['dbh'], $app['db.prefix']);
 
 		$app['dbh']->beginTransaction();
 

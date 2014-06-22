@@ -186,11 +186,11 @@ $app['csrf'] = function () use ($app) {
 };
 
 $app['db'] = function () use ($app) {
-    return new Database($app['dbh'], $app['db.prefix']);
+    return new Braskit\Database($app['dbh'], $app['db.prefix']);
 };
 
 $app['dbh'] = function () use ($app) {
-    return new DBConnection(
+    return new Braskit\Database_Connection(
         $app['db.name'],
         $app['db.host'],
         $app['db.username'],
