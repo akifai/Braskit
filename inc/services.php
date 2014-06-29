@@ -42,14 +42,14 @@ $app['js.includes'] = array(
 
 $app['less.debug'] = false;
 
-$app['less.default_style'] = 'Futaba';
+$app['less.default_style'] = 'futaba';
 
 $app['less.stylesheets'] = array(
-    'Burichan' => 'burichan',
-    'Futaba' => 'futaba',
-    'Tomorrow' => 'tomorrow',
-    'Yotsuba' => 'yotsuba',
-    'Yotsuba B' => 'yotsuba-b',
+    'burichan' => 'Burichan',
+    'futaba' => 'Futaba',
+    'tomorrow' => 'Tomorrow',
+    'yotsuba' => 'Yotsuba',
+    'yotsuba-b' => 'Yotsuba B',
 );
 
 $app['session.name'] = function () use ($app) {

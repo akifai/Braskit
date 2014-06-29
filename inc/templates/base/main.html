@@ -18,9 +18,11 @@
       {%- endif -%}
     </title>
 
-    <link rel="stylesheet" id="sitestyle" href="{{ style.getDefault() }}">
+    <link rel="stylesheet" href="{{ style.getDefaultPath() }}" id="braskit-style">
 
-    <script>{% include "includes/head.js" %}</script>
+    {# This has to be in the header, otherwise the page will load using the
+     # wrong stylesheet. #}
+    <script>{% include "includes/style.js" %}</script>
   </head>
 
   <body{% if js_callbacks %} data-callback="{{ js_callbacks|join(" ") }}"{% endif %}{% if not static %} data-csrf="{{ app.csrf.getToken() }}"{% endif %}>

@@ -1,12 +1,9 @@
 /*
  * braskit.js - Copyright (c) 2013, 2014 Frank Usrs
  *
- * This program is free software. It comes without any warranty, to
- * the extent permitted by applicable law. You can redistribute it
- * and/or modify it under the terms of the Do What The Fuck You Want
- * To Public License, Version 2, as published by Sam Hocevar. See
- * http://www.wtfpl.net/ for more details.
+ * See the LICENSE file for terms and conditions of use.
  */
+
 
 //
 // jQuery helper functions
@@ -68,81 +65,8 @@ $.fn.extend({
 
 
 //
-// Cookie options
-//
-
-$.cookie.defaults = {
-    path: '/',
-    expires: 86400 * 365
-};
-
-
-//
 // Callbacks
 //
-
-/**
- * Creates a <select> element with options, that when toggled, change the style
- * of the page. If less than two styles are found, returns null.
- *
- * @returns {HTMLElement|null}
- */
-function createStyleSwitcher() {
-    var style;
-
-    if (typeof styles != 'object')
-        return null;
-
-    // Get selected/defaulted stylesheet
-    var selected = $.cookie('style');
-
-    if (!selected) {
-        var currentPath = $('#sitestyle').attr('href');
-
-        // there used to be a title="" attribute with the default name
-        // on the <link> element, but I can't be bothered to readd it.
-        for (style in styles) {
-            if (styles[style] == currentPath)
-                selected = style;
-        }
-    }
-
-    // Create <select> for switcher
-    var switcher = $(document.createElement('select'));
-
-    // Counter for styles
-    var count = 0;
-
-    for (style in styles) {
-        count++;
-
-        var option = $(document.createElement('option'));
-
-        // The text automatically becomes the value
-        $(option).text(style);
-
-        // If this is the current style, make it selected
-        if (style == selected)
-            $(option).prop('selected', true);
-
-        switcher.append(option);
-    }
-
-    // no styles to switch between
-    if (count < 2)
-        return null;
-
-    // set onchange event for the switcher
-    switcher.change(function () {
-        var value = $(this).val();
-        changeStyle(value);
-
-        // Save the new style
-        $.cookie('style', value);
-    });
-
-    return switcher;
-}
 
 function runCallbacks() {
     var callbacks = $(document.body).data('callback');
@@ -158,14 +82,36 @@ function runCallbacks() {
 }
 
 function doStyleSwitchers() {
-    var styleSelector = createStyleSwitcher();
-
-    if (!styleSelector) {
-        // no styles to switch between
+    if (!BraskitStyle || BraskitStyle.styles.length < 2) {
+        // don't show style selector if there aren't at least two styles to
+        // choose between
         return;
     }
 
-    $('.style-list').html(styleSelector);
+    // creator selector and add change handler
+    var selector = $('<select>').change(function () {
+        var selected = $(this).find(':selected').val();
+        BraskitStyle.set(selected);
+    });
+
+    // add options to selector
+    for (var style in BraskitStyle.styles) {
+        if (BraskitStyle.styles.hasOwnProperty(style)) {
+            var option = $('<option>').val(style);
+
+            // show name for option
+            option.text(BraskitStyle.styles[style].name);
+
+            // mark current style as selected
+            if (style == BraskitStyle.getCurrentStyle()) {
+                option.prop('selected', true);
+            }
+
+            selector.append(option);
+        }
+    }
+
+    $('.style-list').html(selector);
     $('.style-unhide').removeClass('no-screen');
 }
 
@@ -392,7 +338,7 @@ Dialogue.prototype.destroy = function () {
 // Global init
 //
 
-$(document).ready(function () {
+$(function () {
     // run page-specific callbacks
     runCallbacks();
 
@@ -401,20 +347,20 @@ $(document).ready(function () {
 
     // Focus stuff
     $('.focus').first().focus();
+
+    $('[data-ajax]').click(function (event) {
+        event.preventDefault();
+
+        var handler = $(this).data('handler');
+        var loadUrl = $(this).data('ajax');
+        var original = $(this).attr('href');
+
+        if (handler === undefined) {
+            new Dialogue(loadUrl, original);
+        } else if (window[handler]) {
+            window[handler].apply(this, [event, loadUrl, original]);
+        }
+    });
+
+    $('[name=delform]').submit(delformSubmit);
 });
-
-$('[data-ajax]').click(function (event) {
-    event.preventDefault();
-
-    var handler = $(this).data('handler');
-    var loadUrl = $(this).data('ajax');
-    var original = $(this).attr('href');
-
-    if (handler === undefined) {
-        new Dialogue(loadUrl, original);
-    } else if (window[handler]) {
-        window[handler].apply(this, [event, loadUrl, original]);
-    }
-});
-
-$('[name=delform]').submit(delformSubmit);

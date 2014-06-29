@@ -38,19 +38,20 @@ class Style {
 	public function __construct() {
 		global $app;
 
-		if ($app['less.stylesheets']) {
-			$this->styles = $app['less.stylesheets'];
-		} else {
-			// # makes the <link> invalid, / prevents us from
-			// "expanding" the path
-			$this->styles = array('Default' => '#/');
+		foreach ($app['less.stylesheets'] as $key => $name) {
+			$this->styles[$key] = array(
+				'name' => $name,
+				'path' => $key,
+			);
 		}
 
-		if ($app['less.default_style']) {
-			$this->default = $app['less.default_style'];
-		} else {
+		$default = $app['less.default_style'];
+
+		if ($default && $this->styles[$default]) {
+			$this->default = $default;
+		} elseif ($this->styles) {
 			reset($this->styles);
-			$this->default = current($this->styles);
+			$this->default = key($this->styles);
 		}
 	}
 
@@ -60,14 +61,17 @@ class Style {
 	protected function transformPaths() {
 		global $app;
 
-		if ($this->pathsAreTransformed)
+		if ($this->pathsAreTransformed) {
 			return;
+		}
 
-		foreach ($this->styles as &$style) {
-			if (strpos($style, '/') !== false)
+		foreach (array_keys($this->styles) as $key) {
+			if (strstr($this->styles[$key]['path'], '/')) {
 				continue; // don't modify this path
+			}
 
-			$path = TINYIB_ROOT."/static/styles/$style";
+			$style = $this->styles[$key]['path'];
+			$path = $app['path.root']."/static/styles/$style";
 
 			// look for compiled LESS
 			$results = glob("$path/$style-*.css");
@@ -86,20 +90,25 @@ class Style {
 			}
 
 			// web path
-			$style = expand_path("static/styles/$style/$basename");
+			$path = expand_path("static/styles/$style/$basename");
+			$this->styles[$key]['path'] = $path;
 		}
 
 		$this->pathsAreTransformed = true;
 	}
 
-	/**
-	 * @return string Path to default style.
-	 */
 	public function getDefault() {
+		return $this->default;
+	}
+
+	/**
+	 * @return string Path for default style.
+	 */
+	public function getDefaultPath() {
 		if (!$this->pathsAreTransformed)
 			$this->transformPaths();
 
-		return $this->styles[$this->default];
+		return $this->styles[$this->default]['path'];
 	}
 
 	/**
