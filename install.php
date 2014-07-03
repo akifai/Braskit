@@ -5,22 +5,10 @@
  * See LICENSE for terms and conditions of use.
  */
 
-require(dirname(__FILE__).'/vendor/autoload.php');
+require __DIR__.'/vendor/autoload.php';
 
 $app = new App();
 
 $app['controller'] = new Controller_Install($app);
 
 $app->run();
-
-// TODO
-function diverge($dest, $args = array()) {
-	global $app;
-
-	// missing slash
-	if (substr($dest, 0, 1) !== '/') {
-		$dest = "/$goto";
-	}
-
-	redirect($app['url']->create($dest, $args));
-}

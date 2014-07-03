@@ -5,6 +5,24 @@
  * See LICENSE for terms and conditions of use.
  */
 
+function diverge($dest, $args = array()) {
+	global $app, $ajax;
+
+	if ($app['controller'] instanceof Controller_Ajax) {
+		$ajax['diverge'] = $dest;
+		$ajax['divergeArgs'] = $args;
+
+		return;
+	}
+
+	// missing slash
+	if (substr($dest, 0, 1) !== '/') {
+		$dest = "/$goto";
+	}
+
+	redirect($app['url']->create($dest, $args));
+}
+
 /**
  * @deprecated
  */
