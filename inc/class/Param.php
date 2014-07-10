@@ -5,7 +5,10 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class ParamException extends LogicException {}
+namespace Braskit;
+
+use \RuntimeException;
+use \Request;
 
 class Param {
     const T_STRING = 1; // can be string
@@ -138,7 +141,7 @@ class Param {
                 $newflags |= self::S_DEFAULT;
                 break;
             default:
-                throw new ParamException("Invalid flag '$part'.");
+                throw new RuntimeException("Param: Invalid flag '$part'.");
             }
         }
 
@@ -161,22 +164,22 @@ class Param {
      * Check a flag value.
      *
      * @param integer $flags
-     * @throws ParamException if the flags are invalid
+     * @throws RuntimeException if the flags are invalid
      */
     protected function checkFlags($flags) {
         if (!$flags) {
             // no flags
-            throw new ParamException('No flags provided.');
+            throw new RuntimeException('Param: No flags provided.');
         }
 
         if (!($flags & self::TYPE_FLAGS)) {
             // missing type flag(s)
-            throw new ParamException('No type flag provided.');
+            throw new RuntimeException('Param: No type flag provided.');
         }
 
         if (!($flags & self::METHOD_FLAGS)) {
             // missing method flag(s)
-            throw new ParamException('No method flag provided.');
+            throw new RuntimeException('Param: No method flag provided.');
         }
     }
 }

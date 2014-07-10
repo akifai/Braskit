@@ -200,7 +200,7 @@ $app['dbh'] = function () use ($app) {
 };
 
 $app['param'] = $app->factory(function () use ($app) {
-    return new Param($app['request']);
+    return new Braskit\Param($app['request']);
 });
 
 $app['request'] = function () use ($app) {

@@ -16,7 +16,7 @@ class CSRF {
 
     protected $oldToken = false;
 
-    public function __construct(\Param $param, \Session $session) {
+    public function __construct(Param $param, \Session $session) {
         $this->param = $param;
         $this->session = $session;
     }
