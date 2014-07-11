@@ -10,7 +10,7 @@
  * config.php and edit it there instead.
  */
 
-if (!(isset($app) && $app instanceof App)) {
+if (!(isset($app) && $app instanceof Braskit\App)) {
     // protect against direct access
     exit();
 }

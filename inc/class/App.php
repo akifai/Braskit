@@ -5,6 +5,10 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit;
+
+use Pimple;
+
 class App extends Pimple {
     public function __construct() {
         parent::__construct();
@@ -12,7 +16,7 @@ class App extends Pimple {
         $app = $this;
 
         // load default services
-        require(dirname(__FILE__).'/../services.php');
+        require __DIR__.'/../services.php';
     }
 
     /**
@@ -25,7 +29,7 @@ class App extends Pimple {
     public function run() {
         try {
             $this['controller']->run();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this['controller']->exceptionHandler($e);
         }
     }

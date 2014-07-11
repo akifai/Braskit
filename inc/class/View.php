@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\App;
+
 abstract class View {
     /**
      * App instance

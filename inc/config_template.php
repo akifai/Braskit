@@ -8,7 +8,7 @@ function create_config($vars) {
 ?>
 
 # protects against outsiders - don't remove
-isset($app) && $app instanceof App or exit;
+isset($app) && $app instanceof Braskit\App or exit;
 
 
 #

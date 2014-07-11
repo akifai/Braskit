@@ -7,7 +7,7 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-$app = new App();
+$app = new Braskit\App();
 
 $app['controller'] = new Controller_Web($app);
 
