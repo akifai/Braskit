@@ -9,21 +9,24 @@ abstract class View {
 	/**
 	 * App instance
 	 */
-	public $app;
+	protected $app;
 
 	/**
-	 * The request body.
+	 * The response body.
 	 *
 	 * @var string
+	 * @todo
 	 */
 	public $responseBody = '';
 
 	/**
-	 * @todo Avoid globals.
+	 * Template vars
+	 *
+	 * @var array
 	 */
-	public function __construct(App $app) {
-		global $app;
+	protected $templateVars = array();
 
+	public function __construct(App $app) {
 		$this->app = $app;
 
 		$request = $app['request'];
@@ -51,12 +54,38 @@ abstract class View {
 		return $this->render('csrf.html');
 	}
 
+	/**
+	 * @todo
+	 */
 	private function methodNotAllowed() {
 		header('HTTP/1.0 405 Method Not Allowed');
 		throw new Exception('Method not allowed.');
 	}
 
-	protected function render($template, $args = array()) {
-		return $this->app['template']->render($template, $args);
+	/**
+	 * Sets a template variable.
+	 *
+	 * @param $key string Variable name.
+	 * @param $value mixed A value to pass to the templates.
+	 */
+	protected function setVar($key, $value) {
+		$this->templateVars[$key] = $value;
+	}
+
+	/**
+	 * Renders a template. Any similarly named variables passed to the
+	 * template in this method will override those set with $this->setVar().
+	 *
+	 * @param string $template Template filename.
+	 * @param array $args Template variables.
+	 *
+	 * @return string Rendered template.
+	 */
+	protected function render($tpl, $args = array()) {
+		$template = $this->app['template'];
+
+		$params = array_merge($this->templateVars, $args);
+
+		return $template->render($tpl, $params);
 	}
 }
