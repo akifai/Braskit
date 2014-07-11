@@ -6,52 +6,54 @@
  */
 
 class View_Bans extends View {
-	protected function get($app) {
-		$user = do_login($app);
+    protected function get($app) {
+        $user = do_login($app);
 
-		// TODO: Pagination
-		$bans = $app['db']->allBans();
+        // TODO: Pagination
+        $bans = $app['db']->allBans();
 
-		$ip = $app['param']->get('ip');
+        $ip = $app['param']->get('ip');
 
-		return $this->render('bans.html', array(
-			'admin' => true,
-			'bans' => $bans,
-			'ip' => $ip,
-		));
-	}
+        return $this->render('bans.html', array(
+            'admin' => true,
+            'bans' => $bans,
+            'ip' => $ip,
+        ));
+    }
 
-	protected function post($app) {
-		$user = do_login($app);
+    protected function post($app) {
+        $user = do_login($app);
 
-		$app['csrf']->check();
+        $app['csrf']->check();
 
-		$param = $app['param'];
+        $param = $app['param'];
 
-		// adding a ban
-		$expire = $param->get('expire');
-		$reason = $param->get('reason');
-		$ip = $param->get('ip');
+        // adding a ban
+        $expire = $param->get('expire');
+        $reason = $param->get('reason');
+        $ip = $param->get('ip');
 
-		if ($ip) {
-			$ban = new BanCreate($ip);
-			$ban->setReason($reason);
-			$ban->setExpire($expire);
+        if ($ip) {
+            $ban = new BanCreate($ip);
+            $ban->setReason($reason);
+            $ban->setExpire($expire);
 
-			$ban->add();
-		}
+            $ban->add();
+        }
 
-		// lifting bans
-		$lifts = $param->get('lift', 'string array');
+        // lifting bans
+        $lifts = $param->get('lift', 'string array');
 
-		if ($lifts && !is_array($lifts)) {
-			$lifts = array($lifts);
-		}
+        if ($lifts && !is_array($lifts)) {
+            $lifts = array($lifts);
+        }
 
-		foreach ($lifts as $id) {
-			Ban::delete($id);
-		}
+        foreach ($lifts as $id) {
+            Ban::delete($id);
+        }
 
-		diverge('/bans');
-	}
+        diverge('/bans');
+    }
 }
+
+/* vim: set ts=4 sw=4 sts=4 et: */

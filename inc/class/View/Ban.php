@@ -9,23 +9,25 @@
  * @todo Find domains and list them.
  */
 class View_Ban extends View {
-	protected function get($app, $boardname) {
-		$user = do_login($app);
-		$board = new Board($boardname);
+    protected function get($app, $boardname) {
+        $user = do_login($app);
+        $board = new Board($boardname);
 
-		$id = $app['param']->get('id');
-		$post = $board->getPost($id);
+        $id = $app['param']->get('id');
+        $post = $board->getPost($id);
 
-		if (!$post)
-			throw new Exception("No such post.");
+        if (!$post)
+            throw new Exception("No such post.");
 
-		$reason = create_ban_message($post);
+        $reason = create_ban_message($post);
 
-		return $this->render('ban.html', array(
-			'admin' => true,
-			'board' => $board,
-			'post' => $post,
-			'reason' => $reason,
-		));
-	}
+        return $this->render('ban.html', array(
+            'admin' => true,
+            'board' => $board,
+            'post' => $post,
+            'reason' => $reason,
+        ));
+    }
 }
+
+/* vim: set ts=4 sw=4 sts=4 et: */

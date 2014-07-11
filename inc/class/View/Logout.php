@@ -6,11 +6,13 @@
  */
 
 class View_Logout extends View {
-	protected function get($app) {
-		if (isset($app['session']['login'])) {
-			unset($app['session']['login']);
-		}
+    protected function get($app) {
+        if (isset($app['session']['login'])) {
+            unset($app['session']['login']);
+        }
 
-		diverge('/login');
-	}
+        diverge('/login');
+    }
 }
+
+/* vim: set ts=4 sw=4 sts=4 et: */

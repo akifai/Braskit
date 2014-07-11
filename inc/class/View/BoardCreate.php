@@ -6,19 +6,21 @@
  */
 
 class View_BoardCreate extends View {
-	protected function post($app) {
-		$user = do_login('/manage');
+    protected function post($app) {
+        $user = do_login('/manage');
 
-		$app['csrf']->check();
+        $app['csrf']->check();
 
-		$param = $app['param'];
+        $param = $app['param'];
 
-		$boardname = $param->get('path');
-		$title = $param->get('title');
+        $boardname = $param->get('path');
+        $title = $param->get('title');
 
-		$board = new Board($boardname, false);
-		$board->create($title);
+        $board = new Board($boardname, false);
+        $board->create($title);
 
-		diverge('/manage');
-	}
+        diverge('/manage');
+    }
 }
+
+/* vim: set ts=4 sw=4 sts=4 et: */

@@ -6,15 +6,17 @@
  */
 
 class View_Rebuild extends View {
-	protected function get($app, $boardname) {
-		$user = do_login($app);
+    protected function get($app, $boardname) {
+        $user = do_login($app);
 
-		$board = new Board($boardname);
+        $board = new Board($boardname);
 
-		set_time_limit(0);
+        set_time_limit(0);
 
-		$board->rebuildAll();
+        $board->rebuildAll();
 
-		redirect($board->path('index.html'));
-	}
+        redirect($board->path('index.html'));
+    }
 }
+
+/* vim: set ts=4 sw=4 sts=4 et: */
