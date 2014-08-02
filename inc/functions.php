@@ -8,7 +8,7 @@
 function diverge($dest, $args = array()) {
 	global $app, $ajax;
 
-	if ($app['controller'] instanceof Controller_Ajax) {
+	if ($app['controller'] instanceof Braskit\Controller\Ajax) {
 		$ajax['diverge'] = $dest;
 		$ajax['divergeArgs'] = $args;
 

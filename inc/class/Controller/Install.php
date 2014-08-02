@@ -5,10 +5,15 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Controller;
+
+use Braskit\Controller;
+use Router_Install; // todo
+
 /**
  * Controller for install.php
  */
-class Controller_Install extends Controller {
+class Install extends Controller {
     const CONTENT_TYPE = 'Content-Type: text/html; charset=UTF-8';
 
     public function run() {
@@ -45,7 +50,7 @@ class Controller_Install extends Controller {
         return new Router_Install($this->app['url']->get());
     }
 
-    public function exceptionHandler(Exception $e) {
+    public function exceptionHandler(\Exception $e) {
         // too lazy to bother with this now
         var_dump($e);
     }

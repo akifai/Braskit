@@ -5,10 +5,15 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Controller;
+
+use Braskit\Controller;
+use Router_Main; // todo
+
 /**
  * Controller for ajax.php
  */
-class Controller_Ajax extends Controller {
+class Ajax extends Controller {
     const CONTENT_TYPE = 'Content-Type: application/json; charset=UTF-8';
 
     public function run() {
@@ -60,7 +65,7 @@ class Controller_Ajax extends Controller {
         return json_encode($ajax);
     }
 
-    public function exceptionHandler(Exception $e) {
+    public function exceptionHandler(\Exception $e) {
         ob_end_clean();
 
         header('HTTP/1.1 403 Forbidden');

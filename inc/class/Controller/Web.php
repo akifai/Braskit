@@ -5,10 +5,19 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Controller;
+
+use Braskit\Controller;
+
+// todo
+use Braskit\Error_CSRF;
+use Router_Main;
+use Parser;
+
 /**
  * Controller for board.php
  */
-class Controller_Web extends Controller {
+class Web extends Controller {
     const CONTENT_TYPE = 'Content-Type: text/html; charset=UTF-8';
     const INSERT_STR = '<!--footer_insert-->';
 
@@ -41,7 +50,7 @@ class Controller_Web extends Controller {
         return new Router_Main($this->app['url']->get());
     }
 
-    public function exceptionHandler(Exception $e) {
+    public function exceptionHandler(\Exception $e) {
         $template = 'error.html';
 
         // used for return link
@@ -49,17 +58,17 @@ class Controller_Web extends Controller {
 
         $message = $e->getMessage();
 
-        if (!($e instanceof HTMLException)) {
+        if (!($e instanceof \HTMLException)) {
             // escape HTML
             $message = Parser::escape($message);
         }
 
-        if ($e instanceof BanException) {
+        if ($e instanceof \BanException) {
             // show the ban screen
             $template = 'banned.html';
         }
 
-        if (!($e instanceof Braskit\Error_CSRF)) {
+        if (!($e instanceof Error_CSRF)) {
             // prevent CSRF errors on resubmission
             $this->app['csrf']->rollback();
         }
@@ -71,7 +80,7 @@ class Controller_Web extends Controller {
                 'message' => $message,
                 'referrer' => $referrer,
             ));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Twig failed, rip
             header('Content-Type: text/plain; charset=UTF-8');
 

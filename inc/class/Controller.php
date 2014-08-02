@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-use Braskit\App;
+namespace Braskit;
 
 abstract class Controller {
     protected $app;
@@ -28,7 +28,7 @@ abstract class Controller {
      * @param Exception $e
      * @return void
      */
-    abstract public function exceptionHandler(Exception $e);
+    abstract public function exceptionHandler(\Exception $e);
 
     /**
      * Get an instance of Router.
