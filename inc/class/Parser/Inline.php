@@ -5,18 +5,23 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Parser;
+
+use Braskit\Parser;
+use Braskit\Parser\Inline\Tree;
+
 /**
  * @author Stee
  * @todo Document this.
  */
-abstract class Parser_Inline extends Parser {
+abstract class Inline extends Parser {
     protected $stack = array();
     protected $tree;
 
     protected $markup = array();
     protected $modifiers = array();
     
-    public function __construct($text, Array $modifiers = array()) {
+    public function __construct($text, array $modifiers = array()) {
         $this->modifiers = $modifiers;
 
         $this->raw = $text;
@@ -127,7 +132,7 @@ abstract class Parser_Inline extends Parser {
      * @todo '*foo_' kills the underscore.
      */
     protected function makeTree() {
-        $this->tree = new Parser_Inline_Tree();
+        $this->tree = new Tree();
 
         $current = $this->tree;
         $nest = array();
@@ -227,7 +232,7 @@ abstract class Parser_Inline extends Parser {
                         $current->add($part);
                     } else {
                         // Starting a new layer.
-                        $newNode = new Parser_Inline_Tree($current, $this_markup);
+                        $newNode = new Tree($current, $this_markup);
                         $current->add($newNode);
 
                         $current = $newNode;
@@ -321,7 +326,7 @@ abstract class Parser_Inline extends Parser {
         $text = '';
 
         foreach ($tree->nodes as $node) {
-            if ($node instanceof Parser_Inline_Tree) {
+            if ($node instanceof Tree) {
                 $text .= $this->formatTree($node);
             } else {
                 // text node

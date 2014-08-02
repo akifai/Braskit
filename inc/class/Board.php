@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\Parser;
+
 /**
  * @todo This thing is a huge pile of shit and needs to be redone and
  *       reorganised. In particular, many methods here would do better in either

@@ -5,11 +5,15 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Parser;
+
+use Braskit\Parser;
+
 /**
  * Abstract class which provides the facilities needed for parsing blocks of
  * text.
  */
-abstract class Parser_Block extends Parser {
+abstract class Block extends Parser {
     protected $lines = array();
 
     /**

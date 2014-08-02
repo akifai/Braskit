@@ -5,6 +5,10 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Parser;
+
+use Braskit\Parser\Inline\WakabaMark as Inline;
+
 /**
  * A parser for WakabaMark (http://wakaba.c3.cx/docs/docs.html#WakabaMark).
  *
@@ -18,7 +22,7 @@
  * There are probably a billion other little difference I'm unaware of or which
  * I forgot.
  */
-class Parser_WakabaMark extends Parser_Block {
+class WakabaMark extends Block {
     const RE_PARAGRAPH = '/^\s*$/';
     const RE_LIST_UL = '/^([*+-])\s+/';
     const RE_LIST_OL = '/^(\d+)\.\s+/';
@@ -70,7 +74,7 @@ class Parser_WakabaMark extends Parser_Block {
      */
     protected function parseInline($text) {
         // yo dawg, parser in your parser, etc
-        $parser = new Parser_Inline_WakabaMark($text, $this->modifiers);
+        $parser = new Inline($text, $this->modifiers);
 
         $this->parsed .= $parser->parsed;
         $this->stripped .= $parser->stripped;

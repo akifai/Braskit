@@ -8,11 +8,11 @@
 namespace Braskit\Controller;
 
 use Braskit\Controller;
+use Braskit\Parser;
 
 // todo
 use Braskit\Error_CSRF;
 use Router_Main;
-use Parser;
 
 /**
  * Controller for board.php

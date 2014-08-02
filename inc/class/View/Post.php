@@ -5,6 +5,9 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\Parser;
+use Braskit\Parser\WakabaMark;
+
 class View_Post extends View {
     protected function post($app, $boardname) {
         // get the ip
@@ -76,7 +79,7 @@ class View_Post extends View {
 
         if (!$raw) {
             // format the comment
-            $parser = new Parser_WakabaMark($comment, array($format_cb));
+            $parser = new WakabaMark($comment, array($format_cb));
             $formatted_comment = $parser->parsed;
         } else {
             $formatted_comment = Parser::normaliseInput($comment);

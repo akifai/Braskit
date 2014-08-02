@@ -5,7 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class Parser_Inline_WakabaMark extends Parser_Inline {
+namespace Braskit\Parser\Inline;
+
+use Braskit\Parser\Inline;
+
+class WakabaMark extends Inline {
     protected $markup = array(
         array(
             'token' => array('*', '_'),

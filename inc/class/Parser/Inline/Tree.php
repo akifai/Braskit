@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class Parser_Inline_Tree {
+namespace Braskit\Parser\Inline;
+
+/**
+ * @author Stee
+ */
+class Tree {
     public $nodes = array();
     public $markup;
     public $parent;
@@ -19,7 +24,7 @@ class Parser_Inline_Tree {
         array_push($this->nodes, $node);
     }
 
-    public function copyTo(Parser_Inline_Tree $tree) {
+    public function copyTo(Tree $tree) {
         foreach ($this->nodes as $node) {
             $tree->add($node);
         }

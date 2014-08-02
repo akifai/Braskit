@@ -5,6 +5,10 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit;
+
+use Normalizer;
+
 /**
  * Methods and properties which are common for all parsers.
  */
