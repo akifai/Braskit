@@ -8,7 +8,7 @@
 namespace Braskit\Controller;
 
 use Braskit\Controller;
-use Router_Install; // todo
+use Braskit\Router\Install as Router;
 
 /**
  * Controller for install.php
@@ -47,7 +47,7 @@ class Install extends Controller {
     }
 
     public function getRouter() {
-        return new Router_Install($this->app['url']->get());
+        return new Router($this->app['url']->get());
     }
 
     public function exceptionHandler(\Exception $e) {

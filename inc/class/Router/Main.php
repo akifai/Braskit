@@ -5,10 +5,15 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Router;
+
+use Board; // todo
+use Braskit\Router;
+
 /**
  * Routes for ajax.php & board.php.
  */
-class Router_Main extends Router {
+class Main extends Router {
     public function setRoutes() {
         // Regex for boards
         $board_re = '('.Board::BOARD_RE.')';

@@ -9,10 +9,10 @@ namespace Braskit\Controller;
 
 use Braskit\Controller;
 use Braskit\Parser;
+use Braskit\Router\Main as Router;
 
 // todo
 use Braskit\Error_CSRF;
-use Router_Main;
 
 /**
  * Controller for board.php
@@ -47,7 +47,7 @@ class Web extends Controller {
     }
 
     public function getRouter() {
-        return new Router_Main($this->app['url']->get());
+        return new Router($this->app['url']->get());
     }
 
     public function exceptionHandler(\Exception $e) {

@@ -5,10 +5,14 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Router;
+
+use Braskit\Router;
+
 /**
  * Routes for the installer.
  */
-class Router_Install extends Router {
+class Install extends Router {
     public function setRoutes() {
         $this->routes = array(
             // step 1
