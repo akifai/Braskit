@@ -174,7 +174,7 @@ $app['cache'] = function () use ($app) {
 };
 
 $app['config'] = function () {
-    return new GlobalConfig();
+    return new Braskit\Config\Site();
 };
 
 $app['counter'] = function () use ($app) {

@@ -6,6 +6,7 @@
  */
 
 // todo
+use Braskit\Config\Board as Config;
 use Braskit\File;
 use Braskit\FileMetaData;
 use Braskit\Parser;
@@ -50,7 +51,7 @@ class Board {
 				throw new Exception("The board doesn't exist.");
 
 			if ($load_config)
-				$this->config = new BoardConfig($this);
+				$this->config = new Config($this);
 		}
 	}
 
