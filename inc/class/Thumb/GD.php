@@ -7,8 +7,8 @@
 
 namespace Braskit\Thumb;
 
+use Braskit\Image;
 use Braskit\Thumb;
-use Image; // todo
 
 class GD extends Thumb {
     protected $thumbQuality = 75;

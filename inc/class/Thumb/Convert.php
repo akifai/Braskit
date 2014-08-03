@@ -7,8 +7,8 @@
 
 namespace Braskit\Thumb;
 
+use Braskit\Image;
 use Braskit\Thumb;
-use Image; // todo
 
 /**
  * Thumbnailing with imagemagick's convert utility.

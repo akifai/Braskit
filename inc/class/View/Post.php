@@ -168,7 +168,7 @@ class View_Post extends View {
         $board->checkFlood($time, $ip, $formatted_comment, $file->exists);
 
         // Set up database values
-        $post = new Post($parent);
+        $post = new \Braskit\Post($parent);
 
         $post->board = (string)$board;
         $post->parent = $parent;

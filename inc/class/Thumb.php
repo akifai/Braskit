@@ -7,8 +7,6 @@
 
 namespace Braskit;
 
-use Image;
-
 /**
  * Base class for image thumbnailing.
  */

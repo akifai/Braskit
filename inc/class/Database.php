@@ -3,7 +3,7 @@
 namespace Braskit;
 
 use PDO;
-use Ban, File, Post;
+use Ban;
 
 class Database {
     protected $dbh;
@@ -60,7 +60,7 @@ class Database {
 
         $sth->execute();
 
-        $sth->setFetchMode(PDO::FETCH_CLASS, 'Post');
+        $sth->setFetchMode(PDO::FETCH_CLASS, 'Braskit\\Post');
 
         return $sth->fetch();
     }
@@ -114,7 +114,7 @@ class Database {
         $sth = $this->dbh->prepare("SELECT * FROM {$this->prefix}{$view} WHERE board = ? AND parent = 0 ORDER BY lastbump DESC");
         $sth->execute(array($board));
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
     public function getThreads($board, $offset, $limit, $admin = false) {
@@ -135,7 +135,7 @@ class Database {
 
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
     public function postsInThreadByID($board, $id, $admin = false) {
@@ -151,7 +151,7 @@ class Database {
 
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
     public function countPostsInThread($board, $id) {
@@ -174,7 +174,7 @@ class Database {
         $sth->bindParam(':limit', $limit, PDO::PARAM_INT);
         $sth->execute();
 
-        $posts = $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        $posts = $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
 
         if ($posts) {
             // get the replies in the right order
@@ -190,7 +190,7 @@ class Database {
         $sth->bindParam(':md5', $md5, PDO::PARAM_STR);
         $sth->execute();
 
-        $sth->setFetchMode(PDO::FETCH_CLASS, 'Post');
+        $sth->setFetchMode(PDO::FETCH_CLASS, 'Braskit\\Post');
 
         return $sth->fetch();
     }
@@ -204,7 +204,7 @@ class Database {
 
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
     public function trimPostsByThreadCount($board, $max_threads) {
@@ -215,7 +215,7 @@ class Database {
 
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
 
@@ -258,7 +258,7 @@ class Database {
         $sth->bindParam(':limit', $limit, PDO::PARAM_INT);
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Post');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Post');
     }
 
 

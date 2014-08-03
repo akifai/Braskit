@@ -7,8 +7,8 @@
 
 namespace Braskit\Thumb;
 
+use Braskit\Image;
 use Braskit\Thumb;
-use Image; // todo
 
 /**
  * Thumbnailing using the SIPS command line program in OS X.
