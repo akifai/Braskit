@@ -15,8 +15,9 @@
         "ircmaxell/password-compat": "dev-master"
     },
     "autoload": {
-        "classmap": ["inc/class/"],
-        "files": [
+        "classmap": [
+            "inc/class/",
+            "inc/lib/lessc-fixed/lessc.php",
             "inc/lib/jsminplus/jsminplus.php"
         ]
     }

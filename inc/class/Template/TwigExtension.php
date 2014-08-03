@@ -7,7 +7,7 @@
 
 namespace Braskit\Template;
 
-use Style;
+use Braskit\Style;
 
 use Twig_Extension;
 use Twig_SimpleFilter as SimpleFilter;
