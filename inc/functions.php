@@ -7,6 +7,30 @@
 
 use Braskit\Error;
 
+// helper function - TODO
+function get_ids($board) {
+	global $app;
+
+	$posts = array();
+	$ids = $app['param']->get('id', 'string array');
+
+	if (!is_array($ids))
+		$ids = array($ids);
+
+	$ids = array_unique(array_values($ids));
+
+	foreach ($ids as $id) {
+		if (ctype_digit($id)) {
+			$post = $board->getPost($id);
+
+			if ($post !== false)
+				$posts[] = $post;
+		}
+	}
+
+	return $posts;
+}
+
 function diverge($dest, $args = array()) {
 	global $app, $ajax;
 

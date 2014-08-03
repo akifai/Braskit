@@ -5,7 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Reports extends View {
+namespace Braskit\View;
+
+use Braskit\View;
+
+class Reports extends View {
     protected function get($app) {
         return $this->csrfScreen();
     }

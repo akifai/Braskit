@@ -5,10 +5,13 @@
  * See LICENSE for terms and conditions of use.
  */
 
-use Braskit\Error;
-use Braskit\User\Login;
+namespace Braskit\View;
 
-class View_Login extends View {
+use Braskit\Error;
+use Braskit\User\Login as UserLogin;
+use Braskit\View;
+
+class Login extends View {
     protected function get($app) {
         $error = false;
 
@@ -46,7 +49,7 @@ class View_Login extends View {
 
         try {
             // validate user/pw
-            $user = new Login($username, $password);
+            $user = new UserLogin($username, $password);
 
             // this keeps us logged in
             $app['session']['login'] = serialize($user);

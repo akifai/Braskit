@@ -5,13 +5,19 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Report extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\Error;
+use Braskit\View;
+
+class Report extends View {
     protected function get($app, $boardname) {
         $board = new Board($boardname);
         $config = $board->config;
 
         if (!$config->enable_reports)
-            throw new Exception('You cannot report posts on this board.');
+            throw new Error('You cannot report posts on this board.');
 
         $posts = get_ids($board);
 
@@ -34,7 +40,7 @@ class View_Report extends View {
         $config = $board->config;
 
         if (!$config->enable_reports)
-            throw new Exception('You cannot report posts on this board.');
+            throw new Error('You cannot report posts on this board.');
 
         // We don't want banned users reporting.
         Ban::check($app['request']->ip, time());
@@ -44,7 +50,7 @@ class View_Report extends View {
             $threshold = time() - $config->seconds_between_reports;
 
             if ($app['db']->checkReportFlood($app['request']->ip, $threshold)) {
-                throw new Exception('You are reporting too fast!');
+                throw new Error('You are reporting too fast!');
             }
         }
 
@@ -56,30 +62,6 @@ class View_Report extends View {
         // TODO: Confirmation message
         redirect($board->path(''));
     }
-}
-
-// helper function - TODO
-function get_ids($board) {
-    global $app;
-
-    $posts = array();
-    $ids = $app['param']->get('id', 'string array');
-
-    if (!is_array($ids))
-        $ids = array($ids);
-
-    $ids = array_unique(array_values($ids));
-
-    foreach ($ids as $id) {
-        if (ctype_digit($id)) {
-            $post = $board->getPost($id);
-
-            if ($post !== false)
-                $posts[] = $post;
-        }
-    }
-
-    return $posts;
 }
 
 /* vim: set ts=4 sw=4 sts=4 et: */

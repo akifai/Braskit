@@ -14,6 +14,8 @@ use Braskit\Router;
  * Routes for ajax.php & board.php.
  */
 class Main extends Router {
+    protected $prefix = 'Braskit\\View\\';
+
     public function setRoutes() {
         // Regex for boards
         $board_re = '('.Board::BOARD_RE.')';
@@ -23,30 +25,30 @@ class Main extends Router {
 
         $this->routes = array(
             // User actions
-            "/$board_re/post" => 'View_Post',
-            "/$board_re/delete" => 'View_Delete',
-            "/$board_re/report" => 'View_Report',
+            "/$board_re/post" => 'Post',
+            "/$board_re/delete" => 'Delete',
+            "/$board_re/report" => 'Report',
 
             // Mod view
-            "/$board_re/(?:$num_re(?:\\.html)?|index\\.html)?" => 'View_Page',
-            "/$board_re/res/$num_re(?:\\.html)?" => 'View_Thread',
+            "/$board_re/(?:$num_re(?:\\.html)?|index\\.html)?" => 'Page',
+            "/$board_re/res/$num_re(?:\\.html)?" => 'Thread',
 
             // Mod board actions
-            "/$board_re/ban" => 'View_Ban',
-            "/$board_re/config" => 'View_Config',
-            "/$board_re/edit" => 'View_BoardEdit',
-            "/$board_re/rebuild" => 'View_Rebuild',
+            "/$board_re/ban" => 'Ban',
+            "/$board_re/config" => 'Config',
+            "/$board_re/edit" => 'BoardEdit',
+            "/$board_re/rebuild" => 'Rebuild',
 
             // Mod global actions
-            '/bans' => 'View_Bans',
-            '/config' => 'View_Config',
-            '/login' => 'View_Login',
-            '/logout' => 'View_Logout',
-            '/manage' => 'View_Manage',
-            '/reports' => 'View_Reports',
+            '/bans' => 'Bans',
+            '/config' => 'Config',
+            '/login' => 'Login',
+            '/logout' => 'Logout',
+            '/manage' => 'Manage',
+            '/reports' => 'Reports',
 
-            '/create_board' => 'View_BoardCreate',
-            '/users(?:/(\w+))?' => 'View_Users',
+            '/create_board' => 'BoardCreate',
+            '/users(?:/(\w+))?' => 'Users',
         );
     }
 }

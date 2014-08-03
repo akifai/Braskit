@@ -5,10 +5,19 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\View;
+
+use Braskit\Error;
 use Braskit\Parser;
 use Braskit\Parser\WakabaMark;
+use Braskit\Post as PostModel;
+use Braskit\View;
 
-class View_Post extends View {
+// todo
+use Ban;
+use Board;
+
+class Post extends View {
     protected function post($app, $boardname) {
         // get the ip
         $ip = $app['request']->ip;
@@ -43,20 +52,20 @@ class View_Post extends View {
         if (!ctype_digit($parent)
         || length($parent) > 10
         || length($password) > 100)
-            throw new Exception('Abnormal post.');
+            throw new Error('Abnormal post.');
 
         if (length($name) > 100
         || length($email) > 100
         || length($subject) > 100
         || length($comment) > 10000)
-            throw new Exception('Too many characters in text field.');
+            throw new Error('Too many characters in text field.');
 
         // create new board object
         $board = new Board($boardname);
 
         // check if thread exists
         if ($parent && !$app['db']->threadExistsByID($board, $parent))
-            throw new Exception('The specified thread does not exist.');
+            throw new Error('The specified thread does not exist.');
 
         // check if we're logged in
         $user = do_login();
@@ -154,21 +163,21 @@ class View_Post extends View {
             if ($board->config->allow_thread_textonly) {
                 // the nofile box must be checked to post without a file
                 if (!$file->exists && !$nofile)
-                    throw new Exception('No file selected.');
+                    throw new Error('No file selected.');
             } elseif (!$file->exists) {
                 // an image must be uploaded
-                throw new Exception('An image is required to start a thread.');
+                throw new Error('An image is required to start a thread.');
             }
         } elseif (!$file->exists && !length($comment)) {
             // make sure replies have either a comment or file
-            throw new Exception('Please enter a message and/or upload an image to make a reply.');
+            throw new Error('Please enter a message and/or upload an image to make a reply.');
         }
 
         // check flood
         $board->checkFlood($time, $ip, $formatted_comment, $file->exists);
 
         // Set up database values
-        $post = new \Braskit\Post($parent);
+        $post = new PostModel($parent);
 
         $post->board = (string)$board;
         $post->parent = $parent;

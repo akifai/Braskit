@@ -5,9 +5,14 @@
  * See LICENSE for terms and conditions of use.
  */
 
-use Braskit\PgError;
+namespace Braskit\View;
 
-class View_Delete extends View {
+use Board; // todo
+use Braskit\Error;
+use Braskit\PgError;
+use Braskit\View;
+
+class Delete extends View {
     protected function get($app) {
         return $this->csrfScreen();
     }
@@ -42,7 +47,7 @@ class View_Delete extends View {
             $password = null;
         } elseif ($password === '' || $password !== $cookie_pw) {
             // the passwords were either blank or not equal
-            throw new Exception('Incorrect password for deletion.');
+            throw new Error('Incorrect password for deletion.');
         }
 
         // Most delete actions will take place from the user delete form, which
@@ -89,7 +94,7 @@ class View_Delete extends View {
                         $rebuild_queue[$post->parent] = true;
                     }
                 }
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 $err = $e->getCode();
 
                 if ($err === PgError::INVALID_PASSWORD) {
@@ -111,7 +116,7 @@ class View_Delete extends View {
 
         // Show an error if any posts had the incorrect password.
         if ($error) {
-            throw new Exception('Incorrect password for deletion.');
+            throw new Error('Incorrect password for deletion.');
         }
 
         if ($nexttask) {

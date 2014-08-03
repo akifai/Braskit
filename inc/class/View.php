@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-use Braskit\App;
+namespace Braskit;
 
 abstract class View {
     /**
@@ -34,7 +34,7 @@ abstract class View {
         $request = $app['request'];
 
         if (!$request->method) {
-            throw new LogicException('View executed outside of HTTP context.');
+            throw new \LogicException('View executed outside of HTTP context.');
         }
 
         $verb = $request->method === 'POST' ? 'post' : 'get';
@@ -61,7 +61,7 @@ abstract class View {
      */
     private function methodNotAllowed() {
         header('HTTP/1.0 405 Method Not Allowed');
-        throw new Exception('Method not allowed.');
+        throw new Error('Method not allowed.');
     }
 
     /**

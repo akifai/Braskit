@@ -5,7 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Install_Restart extends View {
+namespace Braskit\View\Install;
+
+use Braskit\View;
+
+class Restart extends View {
     protected function get($app) {
         unset($app['session']['install_config']);
 

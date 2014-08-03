@@ -12,6 +12,12 @@ namespace Braskit;
  */
 abstract class Router {
     /**
+     * A namespace prefix to prepend to view class names that aren't denoted
+     * with a fully qualified class name.
+     */
+    protected $prefix = '';
+
+    /**
      * The regex that matched the URL, or false if none matched.
      *
      * @var mixed
@@ -62,6 +68,10 @@ abstract class Router {
             $regex = '@^'.$regex.'$@';
 
             if (preg_match($regex, $url, $matches)) {
+                if ($view[0] !== '\\') {
+                    $view = $this->prefix.$view;
+                }
+
                 $this->regex = $regex;
                 $this->view = $view;
                 $this->matches = $matches;

@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Thread extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\View;
+
+class Thread extends View {
     protected function get($app, $boardname, $id) {
         $user = do_login($app);
 

@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_BoardCreate extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\View;
+
+class BoardCreate extends View {
     protected function post($app) {
         $user = do_login('/manage');
 

@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Rebuild extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\View;
+
+class Rebuild extends View {
     protected function get($app, $boardname) {
         $user = do_login($app);
 

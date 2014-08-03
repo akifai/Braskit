@@ -5,10 +5,16 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\Error;
+use Braskit\View;
+
 /**
  * @todo Find domains and list them.
  */
-class View_Ban extends View {
+class Ban extends View {
     protected function get($app, $boardname) {
         $user = do_login($app);
         $board = new Board($boardname);
@@ -17,7 +23,7 @@ class View_Ban extends View {
         $post = $board->getPost($id);
 
         if (!$post)
-            throw new Exception("No such post.");
+            throw new Error("No such post.");
 
         $reason = create_ban_message($post);
 

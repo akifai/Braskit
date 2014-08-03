@@ -13,18 +13,20 @@ use Braskit\Router;
  * Routes for the installer.
  */
 class Install extends Router {
+    protected $prefix = 'Braskit\\View\\Install\\';
+
     public function setRoutes() {
         $this->routes = array(
             // step 1
-            '/' => 'View_Install_Start',
+            '/' => 'Start',
 
             // step 2
-            '/config' => 'View_Install_Config',
-            '/get_config' => 'View_Install_Download',
-            '/restart' => 'View_Install_Restart',
+            '/config' => 'Config',
+            '/get_config' => 'Download',
+            '/restart' => 'Restart',
 
             // step 3
-            '/finish' => 'View_Install_Finish',
+            '/finish' => 'Finish',
         );
     }
 }

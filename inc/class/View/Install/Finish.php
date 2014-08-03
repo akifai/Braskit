@@ -5,9 +5,14 @@
  * See LICENSE for terms and conditions of use.
  */
 
-use Braskit\User\Admin;
+namespace Braskit\View\Install;
 
-class View_Install_Finish extends View {
+use Braskit\Database;
+use Braskit\Database\Connection;
+use Braskit\User\Admin;
+use Braskit\View;
+
+class Finish extends View {
     protected function get($app) {
         // we don't belong here yet
         if (!file_exists(TINYIB_ROOT.'/config.php')) {
@@ -26,11 +31,11 @@ class View_Install_Finish extends View {
         // this makes sure that the person who placed config.php in the
         // root dir is the same person finishing the install
         if ($app['session']['installer_secret'] !== $app['secret']) {
-            throw new Exception('Fuck off.');
+            throw new Error('Fuck off.');
         }
 
         // connect to database
-        $app['dbh'] = new Braskit\Database\Connection(
+        $app['dbh'] = new Connection(
             $app['db.name'],
             $app['db.host'],
             $app['db.username'],
@@ -38,7 +43,7 @@ class View_Install_Finish extends View {
             $app['counter']
         );
 
-        $app['db'] = new Braskit\Database($app['dbh'], $app['db.prefix']);
+        $app['db'] = new Database($app['dbh'], $app['db.prefix']);
 
         $app['dbh']->beginTransaction();
 

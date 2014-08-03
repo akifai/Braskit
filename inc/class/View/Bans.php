@@ -5,7 +5,13 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Bans extends View {
+namespace Braskit\View;
+
+use Ban; // todo
+use BanCreate; // todo
+use Braskit\View;
+
+class Bans extends View {
     protected function get($app) {
         $user = do_login($app);
 

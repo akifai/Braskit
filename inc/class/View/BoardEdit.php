@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_BoardEdit extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\View;
+
+class BoardEdit extends View {
     protected function get($app, $boardname) {
         $user = do_login($app);
 

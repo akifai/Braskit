@@ -5,7 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Home extends View {
+namespace Braskit\View;
+
+use Braskit\View;
+
+class Home extends View {
     protected function get() {
         diverge('/login');
     }

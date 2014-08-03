@@ -5,7 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Install_Config extends View {
+namespace Braskit\View\Install;
+
+use Braskit\View;
+
+class Config extends View {
     protected function get($app) {
         if (!isset($app['session']['install_config'])) {
             // we haven't even begun

@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Users extends View {
+namespace Braskit\View;
+
+use Braskit\Error;
+use Braskit\View;
+
+class Users extends View {
     protected function get($app, $username = false) {
         $user = do_login($app);
 
@@ -57,7 +62,7 @@ class View_Users extends View {
 
             // Check password
             if ($password === '' || $password !== $password2)
-                throw new Exception('Invalid password');
+                throw new Error('Invalid password');
 
             $target->setEmail($email);
             $target->setPassword($password);

@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class View_Config extends View {
+namespace Braskit\View;
+
+use Board; // todo
+use Braskit\View;
+
+class Config extends View {
     protected function get($app, $boardname = false) {
         $user = do_login($app);
 
