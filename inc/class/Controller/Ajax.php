@@ -8,7 +8,7 @@
 namespace Braskit\Controller;
 
 use Braskit\Controller;
-use Router_Main; // todo
+use Braskit\Router\Main as Router;
 
 /**
  * Controller for ajax.php
@@ -54,7 +54,7 @@ class Ajax extends Controller {
     }
 
     public function getRouter() {
-        return new Router_Main($this->app['url']->get());
+        return new Router($this->app['url']->get());
     }
 
     public function obHandler($buffer) {

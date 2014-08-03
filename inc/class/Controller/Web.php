@@ -9,11 +9,9 @@ namespace Braskit\Controller;
 
 use Braskit\Controller;
 use Braskit\Error;
+use Braskit\Error\CSRF as CSRFError;
 use Braskit\Parser;
 use Braskit\Router\Main as Router;
-
-// todo
-use Braskit\Error_CSRF;
 
 /**
  * Controller for board.php
@@ -75,7 +73,7 @@ class Web extends Controller {
             $template = 'banned.html';
         }
 
-        if (!($e instanceof Error_CSRF)) {
+        if (!($e instanceof CSRFError)) {
             // prevent CSRF errors on resubmission
             $this->app['csrf']->rollback();
         }

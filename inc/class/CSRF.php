@@ -7,6 +7,8 @@
 
 namespace Braskit;
 
+use Braskit\Error\CSRF as CSRFError;
+
 class CSRF {
     const PARAM_KEY = 'csrf';
     const SESSION_KEY = 'csrf_token';
@@ -24,7 +26,7 @@ class CSRF {
     /**
      * Checks if a CSRF token was sent and that it's valid.
      *
-     * @throws Error_CSRF if the tokens did not match
+     * @throws CSRFError if the tokens did not match
      */
     public function check() {
         $success = $this->getToken() === $this->getTokenParam();
@@ -34,7 +36,7 @@ class CSRF {
 
             unset($this->session[self::SESSION_KEY]);
         } else {
-            throw new Error_CSRF('Invalid CSRF token.');
+            throw new CSRFError('Invalid CSRF token.');
         }
     }
 
