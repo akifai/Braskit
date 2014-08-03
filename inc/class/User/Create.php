@@ -8,8 +8,8 @@
 namespace Braskit\User;
 
 use Braskit\Error;
+use Braskit\PgError;
 use Braskit\User;
-use PgError; // todo
 
 class Create extends User {
     protected $self_level = 0;

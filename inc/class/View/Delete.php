@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\PgError;
+
 class View_Delete extends View {
     protected function get($app) {
         return $this->csrfScreen();

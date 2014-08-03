@@ -11,6 +11,7 @@ use Braskit\File;
 use Braskit\FileMetaData;
 use Braskit\Parser;
 use Braskit\Post;
+use Braskit\Spam;
 
 /**
  * @todo This thing is a huge pile of shit and needs to be redone and

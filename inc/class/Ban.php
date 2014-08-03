@@ -1,5 +1,7 @@
 <?php
 
+use Braskit\PgError;
+
 class Ban {
 	public $id = null;
 	public $ip = null;
