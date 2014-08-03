@@ -7,4 +7,16 @@
 
 namespace Braskit;
 
-class Error extends \Exception {}
+class Error extends \Exception {
+    protected $htmlMessage;
+
+    public function getHTMLMessage() {
+        return $this->htmlMessage;
+    }
+
+    public function setHTMLMessage($message) {
+        $this->htmlMessage = $message;
+    }
+}
+
+/* vim: set ts=4 sw=4 sts=4 et: */

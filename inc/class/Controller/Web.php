@@ -8,6 +8,7 @@
 namespace Braskit\Controller;
 
 use Braskit\Controller;
+use Braskit\Error;
 use Braskit\Parser;
 use Braskit\Router\Main as Router;
 
@@ -58,9 +59,15 @@ class Web extends Controller {
 
         $message = $e->getMessage();
 
-        if (!($e instanceof \HTMLException)) {
-            // escape HTML
-            $message = Parser::escape($message);
+        if ($e instanceof Error) {
+            $html = $e->getHTMLMessage();
+
+            if ($html === null) {
+                // no HTML message - escape the regular one
+                $message = Parser::escape($message);
+            } else {
+                $message = $html;
+            }
         }
 
         if ($e instanceof \BanException) {

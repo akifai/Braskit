@@ -8,6 +8,7 @@
 // todo
 use Braskit\BanCreate;
 use Braskit\Config\Board as Config;
+use Braskit\Error;
 use Braskit\File;
 use Braskit\FileMetaData;
 use Braskit\Parser;
@@ -482,10 +483,14 @@ class Board {
 		if ($row === false)
 			return;
 
-		$message = 'Error: The file <a href="%s">has been uploaded</a> previously.';
-		$link = $this->linkToPost($row);
+		$e = new Error('Your file has been uploaded previously.');
 
-		throw new HTMLException(sprintf($message, $link));
+		$html = 'Your file <a href="%s">has been uploaded</a> previously.';
+		$url = $this->linkToPost($row);
+
+		$e->setHTMLMessage(sprintf($html, $url));
+
+		throw $e;
 	}
 
 	public function handleUpload($upload) {
