@@ -5,11 +5,11 @@
  * See the LICENSE file for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Database;
 
 use PDO;
 
-class Database_Connection extends PDO {
+class Connection extends PDO {
     protected $counter;
 
     protected $name = '';
@@ -68,7 +68,7 @@ class Database_Connection extends PDO {
 
         // use our custom class when creating statement handles
         $options[PDO::ATTR_STATEMENT_CLASS] = array(
-            'Braskit\Database_Statement',
+            'Braskit\Database\Statement',
             array($this, $this->counter)
         );
 

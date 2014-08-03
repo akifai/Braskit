@@ -30,7 +30,7 @@ class View_Install_Finish extends View {
         }
 
         // connect to database
-        $app['dbh'] = new Braskit\Database_Connection(
+        $app['dbh'] = new Braskit\Database\Connection(
             $app['db.name'],
             $app['db.host'],
             $app['db.username'],

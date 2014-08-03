@@ -5,11 +5,11 @@
  * See the LICENSE file for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Database;
 
 use PDOStatement;
 
-class Database_Statement extends PDOStatement {
+class Statement extends PDOStatement {
     protected $counter;
     protected $dbh;
 

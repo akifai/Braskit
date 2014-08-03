@@ -190,7 +190,7 @@ $app['db'] = function () use ($app) {
 };
 
 $app['dbh'] = function () use ($app) {
-    return new Braskit\Database_Connection(
+    return new Braskit\Database\Connection(
         $app['db.name'],
         $app['db.host'],
         $app['db.username'],
