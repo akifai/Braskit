@@ -230,19 +230,19 @@ $app['thumb'] = function () use ($app) {
 
     switch ($method) {
     case 'convert':
-        return new Thumb_Convert($app['path.tmp'], array(
+        return new Braskit\Thumb\Convert($app['path.tmp'], array(
             'convert_path' => $app['thumb.convert_path'],
             'quality' => $app['thumb.quality'],
         ));
     case 'gd':
-        return new Thumb_GD($app['path.tmp'], array(
+        return new Braskit\Thumb\GD($app['path.tmp'], array(
             'quality' => $app['thumb.quality'],
         ));
     #case 'imagemagick':
     #case 'imagick':
-    #    return new Thumb_Imagick($app['path.tmp']);
+    #    return new Braskit\Thumb\Imagick($app['path.tmp']);
     case 'sips':
-        return new Thumb_Sips($app['path.tmp']);
+        return new Braskit\Thumb\Sips($app['path.tmp']);
     }
 
     throw new LogicException("Unknown thumbnail method '$method'.");

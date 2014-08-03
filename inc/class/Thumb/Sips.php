@@ -5,12 +5,17 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Thumb;
+
+use Braskit\Thumb;
+use Image; // todo
+
 /**
  * Thumbnailing using the SIPS command line program in OS X.
  *
  * Should not be used in production and probably not in development either.
  */
-class Thumb_Sips extends Thumb {
+class Sips extends Thumb {
     // taken from wakaba
     const CMD_F = 'sips -z %d %d -s formatOptions normal -s format jpeg %s --out %s >/dev/null';
 

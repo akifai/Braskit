@@ -5,7 +5,12 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class Thumb_GD extends Thumb {
+namespace Braskit\Thumb;
+
+use Braskit\Thumb;
+use Image; // todo
+
+class GD extends Thumb {
     protected $thumbQuality = 75;
 
     protected function makeThumbnail(Image $image, $max_w, $max_h) {
@@ -50,7 +55,7 @@ class Thumb_GD extends Thumb {
         return $thumb;
     }
 
-    protected function setOptions(Array $options) {
+    protected function setOptions(array $options) {
         if (isset($options['quality'])) {
             $this->thumbQuality = $options['quality'];
         }

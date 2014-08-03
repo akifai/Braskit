@@ -5,10 +5,15 @@
  * See LICENSE for terms and conditions of use.
  */
 
+namespace Braskit\Thumb;
+
+use Braskit\Thumb;
+use Image; // todo
+
 /**
  * Thumbnailing with imagemagick's convert utility.
  */
-class Thumb_Convert extends Thumb {
+class Convert extends Thumb {
     protected $convertPath = 'convert';
     protected $thumbQuality = 75;
 
@@ -52,7 +57,7 @@ class Thumb_Convert extends Thumb {
         return $thumb;
     }
 
-    protected function setOptions(Array $options) {
+    protected function setOptions(array $options) {
         if (isset($options['convert_path'])) {
             $this->convertPath = $options['convert_path'];
         }

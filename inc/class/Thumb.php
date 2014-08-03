@@ -5,14 +5,9 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class ThumbData {
-    public $width = 0;
-    public $height = 0;
-    public $ext = '';
-    public $tmpfile = '';
-}
+namespace Braskit;
 
-class ThumbException extends Exception {}
+use Image;
 
 /**
  * Base class for image thumbnailing.
@@ -41,7 +36,7 @@ abstract class Thumb {
      * @param Image $image
      * @param $max
      *
-     * @throws ThumbException if the image didn't thumbnail
+     * @throws \RuntimeException if the image didn't thumbnail
      *
      * @return ThumbData
      */
@@ -53,7 +48,7 @@ abstract class Thumb {
             return $thumb;
         }
 
-        throw new ThumbException("Couldn't thumbnail image.");
+        throw new \RuntimeException("Couldn't thumbnail image.");
     }
 
     /**
