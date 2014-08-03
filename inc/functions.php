@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\Error;
+
 function diverge($dest, $args = array()) {
 	global $app, $ajax;
 
@@ -315,7 +317,7 @@ function create_ban_message($post) {
 function do_login($url = false) {
 	try {
 		$user = get_session_login();
-	} catch (UserException $e) {
+	} catch (Error $e) {
 		$user = false;
 	}
 

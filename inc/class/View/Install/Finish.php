@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\User\Admin;
+
 class View_Install_Finish extends View {
     protected function get($app) {
         // we don't belong here yet
@@ -43,7 +45,7 @@ class View_Install_Finish extends View {
         $app['db']->initDatabase();
 
         // create our user account
-        $user = new UserAdmin();
+        $user = new Admin();
 
         $u = $user->create($app['session']['installer_user']);
         $u->setPassword($app['session']['installer_pass']);

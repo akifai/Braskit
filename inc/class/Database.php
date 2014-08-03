@@ -3,7 +3,7 @@
 namespace Braskit;
 
 use PDO;
-use Ban, File, Post, User;
+use Ban, File, Post;
 
 class Database {
     protected $dbh;
@@ -532,7 +532,7 @@ class Database {
     public function getUserList() {
         $sth = $this->dbh->query("SELECT username, level, lastlogin, email FROM {$this->prefix}users ORDER BY level DESC, username");
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'User');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\User');
     }
 
     public function getUser($username) {
@@ -540,7 +540,7 @@ class Database {
         $sth->bindParam(':username', $username, PDO::PARAM_STR);
         $sth->execute();
 
-        $sth->setFetchMode(PDO::FETCH_CLASS, 'User');
+        $sth->setFetchMode(PDO::FETCH_CLASS, 'Braskit\\User');
 
         return $sth->fetch();
     }

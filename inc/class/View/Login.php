@@ -5,13 +5,16 @@
  * See LICENSE for terms and conditions of use.
  */
 
+use Braskit\Error;
+use Braskit\User\Login;
+
 class View_Login extends View {
     protected function get($app) {
         $error = false;
 
         try {
             $user = do_login();
-        } catch (UserException $e) {
+        } catch (Error $e) {
             $user = false;
             $error = $e->getMessage();
         }
@@ -43,13 +46,13 @@ class View_Login extends View {
 
         try {
             // validate user/pw
-            $user = new UserLogin($username, $password);
+            $user = new Login($username, $password);
 
             // this keeps us logged in
             $app['session']['login'] = serialize($user);
 
             $loggedin = true;
-        } catch (UserException $e) {
+        } catch (Error $e) {
             $loggedin = false;
 
             // store the error message we display after the redirect
