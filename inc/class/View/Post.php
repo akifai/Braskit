@@ -8,14 +8,12 @@
 namespace Braskit\View;
 
 use Braskit\Ban;
+use Braskit\Board;
 use Braskit\Error;
 use Braskit\Parser;
 use Braskit\Parser\WakabaMark;
 use Braskit\Post as PostModel;
 use Braskit\View;
-
-// todo
-use Board;
 
 class Post extends View {
     protected function post($app, $boardname) {

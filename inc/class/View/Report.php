@@ -7,8 +7,8 @@
 
 namespace Braskit\View;
 
-use Board; // todo
 use Braskit\Ban;
+use Braskit\Board;
 use Braskit\Error;
 use Braskit\View;
 

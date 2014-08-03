@@ -7,7 +7,7 @@
 
 namespace Braskit\Router;
 
-use Board; // todo
+use Braskit\Board;
 use Braskit\Router;
 
 /**

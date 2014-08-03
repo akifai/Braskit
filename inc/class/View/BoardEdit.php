@@ -7,7 +7,7 @@
 
 namespace Braskit\View;
 
-use Board; // todo
+use Braskit\Board;
 use Braskit\View;
 
 class BoardEdit extends View {
