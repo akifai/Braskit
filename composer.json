@@ -15,8 +15,10 @@
         "ircmaxell/password-compat": "dev-master"
     },
     "autoload": {
+        "psr-4": {
+            "Braskit\\": "inc/class/"
+        },
         "classmap": [
-            "inc/class/",
             "inc/lib/lessc-fixed/lessc.php",
             "inc/lib/jsminplus/jsminplus.php"
         ]

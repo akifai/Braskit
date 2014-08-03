@@ -5,6 +5,8 @@
  * See LICENSE for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Error;
 
-class Error_CSRF extends Error {}
+use Braskit\Error;
+
+class CSRF extends Error {}
