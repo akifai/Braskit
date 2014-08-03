@@ -6,6 +6,7 @@
  */
 
 // todo
+use Braskit\BanCreate;
 use Braskit\Config\Board as Config;
 use Braskit\File;
 use Braskit\FileMetaData;

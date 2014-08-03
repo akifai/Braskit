@@ -277,7 +277,7 @@ class Database {
         $sth = $this->dbh->prepare("SELECT * FROM {$this->prefix}bans_view WHERE ip >>= ? ORDER BY timestamp DESC");
         $sth->execute(array($ip));
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Ban');
     }
 
     public function activeBansByIP($ip, $time) {
@@ -288,12 +288,12 @@ class Database {
 
         $sth->execute();
 
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Ban');
     }
 
     public function allBans() {
         $sth = $this->dbh->query("SELECT * FROM {$this->prefix}bans_view ORDER BY timestamp DESC");
-        return $sth->fetchAll(PDO::FETCH_CLASS, 'Ban');
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Ban');
     }
 
     public function insertBan(Ban $ban) {

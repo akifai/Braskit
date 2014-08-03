@@ -7,6 +7,7 @@
 
 namespace Braskit\View;
 
+use Braskit\Ban;
 use Braskit\Error;
 use Braskit\Parser;
 use Braskit\Parser\WakabaMark;
@@ -14,7 +15,6 @@ use Braskit\Post as PostModel;
 use Braskit\View;
 
 // todo
-use Ban;
 use Board;
 
 class Post extends View {

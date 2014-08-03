@@ -7,8 +7,8 @@
 
 namespace Braskit\View;
 
-use Ban; // todo
-use BanCreate; // todo
+use Braskit\Ban;
+use Braskit\BanCreate;
 use Braskit\View;
 
 class Bans extends View {
