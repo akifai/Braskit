@@ -5,9 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Cache;
 
-class Cache_Debug implements Cache {
+use Braskit\Cache;
+
+class Debug implements Cache {
     public function get($key) {
         return false;
     }

@@ -5,7 +5,9 @@
  * See LICENSE for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Cache;
+
+use Braskit\Cache;
 
 /**
  * Cache stored in PHP files.
@@ -15,7 +17,7 @@ namespace Braskit;
  *
  * @todo Redo this.
  */
-class Cache_PHP implements Cache {
+class PHP implements Cache {
     public function __construct($cacheDir) {
         $this->cacheDir = $cacheDir;
     }

@@ -5,9 +5,11 @@
  * See LICENSE for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\Cache;
 
-class Cache_APC implements Cache {
+use Braskit\Cache;
+
+class APC implements Cache {
     public function get($key) {
         return apc_fetch($key);
     }
