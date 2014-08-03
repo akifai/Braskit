@@ -13,7 +13,7 @@ abstract class UrlHandler {
 
     protected $url = null;
 
-    public function __construct(\Request $request, array $entrypoints) {
+    public function __construct(Request $request, array $entrypoints) {
         $this->request = $request;
 
         $this->entryPoints = $entrypoints;

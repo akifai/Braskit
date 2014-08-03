@@ -1,6 +1,13 @@
 <?php
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
-class Session implements ArrayAccess, Iterator {
+namespace Braskit;
+
+class Session implements \ArrayAccess, \Iterator {
     public function __construct($session_name) {
         session_name($session_name);
         session_start();

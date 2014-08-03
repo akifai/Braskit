@@ -204,11 +204,11 @@ $app['param'] = $app->factory(function () use ($app) {
 });
 
 $app['request'] = function () use ($app) {
-    return new Request();
+    return new Braskit\Request();
 };
 
 $app['session'] = function () use ($app) {
-    return new Session($app['session.name']);
+    return new Braskit\Session($app['session.name']);
 };
 
 $app['template'] = function () use ($app) {
@@ -249,7 +249,7 @@ $app['thumb'] = function () use ($app) {
 };
 
 $app['url'] = function () use ($app) {
-    return new Braskit\UrlHandler_QueryString($app['request']);
+    return new Braskit\UrlHandler\QueryString($app['request']);
 };
 
 $app['view'] = function () use ($app) {

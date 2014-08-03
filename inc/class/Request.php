@@ -5,7 +5,7 @@
  * See LICENSE for terms and conditions of use.
  */
 
-class RequestException extends Exception {}
+namespace Braskit;
 
 class Request {
     public $get = array();
@@ -263,7 +263,7 @@ class Request {
 	protected function validateUpload($file) {
 		if (!isset($file['error'])) {
             // tampering through register_globals detected
-			throw new RequestException('Abnormal POST.');
+			throw new \RuntimeException('Abnormal POST.');
         }
 
 		switch ($file['error']) {
@@ -299,7 +299,7 @@ class Request {
 			$msg = 'Unable to save the uploaded file.';
 		}
 
-		throw new RequestException($msg);
+		throw new \RuntimeException($msg);
 	}
 
     /**

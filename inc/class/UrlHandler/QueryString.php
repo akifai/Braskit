@@ -5,16 +5,19 @@
  * See LICENSE for terms and conditions of use.
  */
 
-namespace Braskit;
+namespace Braskit\UrlHandler;
+
+use Braskit\Request;
+use Braskit\UrlHandler;
 
 /**
  * URL subclass for query string-based routing and URLs. Will work in any setup,
  * but creates ugly URLs.
  */
-class UrlHandler_QueryString extends UrlHandler {
+class QueryString extends UrlHandler {
     protected $request;
 
-    public function __construct(\Request $request) {
+    public function __construct(Request $request) {
         $this->request = $request;
     }
 
