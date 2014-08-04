@@ -154,7 +154,7 @@ class Style {
         try {
             $less->compileFile($input, $output);
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // print to error log
             if (!$app['less.debug']) {
                 file_put_contents(STDERR, "LESS: $message");
