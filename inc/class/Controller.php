@@ -52,12 +52,6 @@ abstract class Controller {
         require($this->app['path.root'].'/inc/functions.php');
 
         date_default_timezone_set($this->app['timezone']);
-
-        if (get_magic_quotes_gpc()) {
-            // some functions will alter their output depending on what this is
-            // set to. cleaning up GET/POST/COOKIE is done in the Request class.
-            set_magic_quotes_runtime(false);
-        }
     }
 }
 

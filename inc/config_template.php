@@ -1,5 +1,9 @@
 <?php
-defined('TINYIB') or exit;
+/*
+ * Copyright (C) 2013, 2014 Frank Usrs
+ *
+ * See LICENSE for terms and conditions of use.
+ */
 
 function create_config($vars) {
 	ob_start();
@@ -8,7 +12,7 @@ function create_config($vars) {
 ?>
 
 # protects against outsiders - don't remove
-isset($app) && $app instanceof Braskit\App or exit;
+isset($app) or exit;
 
 
 #
@@ -40,8 +44,8 @@ $app['db.password'] = <?php var_export($vars['db_password']) ?>;
 # database host - usually 'localhost', but may vary
 $app['db.host'] = <?php var_export($vars['db_host']) ?>;
 
-# table prefix - if you're sharing the database with another application (i.e.
-# mediawiki or another Braskit install), then set this to something unique.
+# table prefix - if you're sharing the database with another application (for
+# instance another Braskit install), then set this to something unique.
 $app['db.prefix'] = <?php var_export($vars['db_prefix']) ?>;
 
 <?php

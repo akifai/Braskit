@@ -44,11 +44,9 @@ abstract class Parser {
         );
 
         // remove invalid unicode
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $text = htmlspecialchars_decode(
-                htmlspecialchars($text, ENT_SUBSTITUTE, 'UTF-8')
-            );
-        }
+        $text = htmlspecialchars_decode(
+            htmlspecialchars($text, ENT_SUBSTITUTE, 'UTF-8')
+        );
 
         // normalise unicode
         if (extension_loaded('intl') && !Normalizer::isNormalized($text)) {
@@ -65,13 +63,7 @@ abstract class Parser {
      * @return string
      */
     public static function escape($str) {
-        $flags = ENT_QUOTES;
-
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $flags |= ENT_HTML5;
-        }
-
-        return htmlspecialchars($str, $flags, 'UTF-8');
+        return htmlspecialchars($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 }
 
