@@ -11,55 +11,71 @@ use Braskit\Cache;
 
 /**
  * Cache stored in PHP files.
- *
- * This is shit because it's a quick conversion of the old cache functions,
- * which were also shit.
- *
- * @todo Redo this.
  */
 class PHP implements Cache {
+    /**
+     * Cache directory.
+     *
+     * @var string
+     */
+    protected $cacheDir = '';
+
+    /**
+     * Cache directory exists.
+     *
+     * @var boolean
+     */
+    protected $dirExists = false;
+
+    /**
+     * Constructor.
+     *
+     * @param string $cacheDir Directory to cache to.
+     */
     public function __construct($cacheDir) {
         $this->cacheDir = $cacheDir;
     }
 
     public function get($key) {
-        $filename = "$this->cacheDir/cache-{$key}.php";
+        $filename = $this->getFileName($key);
 
-        @include($filename);
+        $cache = @include($filename);
 
-        // we couldn't load the cache
-        if (!isset($cache) || $expired) {
+        // We couldn't load the cache, or it expired. Delete it.
+        if (!is_array($cache) || $cache['expired']) {
             @unlink($filename);
+
             return false;
         }
 
-        return $cache;
+        return $cache['content'];
     }
 
     public function set($key, $value, $ttl = false) {
-        @mkdir($this->cacheDir); // TODO ???
+        $this->createDirectory();
 
         // Content of the cache file
-        $content = '<?php ';
+        $content = '<?php return array(';
 
         if ($ttl) {
-            $eol = time() + $ttl; // end of life for cache
-            $content .= sprintf('$expired = time() > %d;', $eol);
+            $expired = sprintf('time() > %d', time() + $ttl);
         } else {
             // the cache never expires
-            $content .= '$expired = false;';
+            $expired = 'false';
         }
 
-        $dumped_data = var_export($value, true);
-        $content .= sprintf('$cache = %s;', $dumped_data);
+        $content .= sprintf("'expired' => $expired, ");
 
-        writePage("$this->cacheDir/cache-$key.php", $content);
+        $data = var_export($value, true);
+        $content .= sprintf("'content' => %s", $data);
 
-        return true;
+        $content .= ');';
+
+        writePage($this->getFileName($key), $content);
     }
 
     public function delete($key) {
-        return @unlink("$this->cacheDir/cache-$key.php");
+        unlink($this->getFileName($key));
     }
 
     public function purge() {
@@ -72,10 +88,38 @@ class PHP implements Cache {
         }
 
         foreach ($files as $file) {
-            @unlink($file);
+            unlink($file);
+        }
+    }
+
+    /**
+     * Get the filename of a cache object.
+     *
+     * @param string $key Cache key.
+     * @return string     File name.
+     */
+    protected function getFileName($key) {
+        return $this->cacheDir.'/cache-'.md5($key).'.php';
+    }
+
+    /**
+     * Ensures that the cache directory exists. Should be called when writing to
+     * cache.
+     *
+     * @throws \RuntimeException if the cache directory cannot be created.
+     */
+    protected function createDirectory() {
+        if ($this->dirExists || is_dir($this->cacheDir)) {
+            return;
         }
 
-        return true;
+        $created = @mkdir($this->cacheDir, 0777 & ~umask(), true);
+
+        if (!$created) {
+            throw new \RuntimeException("Couldn't create cache directory.");
+        }
+
+        $this->dirExists = true;
     }
 }
 
