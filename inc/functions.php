@@ -130,7 +130,7 @@ function get_js() {
 	}
 
 	foreach ($app['js.includes'] as $filename) {
-		if (strpos($filename, '/') === false)
+		if (strpos($filename, '/') !== 0 && !strpos($filename, '://'))
 			$filename = TINYIB_ROOT.'/static/js/'.$filename;
 
 		$js = file_get_contents($filename);
