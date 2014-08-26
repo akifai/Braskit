@@ -32,14 +32,7 @@ function get_ids($board) {
 }
 
 function diverge($dest, $args = array()) {
-	global $app, $ajax;
-
-	if ($app['controller'] instanceof Braskit\Controller\Ajax) {
-		$ajax['diverge'] = $dest;
-		$ajax['divergeArgs'] = $args;
-
-		return;
-	}
+	global $app;
 
 	// missing slash
 	if (substr($dest, 0, 1) !== '/') {

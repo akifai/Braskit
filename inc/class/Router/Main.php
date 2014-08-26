@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\Router;
 
 /**
- * Routes for ajax.php & board.php.
+ * Routes for board.php.
  */
 class Main extends Router {
     protected $prefix = 'Braskit\\View\\';

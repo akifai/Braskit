@@ -76,9 +76,9 @@
 
     {% if context.admin %}
       <span class="post-mod">
-        <a href="{{ context.board.path("delete", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id}) }}" title="Delete">D</a>
-        <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" data-ajax="{{ context.board.apiPath("delete", {"id": p.id, "ban": 1}) }}" title="Ban & Delete">&</a>
-        <a href="{{ context.board.path("ban", {"id": p.id}) }}" data-ajax="{{ context.board.apiPath("ban", {"id": p.id}) }}" title="Ban">B</a>
+        <a href="{{ context.board.path("delete", {"id": p.id}) }}" title="Delete">D</a>
+        <a href="{{ context.board.path("delete", {"id": p.id, "ban": 1}) }}" title="Ban & Delete">&</a>
+        <a href="{{ context.board.path("ban", {"id": p.id}) }}" title="Ban">B</a>
       </span>
     {% endif %}
 	</h2>
@@ -114,7 +114,7 @@
       {% for report in reports|json_decode(true) %}
         <li>
           Reported by <a href="{{ path("ip/"~report.ip, true) }}">{{ report.ip }}</a>: <strong class="reason">{{ report.reason }}</strong>
-          <span class="dismiss">(<a href="{{ path("reports", {"dismiss": report.id}) }}" data-ajax="{{ apipath("reports", {"dismiss": report.id}) }}" data-handler="doReportDismissal" title="Dismiss">Dismiss</a>)</span>
+          <span class="dismiss">(<a href="{{ path("reports", {"dismiss": report.id}) }}" title="Dismiss">Dismiss</a>)</span>
         </li>
       {% endfor %}
     </ul>

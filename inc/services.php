@@ -122,16 +122,6 @@ $app['path.cache.tpl'] = function () use ($app) {
     return "$root/cache/tpl";
 };
 
-$app['path.entry.ajax'] = function () use ($app) {
-    $root = $app['path.root'];
-    return "$root/ajax.php";
-};
-
-$app['path.entry.api'] = function () use ($app) {
-    $root = $app['path.root'];
-    return "$root/api.php";
-};
-
 $app['path.entry.board'] = function () use ($app) {
     $root = $app['path.root'];
     return "$root/board.php";
