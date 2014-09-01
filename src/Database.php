@@ -31,7 +31,9 @@ class Database {
     }
 
     public function initDatabase() {
-        $schema = file_get_contents(TINYIB_ROOT.'/inc/schema.sql');
+        global $app;
+
+        $schema = file_get_contents($app['path.root'].'/config/schema.sql');
         $schema = str_replace('/*_*/', $this->prefix, $schema);
 
         // postgres complains otherwise - this lets us execute multiple queries

@@ -16,7 +16,7 @@ class App extends Pimple {
         $app = $this;
 
         // load default services
-        require __DIR__.'/../services.php';
+        require __DIR__.'/../config/services.php';
     }
 
     /**

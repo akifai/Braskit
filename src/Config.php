@@ -122,7 +122,9 @@ abstract class Config implements \Iterator {
     }
 
     protected function loadStandardConfig() {
-        require(TINYIB_ROOT.'/inc/'.$this->standard_config);
+        global $app;
+
+        require $app['path.root'].'/config/'.$this->standard_config;
 
         foreach ($this->config as $key => $value) {
             $this->config[$key]['modified'] = false;

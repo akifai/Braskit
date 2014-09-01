@@ -15,7 +15,7 @@ use Braskit\View;
 class Finish extends View {
     protected function get($app) {
         // we don't belong here yet
-        if (!file_exists(TINYIB_ROOT.'/config.php')) {
+        if (!file_exists($app['path.root'].'/config.php')) {
             if (!isset($app['session']['installer_secret'])) {
                 diverge('/');
             } else {
@@ -26,7 +26,7 @@ class Finish extends View {
         }
 
         // load config
-        require(TINYIB_ROOT.'/config.php');
+        require $app['path.root'].'/config.php';
 
         // this makes sure that the person who placed config.php in the
         // root dir is the same person finishing the install

@@ -7,14 +7,20 @@ thumbs.db
 *.bak
 .htaccess
 
+# Composer
+/vendor/
+composer.phar
+
 ## Braskit-specific
 /config.php
-*.sql
 
 # ignore all top-level directories, except those we choose
 /*/
-!/inc/
+!/config/
+!/lib/
+!/src/
 !/static/
+!/templates/
 
 # ignore non-standard style directories
 /static/styles/*/
@@ -31,7 +37,3 @@ thumbs.db
 
 # minified JS
 /static/js/cache-*.js
-
-# Composer
-/vendor/
-composer.phar

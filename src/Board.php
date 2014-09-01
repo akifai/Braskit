@@ -28,6 +28,11 @@ class Board {
 
     protected $twig;
 
+    /**
+     * path.root
+     */
+    protected $root;
+
     public static function validateName($board) {
         // Check for blank board name
         if (!strlen($board))
@@ -39,6 +44,10 @@ class Board {
     }
 
     public function __construct($board, $must_exist = true, $load_config = true) {
+        global $app;
+
+        $this->root = $app['path.root']; // TODO
+
         $this->validateName($board);
 
         $this->board = (string)$board;
@@ -105,7 +114,7 @@ class Board {
         foreach (array('', '/res', '/src', '/thumb') as $folder) {
             $folder = $this->board.$folder;
 
-            if ($check_folder && !@mkdir(TINYIB_ROOT."/$folder"))
+            if ($check_folder && !@mkdir("$this->root/$folder"))
                 throw new \RuntimeException("Couldn't create folder: {$folder}");
         }
 
@@ -135,8 +144,8 @@ class Board {
             }
         }
 
-        $oldfolder = TINYIB_ROOT.'/'.$this->board;
-        $newfolder = TINYIB_ROOT.'/'.$newname;
+        $oldfolder = "$this->root/$this->board";
+        $newfolder = "$this->root/$newname";
 
         if (file_exists($newfolder))
             throw new Error('Folder name collision - cannot rename board.');
@@ -224,7 +233,7 @@ class Board {
             $files[] = "$this/res/{$file->id}.html";
 
         foreach ($files as $file) {
-            @unlink(TINYIB_ROOT.'/'.$file);
+            @unlink("$this->root/$file");
         }
     }
 
@@ -488,7 +497,7 @@ class Board {
     }
 
     public function handleUpload($upload) {
-        $root = TINYIB_ROOT.'/'.$this->board;
+        $root = $this->root.'/'.$this->board;
 
         $file = new File($upload, "$root/src");
 
@@ -524,7 +533,7 @@ class Board {
             return $this->twig;
         }
 
-        $path = TINYIB_ROOT."/$this->board/templates";
+        $path = $this->root."/$this->board/templates";
 
         if (!is_dir($path) || !is_readable($path)) {
             // no template directory and/or bad permissions, so just

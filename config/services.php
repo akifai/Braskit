@@ -75,8 +75,7 @@ $app['unique'] = 'bs';
 * Terminology:
 *
 * - root
-*     This is where the inc/ folder lies. Files in this category don't normally
-*     get accessed from the web.
+*     This is the root directory of the package.
 * - webroot
 *     This is where files accessible through the web are stored.
 * - entry
@@ -84,8 +83,8 @@ $app['unique'] = 'bs';
 */
 
 $app['path.root'] = function () use ($app) {
-    // should be set to the parent of the inc/ folder
-    return realpath(dirname(__FILE__).'/..');
+    // should be set to the root of the package folder
+    return realpath(__DIR__.'/..');
 };
 
 $app['path.webroot'] = function () use ($app) {
@@ -134,7 +133,7 @@ $app['path.entry.install'] = function () use ($app) {
 
 $app['path.tpldir'] = function () use ($app) {
     $root = $app['path.root'];
-    return "$root/inc/templates";
+    return "$root/templates";
 };
 
 $app['path.tmp'] = function () {
@@ -204,12 +203,10 @@ $app['template'] = function () use ($app) {
 };
 
 $app['template.chain'] = $app->factory(function () {
-    // returns a new chain loader
     return new Twig_Loader_Chain();
 });
 
 $app['template.loader'] = function () use ($app) {
-    // returns a filesystem loader for inc/templates
     return new Braskit\Template\TwigLoader($app['path.tpldir']);
 };
 

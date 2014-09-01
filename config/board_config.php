@@ -1,12 +1,10 @@
 <?php
-defined('TINYIB') or exit;
+isset($this) or exit;
 
 /*
  * This file contains the default configuration for individual boards.
  *
  * Don't edit this file - the settings can be changed from the moderator panel.
- *
- * Context: inc/class.config.php
  */
 
 $this->config['allow_thread_textonly'] = array(
@@ -70,7 +68,7 @@ $this->config['max_kb'] = array(
 );
 
 $this->config['date_format'] = array(
-	// Note: this should correspond with the value in inc/schema.php
+	// Note: this should correspond with the value in schema.sql
 	'value' => 'YY/MM/DD(Dy)HH24:MI',
 	'type' => 'string',
 	'description' => 'The date format to use for posts, as a PostgreSQL "to_char" template string.',

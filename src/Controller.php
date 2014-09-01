@@ -44,13 +44,6 @@ abstract class Controller {
         // bad things could happen without this
         ignore_user_abort(true);
 
-        // TODO
-        define('TINYIB', null);
-        define('TINYIB_ROOT', $this->app['path.root']);
-
-        // TODO
-        require($this->app['path.root'].'/inc/functions.php');
-
         date_default_timezone_set($this->app['timezone']);
     }
 }

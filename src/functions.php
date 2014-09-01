@@ -115,7 +115,7 @@ function get_js() {
 	// of throwing exceptions
 	ob_start();
 
-	$fh = fopen(TINYIB_ROOT."/$path", 'w');
+	$fh = fopen($app['path.root']."/$path", 'w');
 
 	if (!$fh) {
 		ob_end_clean();
@@ -124,7 +124,7 @@ function get_js() {
 
 	foreach ($app['js.includes'] as $filename) {
 		if (strpos($filename, '/') !== 0 && !strpos($filename, '://'))
-			$filename = TINYIB_ROOT.'/static/js/'.$filename;
+			$filename = $app['path.root'].'/static/js/'.$filename;
 
 		$js = file_get_contents($filename);
 

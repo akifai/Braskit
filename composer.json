@@ -16,11 +16,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Braskit\\": "inc/class/"
+            "Braskit\\": "src/"
         },
+        "files": [
+            "src/functions.php"
+        ],
         "classmap": [
-            "inc/lib/lessc-fixed/lessc.php",
-            "inc/lib/jsminplus/jsminplus.php"
+            "lib/lessc-fixed/lessc.php",
+            "lib/jsminplus/jsminplus.php"
         ]
     }
 }

@@ -20,7 +20,7 @@ class Start extends View {
     }
 
     protected function post($app) {
-        require('inc/config_template.php');
+        require $app['path.root'].'/config/config_template.php';
 
         $param = $app['param'];
 
