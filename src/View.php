@@ -33,11 +33,7 @@ abstract class View {
 
         $request = $app['request'];
 
-        if (!$request->method) {
-            throw new \LogicException('View executed outside of HTTP context.');
-        }
-
-        $verb = $request->method === 'POST' ? 'post' : 'get';
+        $verb = $request->getRealMethod() === 'POST' ? 'post' : 'get';
         $method = array($this, $verb);
 
         if (!is_callable($method)) {

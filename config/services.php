@@ -191,7 +191,8 @@ $app['param'] = $app->factory(function () use ($app) {
 });
 
 $app['request'] = function () use ($app) {
-    return new Braskit\Request();
+    // this will be removed from the service container eventually
+    return Symfony\Component\HttpFoundation\Request::createFromGlobals();
 };
 
 $app['session'] = function () use ($app) {

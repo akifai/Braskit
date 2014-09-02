@@ -7,10 +7,12 @@
 
 namespace Braskit;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 /*
  * Usage:
  *
- *   $upload = $request->getUpload('file');
+ *   $upload = $request->files->get('file');
  *
  *   // Throws an exception if the upload exists but is not valid.
  *   $file = new File($upload, "/path/to/file/directory");
@@ -46,6 +48,8 @@ class File extends FileMetaData {
     protected $tmp;
     protected $t_tmp;
 
+    protected $upload;
+
     // extension of thumbnail
     public $t_ext;
 
@@ -61,16 +65,15 @@ class File extends FileMetaData {
      * @todo
      */
     public function __construct($upload, $dest) {
-        if (!is_array($upload)) {
+        $this->upload = $upload;
+
+        if (!($upload instanceof UploadedFile) || !$upload->isValid()) {
             $this->exists = false;
             return;
         }
 
         // store arguments as properties
         $this->dest = $dest;
-
-        // for convenience
-        $this->tmp = $upload['tmp_name'];
 
         // analyses the file, sets the file type, etc
         $this->analyse();
@@ -81,11 +84,11 @@ class File extends FileMetaData {
 
         $this->width = $this->driver->width;
         $this->height = $this->driver->height;
-        $this->size = $upload['size'];
+        $this->size = $upload->getSize();
         $this->prettysize = make_size($this->size);
-        $this->origname = basename($upload['name']);
+        $this->origname = $upload->getClientOriginalName();
         $this->shortname = shorten_filename($this->origname);
-        $this->md5 = md5_file($upload['tmp_name']);
+        $this->md5 = md5_file($upload->getPathname());
     }
 
     /**
@@ -103,28 +106,27 @@ class File extends FileMetaData {
      * Move the temporary files to their correct destinations.
      * @todo
      */
-    public function move($keep_filename = false /* TODO */) {
+    public function move() {
         if (!$this->exists) {
             // nothing to do
             return; 
         }
 
-        $dest = $this->dest.'/'.$this->filename;
-
         // Move full image
-        move_uploaded_file($this->tmp, $dest);
+        $file = $this->upload->move($this->dest, $this->filename);
 
-        chmod($this->dest.'/'.$this->filename, 0664);
+        chmod($file->getPathname(), 0666 & ~umask());
 
-        if (!$this->t_tmp)
+        if (!$this->t_tmp) {
             return;
+        }
 
         $t_dest = $this->t_dest.'/'.$this->t_filename;
 
         // move thumbnail
         rename($this->t_tmp, $t_dest);
 
-        chmod($t_dest, 0664);
+        chmod($t_dest, 0666 & ~umask());
     }
 
     /**
@@ -169,7 +171,7 @@ class File extends FileMetaData {
      */
     protected function analyse() {
         foreach ($this->detectors as $detector) {
-            $obj = call_user_func($detector, $this->tmp);
+            $obj = call_user_func($detector, $this->upload->getPathname());
 
             if ($obj && in_array($obj->ext, $this->filetypes)) {
                 $this->driver = $obj;

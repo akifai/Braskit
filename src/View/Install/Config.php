@@ -20,8 +20,8 @@ class Config extends View {
         $session_name = $app['session']->getName();
         $session_id = $app['session']->getID();
 
-        $protocol = $app['request']->getProtocol();
-        $hostname = $app['request']->getHostName();
+        $protocol = $app['request']->getScheme();
+        $hostname = $app['request']->getHost();
         $baseurl = $protocol.'://'.$hostname;
 
         $config_path = expand_path('get_config', array(

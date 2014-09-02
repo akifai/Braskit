@@ -22,8 +22,8 @@ class Download extends View {
             );
 
             printf("Go to %s://%s%s to start the installation.\n",
-                $app['request']->getProtocol(),
-                $app['request']->getHostName(),
+                $app['request']->getScheme(),
+                $app['request']->getHost(),
                 $app['request']->getScriptName()
             );
 

@@ -53,7 +53,7 @@ class Web extends Controller {
         $template = 'error.html';
 
         // used for return link
-        $referrer = $this->app['request']->referrer;
+        $referrer = $this->app['request']->headers->get('Referer');
 
         $message = $e->getMessage();
 
@@ -118,7 +118,8 @@ class Web extends Controller {
         // first part of the new buffer
         $newbuf = substr($buffer, 0, $ins);
 
-        $total_time = microtime(true) - $app['request']->microtime;
+        $request_time = $app['request']->server->get('REQUEST_TIME_FLOAT');
+        $total_time = microtime(true) - $request_time;
 
         // Append debug text
         $newbuf .= sprintf('<br>Page generated in %0.4f seconds.', $total_time);

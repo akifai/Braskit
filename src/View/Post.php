@@ -18,13 +18,13 @@ use Braskit\View;
 class Post extends View {
     protected function post($app, $boardname) {
         // get the ip
-        $ip = $app['request']->ip;
+        $ip = $app['request']->getClientIp();
 
         // get the time
-        $time = $app['request']->time;
+        $time = $app['request']->server->get('REQUEST_TIME');
 
         // get the referrer
-        $referrer = $app['request']->referrer;
+        $referrer = $app['request']->headers->get('Referer');
 
         // set default param flags; don't accept GET values
         $param = $app['param']->flags('post');
@@ -153,7 +153,8 @@ class Post extends View {
 
         // Do file uploads
         // TODO: check if uploads are allowed
-        $upload = $app['request']->getUpload('file');
+        // TODO: integrate file stuff into param class
+        $upload = $app['request']->files->get('file');
 
         $file = $board->handleUpload($upload);
 

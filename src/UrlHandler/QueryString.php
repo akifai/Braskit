@@ -7,8 +7,8 @@
 
 namespace Braskit\UrlHandler;
 
-use Braskit\Request;
 use Braskit\UrlHandler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * URL subclass for query string-based routing and URLs. Will work in any setup,
@@ -36,7 +36,7 @@ class QueryString extends UrlHandler {
     }
 
     protected function findUrl() {
-        $query = $this->request->getServerVar('QUERY_STRING');
+        $query = $this->request->server->get('QUERY_STRING');
 
         if (!strlen($query) || $query[0] !== '/') {
             // the query string is either invalid or not defined

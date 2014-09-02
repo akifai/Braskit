@@ -7,6 +7,8 @@
 
 namespace Braskit;
 
+use Symfony\Component\HttpFoundation\Request;
+
 class Param {
     const T_STRING = 1; // can be string
     const T_ARRAY = 2; // can be array
@@ -52,6 +54,9 @@ class Param {
         return $this;
     }
 
+    /**
+     * Fetch a request parameter.
+     */
     public function get($name, $flags = false) {
         if ($flags === false) {
             // use the currently set flags
@@ -75,16 +80,16 @@ class Param {
             $default = array();
         }
 
-        // find the parameter value in the request data
-        if (($flags & self::M_POST) && isset($request->post[$name])) {
+        // Find the parameter value in the request data.
+        if (($flags & self::M_POST) && $request->request->has($name)) {
             // POST values
-            $value = $request->post[$name];
-        } elseif (($flags & self::M_GET) && isset($request->get[$name])) {
+            $value = $request->request->get($name);
+        } elseif (($flags & self::M_GET) && $request->query->has($name)) {
             // GET values
-            $value = $request->get[$name];
-        } elseif (($flags & self::M_COOKIE) && isset($request->cookie[$name])) {
+            $value = $request->query->get($name);
+        } elseif (($flags & self::M_COOKIE) && $request->cookies->has($name)) {
             // COOKIE values
-            $value = $request->cookie[$name];
+            $value = $request->cookies->get($name);
         } else {
             // no parameter found
             return $default;

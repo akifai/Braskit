@@ -7,6 +7,8 @@
 
 namespace Braskit;
 
+use Symfony\Component\HttpFoundation\Request;
+
 abstract class UrlHandler {
     protected $request;
     protected $entryPoints = array();
