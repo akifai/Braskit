@@ -13,7 +13,8 @@
         "pimple/pimple": "v2.0.0",
         "leafo/lessphp": "v0.4.0",
         "ircmaxell/password-compat": "dev-master",
-        "symfony/http-foundation": "2.5.*@dev"
+        "symfony/http-foundation": "2.5.*@dev",
+        "symfony/http-kernel": "2.5.*@dev"
     },
     "autoload": {
         "psr-4": {

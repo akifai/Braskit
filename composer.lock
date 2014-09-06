@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "775beacffe0a6841df8a5726aae26512",
+    "hash": "048f7b8abfb106f73095b0006b0e67b5",
     "packages": [
         {
             "name": "ircmaxell/password-compat",
@@ -137,18 +137,168 @@
             "time": "2014-02-10 08:05:32"
         },
         {
+            "name": "psr/log",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Psr\\Log\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2012-12-21 11:40:51"
+        },
+        {
+            "name": "symfony/debug",
+            "version": "v2.5.4",
+            "target-dir": "Symfony/Component/Debug",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Debug.git",
+                "reference": "189da713c1f8bb03f9184eb87b43ecbc732284ac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Debug/zipball/189da713c1f8bb03f9184eb87b43ecbc732284ac",
+                "reference": "189da713c1f8bb03f9184eb87b43ecbc732284ac",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/http-foundation": "~2.1",
+                "symfony/http-kernel": "~2.1"
+            },
+            "suggest": {
+                "symfony/http-foundation": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Debug\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony Debug Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-07-09 09:05:48"
+        },
+        {
+            "name": "symfony/event-dispatcher",
+            "version": "v2.5.4",
+            "target-dir": "Symfony/Component/EventDispatcher",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/EventDispatcher.git",
+                "reference": "8faf5cc7e80fde74a650a36e60d32ce3c3e0457b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/8faf5cc7e80fde74a650a36e60d32ce3c3e0457b",
+                "reference": "8faf5cc7e80fde74a650a36e60d32ce3c3e0457b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/config": "~2.0",
+                "symfony/dependency-injection": "~2.0",
+                "symfony/stopwatch": "~2.2"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-07-28 13:20:46"
+        },
+        {
             "name": "symfony/http-foundation",
             "version": "2.5.x-dev",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "66996cff6d0de1168f99e460464cd3fb35c192f5"
+                "reference": "cec87359655f901a11de336576851d3957449947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/66996cff6d0de1168f99e460464cd3fb35c192f5",
-                "reference": "66996cff6d0de1168f99e460464cd3fb35c192f5",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/cec87359655f901a11de336576851d3957449947",
+                "reference": "cec87359655f901a11de336576851d3957449947",
                 "shasum": ""
             },
             "require": {
@@ -187,7 +337,78 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-18 09:01:49"
+            "time": "2014-09-03 09:00:14"
+        },
+        {
+            "name": "symfony/http-kernel",
+            "version": "2.5.x-dev",
+            "target-dir": "Symfony/Component/HttpKernel",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/HttpKernel.git",
+                "reference": "18bce9aefd7fb009bb21e6ec61d64d421e9d30df"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/18bce9aefd7fb009bb21e6ec61d64d421e9d30df",
+                "reference": "18bce9aefd7fb009bb21e6ec61d64d421e9d30df",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "psr/log": "~1.0",
+                "symfony/debug": "~2.5",
+                "symfony/event-dispatcher": "~2.5",
+                "symfony/http-foundation": "~2.5"
+            },
+            "require-dev": {
+                "symfony/browser-kit": "~2.2",
+                "symfony/class-loader": "~2.1",
+                "symfony/config": "~2.0",
+                "symfony/console": "~2.2",
+                "symfony/dependency-injection": "~2.0",
+                "symfony/finder": "~2.0",
+                "symfony/process": "~2.0",
+                "symfony/routing": "~2.2",
+                "symfony/stopwatch": "~2.2",
+                "symfony/templating": "~2.2"
+            },
+            "suggest": {
+                "symfony/browser-kit": "",
+                "symfony/class-loader": "",
+                "symfony/config": "",
+                "symfony/console": "",
+                "symfony/dependency-injection": "",
+                "symfony/finder": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\HttpKernel\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony HttpKernel Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-09-03 12:51:22"
         },
         {
             "name": "twig/twig",
@@ -252,7 +473,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "ircmaxell/password-compat": 20,
-        "symfony/http-foundation": 20
+        "symfony/http-foundation": 20,
+        "symfony/http-kernel": 20
     },
     "platform": {
         "php": ">=5.3.7"
