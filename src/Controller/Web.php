@@ -21,10 +21,6 @@ class Web extends Controller {
     const INSERT_STR = '<!--footer_insert-->';
 
     public function run() {
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-
         ob_start(array($this, 'obHandler'));
 
         $this->globalSetup();

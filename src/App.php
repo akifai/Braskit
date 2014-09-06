@@ -8,8 +8,11 @@
 namespace Braskit;
 
 use Pimple;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class App extends Pimple {
+class App extends Pimple implements HttpKernelInterface {
     public function __construct() {
         parent::__construct();
 
@@ -26,12 +29,50 @@ class App extends Pimple {
         return $this['url']->get();
     }
 
-    public function run() {
+    /**
+     * {@inheritdoc}
+     *
+     * @todo This is a giant hack, it'll be redone once our views actually use
+     *       the Response class from symfony.
+     */
+    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true) {
+        $defaultCode = http_response_code();
+        $defaultHeaders = headers_list();
+
+        header_remove();
+
+        ob_start();
+
         try {
             $this['controller']->run();
         } catch (\Exception $e) {
             $this['controller']->exceptionHandler($e);
         }
+
+        $headers = [];
+
+        foreach (headers_list() as $header) {
+            list($field, $value) = explode(':', $header);
+            $headers[trim($field)][] = trim($value);
+        }
+
+        $code = http_response_code();
+        http_response_code($defaultCode);
+
+        header_remove();
+
+        foreach ($defaultHeaders as $header) {
+            header($header);
+        }
+
+        $response = new Response(ob_get_clean(), $code, $headers);
+
+        return $response;
+    }
+
+    public function run() {
+        $response = $this->handle($this['request']);
+        $response->send();
     }
 
     /**
