@@ -643,29 +643,6 @@ class Board {
             $post->id
         );
     }
-
-    public function checkSpam($ip, $values) {
-        global $spam_files;
-
-        $spam = new Spam($spam_files);
-        $spam->do_autoban = $this->config->enable_autobans;
-
-        if (!$spam->arrayMatches($values))
-            return;
-
-        if (!$spam->no_ban) {
-            $ban = new BanCreate($ip);
-            $ban->setReason(sprintf(
-                $this->config->autoban_spam_message,
-                $spam->word
-            ));
-            $ban->setExpire($this->config->autoban_seconds);
-
-            $ban->add();
-        }
-
-        throw new Error('Spam detected.');
-    }
 }
 
 /* vim: set ts=4 sw=4 sts=4 et: */

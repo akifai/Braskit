@@ -72,8 +72,9 @@ class Post extends View {
             // check for bans
             Ban::check($ip);
 
-            // check spam
-            if ($board->config->check_spam) {
+            // check spam - disabled for now
+            #if ($board->config->check_spam) {
+            if (0) {
                 $values = array(&$name, &$email, &$subject, &$comment);
                 $board->checkSpam($ip, $values);
             }
