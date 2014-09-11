@@ -58,29 +58,6 @@ function expand_path($filename, $internal = false) {
 	return "$dirname/$filename";
 }
 
-/**
- * @deprecated
- */
-function expand_script_path($script, $dest, $vars = array()) {
-	global $app;
-
-	$dirname = $app['request']->getScriptName();
-
-	$url = "$dirname/$script?/$dest";
-
-	foreach ($vars as $key => $value)
-		$url .= '&'.urlencode($key).'='.urlencode($value);
-
-	return $url;
-}
-
-/**
- * @deprecated
- */
-function expand_api_path($path, $vars) {
-	return expand_script_path('ajax.php', $path, $vars);
-}
-
 function redirect($url) {
 	header(sprintf('Location: %s', $url), true, 303);
 
@@ -291,13 +268,14 @@ function writePage($filename, $contents) {
 	$fp = fopen($tempfile, 'w');
 	fwrite($fp, $contents);
 	fclose($fp);
+
 	/* If we aren't able to use the rename function, try the alternate method */
 	if (!@rename($tempfile, $filename)) {
 		copy($tempfile, $filename);
 		unlink($tempfile);
 	}
 
-	chmod($filename, 0664); /* it was created 0600 */
+	chmod($filename, 0666 & ~umask()); /* it was created 0600 */
 }
 
 function create_ban_message($post) {
