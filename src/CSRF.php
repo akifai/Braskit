@@ -8,6 +8,7 @@
 namespace Braskit;
 
 use Braskit\Error\CSRF as CSRFError;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class CSRF {
     const PARAM_KEY = 'csrf';
@@ -32,9 +33,9 @@ class CSRF {
         $success = $this->getToken() === $this->getTokenParam();
 
         if ($success) {
-            $this->oldToken = $this->session[self::SESSION_KEY];
+            $this->oldToken = $this->session->get(self::SESSION_KEY);
 
-            unset($this->session[self::SESSION_KEY]);
+            $this->session->remove(self::SESSION_KEY);
         } else {
             throw new CSRFError('Invalid CSRF token.');
         }
@@ -46,17 +47,17 @@ class CSRF {
      */
     public function rollback() {
         if ($this->oldToken) {
-            $this->session[self::SESSION_KEY] = $this->oldToken;
+            $this->session->set(self::SESSION_KEY, $this->oldToken);
             $this->oldToken = false;
         }
     }
 
     public function getToken() {
-        if (!$this->session[self::SESSION_KEY]) {
-            $this->session[self::SESSION_KEY] = random_string(48);
+        if (!$this->session->has(self::SESSION_KEY)) {
+            $this->session->set(self::SESSION_KEY, random_string(48));
         }
 
-        return $this->session[self::SESSION_KEY];
+        return $this->session->get(self::SESSION_KEY);
     }
 
     public function getParamName() {

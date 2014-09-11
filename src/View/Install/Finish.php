@@ -16,7 +16,7 @@ class Finish extends View {
     protected function get($app) {
         // we don't belong here yet
         if (!file_exists($app['path.root'].'/config.php')) {
-            if (!isset($app['session']['installer_secret'])) {
+            if (!$app['session']->has('installer_secret')) {
                 diverge('/');
             } else {
                 diverge('/config');
@@ -30,7 +30,7 @@ class Finish extends View {
 
         // this makes sure that the person who placed config.php in the
         // root dir is the same person finishing the install
-        if ($app['session']['installer_secret'] !== $app['secret']) {
+        if ($app['session']->get('installer_secret') !== $app['secret']) {
             throw new Error('Fuck off.');
         }
 
@@ -52,8 +52,8 @@ class Finish extends View {
         // create our user account
         $user = new Admin();
 
-        $u = $user->create($app['session']['installer_user']);
-        $u->setPassword($app['session']['installer_pass']);
+        $u = $user->create($app['session']->get('installer_user'));
+        $u->setPassword($app['session']->get('installer_pass'));
         $u->setLevel(9999);
         $u->commit();
 
@@ -61,7 +61,7 @@ class Finish extends View {
         $app['dbh']->commit();
 
         // and we're done! clear our session and redirect
-        $app['session']->clean();
+        $app['session']->clear();
 
         redirect('board.php?/login');
     }

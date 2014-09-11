@@ -11,7 +11,7 @@ use Braskit\View;
 
 class Start extends View {
     protected function get($app) {
-        if (isset($app['session']['install_config'])) {
+        if ($app['session']->has('install_config')) {
             diverge('/config');
             return;
         }
@@ -41,18 +41,18 @@ class Start extends View {
 
         // generate a secret key
         $vars['secret'] = random_string(60);
-        $app['session']['installer_secret'] = $vars['secret'];
+        $app['session']->set('installer_secret', $vars['secret']);
 
         // unique identifier
         $vars['unique'] = 'bs'.mt_rand(10, 99);
 
         // note: we use sessions to store the config because we don't want
         // other people to see the finished config!
-        $app['session']['install_config'] = @create_config($vars);
+        $app['session']->set('install_config', @create_config($vars));
 
         // we need these for the last step
-        $app['session']['installer_user'] = $vars['username'];
-        $app['session']['installer_pass'] = $vars['password'];
+        $app['session']->set('installer_user', $vars['username']);
+        $app['session']->set('installer_pass', $vars['password']);
 
         diverge('/config');
     }

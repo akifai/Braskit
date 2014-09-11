@@ -27,19 +27,19 @@ class Install extends Controller {
 
         $config = $this->app['path.root'].'/config.php';
 
-        if (file_exists($config) && !isset($app['session']['installer'])) {
+        if (file_exists($config) && !$app['session']->has('installer')) {
             header('HTTP/1.1 403 Forbidden');
 
             echo 'Braskit is already installed. ',
                 'To re-run the installer, move or delete config.php.';
 
-            exit;
+            return;
         }
 
         // let us download the session-stored config without using cookies
-        ini_set('session.use_only_cookies', false);
+        $app['session']->setOptions(['use_only_cookies' => false]);
 
-        $app['session']['installer'] = true;
+        $app['session']->set('installer', true);
 
         header(self::CONTENT_TYPE);
 

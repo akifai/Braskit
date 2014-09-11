@@ -11,9 +11,7 @@ use Braskit\View;
 
 class Logout extends View {
     protected function get($app) {
-        if (isset($app['session']['login'])) {
-            unset($app['session']['login']);
-        }
+        $app['session']->remove('login');
 
         diverge('/login');
     }

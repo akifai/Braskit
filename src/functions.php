@@ -336,8 +336,8 @@ function get_session_login() {
 
 	$session = $app['session'];
 
-	if (isset($session['login']) && $session['login'] !== false) {
-		return unserialize($session['login']);
+	if ($session->has('login') && ($login = $session->get('login')) !== false) {
+		return unserialize($login);
 	}
 
 	return false;

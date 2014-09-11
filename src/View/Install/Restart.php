@@ -11,7 +11,7 @@ use Braskit\View;
 
 class Restart extends View {
     protected function get($app) {
-        unset($app['session']['install_config']);
+        $app['session']->remove('install_config');
 
         diverge('/');
     }

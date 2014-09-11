@@ -11,14 +11,14 @@ use Braskit\View;
 
 class Config extends View {
     protected function get($app) {
-        if (!isset($app['session']['install_config'])) {
+        if (!$app['session']->has('install_config')) {
             // we haven't even begun
             diverge('/');
             exit;
         }
 
         $session_name = $app['session']->getName();
-        $session_id = $app['session']->getID();
+        $session_id = $app['session']->getId();
 
         $protocol = $app['request']->getScheme();
         $hostname = $app['request']->getHost();
@@ -29,7 +29,7 @@ class Config extends View {
         ));
 
         return $this->render('install_config.html', array(
-            'config' => $app['session']['install_config'],
+            'config' => $app['session']->get('install_config'),
             'config_path' => $config_path,
             'config_url' => $baseurl.$config_path,
             'session_name' => $session_name,

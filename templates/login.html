@@ -10,9 +10,9 @@
       <input type="hidden" name="goto" value="{{ goto }}">
     {% endif %}
 
-    {% if error %}
-      <p class="notice-text">{{ error }}</p>
-    {% endif %}
+    {% for err in error %}
+      <p class="notice-text">{{ err }}</p>
+    {% endfor %}
 
     <table class="form-table">
       <tbody>

@@ -11,7 +11,7 @@ use Braskit\View;
 
 class Download extends View {
     protected function get($app) {
-        if (!isset($app['session']['install_config'])) {
+        if (!$app['session']->has('install_config')) {
             // No config stored
             header('HTTP/1.1 404 Not Found');
 
@@ -32,7 +32,7 @@ class Download extends View {
 
         // offer the config as a download
         header('Content-Disposition: attachment; filename=config.php');
-        echo $app['session']['install_config'];
+        echo $app['session']->get('install_config');
     }
 }
 

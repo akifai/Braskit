@@ -27,11 +27,8 @@ class Login extends View {
             return;
         }
 
-        // get the login error, if any
-        if (isset($app['session']['login_error'])) {
-            $error = $app['session']['login_error'];
-            unset($app['session']['login_error']);
-        }
+        // get login errors, if any
+        $error = $app['session']->getFlashBag()->get('login-error');
 
         $goto = $app['param']->get('goto');
 
@@ -42,6 +39,8 @@ class Login extends View {
     }
 
     protected function post($app) {
+        $session = $app['session'];
+
         $param = $app['param']->flags('post');
 
         $username = $param->get('login_user');
@@ -52,14 +51,14 @@ class Login extends View {
             $user = new UserLogin($username, $password);
 
             // this keeps us logged in
-            $app['session']['login'] = serialize($user);
+            $session->set('login', serialize($user));
 
             $loggedin = true;
         } catch (Error $e) {
             $loggedin = false;
 
             // store the error message we display after the redirect
-            $app['session']['login_error'] = $e->getMessage();
+            $session->getFlashBag()->set('login-error', $e->getMessage());
         }
 
         if ($loggedin) {
