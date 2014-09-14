@@ -31,17 +31,6 @@ function get_ids($board) {
 	return $posts;
 }
 
-function diverge($dest, $args = array()) {
-	global $app;
-
-	// missing slash
-	if (substr($dest, 0, 1) !== '/') {
-		$dest = "/$goto";
-	}
-
-	redirect($app['url']->create($dest, $args));
-}
-
 /**
  * @deprecated
  */
@@ -56,12 +45,6 @@ function expand_path($filename, $internal = false) {
 	$dirname = preg_replace('!/[^/]*$!', '', $app['request']->getScriptName());
 
 	return "$dirname/$filename";
-}
-
-function redirect($url) {
-	header(sprintf('Location: %s', $url), true, 303);
-
-	echo '<html><body><a href="'.$url.'">'.$url.'</a></body></html>';
 }
 
 /**
@@ -309,7 +292,7 @@ function create_ban_message($post) {
  *
  * @deprecated
  */
-function do_login($url = false) {
+function do_login(Braskit\App $app = null) {
 	try {
 		$user = get_session_login();
 	} catch (Error $e) {
@@ -320,9 +303,13 @@ function do_login($url = false) {
 		return $user;
 	}
 
-	if ($url !== false) {
-		diverge('/login', array('goto' => urlencode($url)));
-		exit;
+	if ($app !== null) {
+        $dest = $app['url']->create('/login', ['goto' => (string)$app]);
+
+        // shitty hack
+        header("HTTP/1.1 303 See Other");
+        header("Location: $dest");
+        exit;
 	}
 
 	return false;
@@ -341,18 +328,4 @@ function get_session_login() {
 	}
 
 	return false;
-}
-
-/**
- * @deprecated
- */
-function redirect_after_login($goto = false) {
-	if ($goto) {
-		$goto = urldecode($goto);
-
-		diverge($goto);
-		return;
-	}
-
-	diverge("/manage");
 }

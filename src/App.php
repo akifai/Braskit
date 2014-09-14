@@ -31,41 +31,13 @@ class App extends Pimple implements HttpKernelInterface {
 
     /**
      * {@inheritdoc}
-     *
-     * @todo This is a giant hack, it'll be redone once our views actually use
-     *       the Response class from symfony.
      */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true) {
-        $defaultCode = http_response_code();
-        $defaultHeaders = headers_list();
-
-        header_remove();
-
-        ob_start();
-
         try {
-            $this['controller']->run();
+            $response = $this['controller']->run();
         } catch (\Exception $e) {
-            $this['controller']->exceptionHandler($e);
+            $response = $this['controller']->exceptionHandler($e);
         }
-
-        $headers = [];
-
-        foreach (headers_list() as $header) {
-            list($field, $value) = explode(':', $header);
-            $headers[trim($field)][] = trim($value);
-        }
-
-        $code = http_response_code();
-        http_response_code($defaultCode);
-
-        header_remove();
-
-        foreach ($defaultHeaders as $header) {
-            header($header);
-        }
-
-        $response = new Response(ob_get_clean(), $code, $headers);
 
         return $response;
     }

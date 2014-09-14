@@ -31,7 +31,7 @@ class Reports extends View {
             $app['db']->dismissReports($dismiss);
         }
 
-        diverge('/reports');
+        return $this->diverge('/reports');
     }
 }
 

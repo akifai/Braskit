@@ -71,7 +71,7 @@ class Users extends View {
 
         $target->commit();
 
-        diverge('/users');
+        return $this->diverge('/users');
     }
 }
 

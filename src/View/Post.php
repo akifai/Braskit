@@ -229,11 +229,11 @@ class Post extends View {
 
         if ($board->config->auto_noko) {
             // redirect to thread
-            redirect($board->path($dest));
-        } else {
-            // redirect to board index
-            redirect($board->path(""));
+            return $this->redirect($board->path($dest));
         }
+
+        // redirect to board index
+        return $this->redirect($board->path(""));
     }
 }
 

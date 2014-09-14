@@ -23,8 +23,7 @@ class Login extends View {
         }
 
         if ($user) {
-            redirect_after_login();
-            return;
+            return $this->diverge('/manage');
         }
 
         // get login errors, if any
@@ -62,13 +61,12 @@ class Login extends View {
         }
 
         if ($loggedin) {
-            $goto = $param->get('goto', 'default');
-            redirect_after_login($goto);
+            $goto = urldecode($param->get('goto', 'default')) ?: '/manage';
 
-            exit;
+            return $this->diverge($goto);
         }
 
-        diverge('/login');
+        return $this->diverge('/login');
     }
 }
 

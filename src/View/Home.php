@@ -11,7 +11,7 @@ use Braskit\View;
 
 class Home extends View {
     protected function get() {
-        diverge('/login');
+        return $this->diverge('/login');
     }
 }
 

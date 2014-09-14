@@ -24,7 +24,7 @@ class BoardCreate extends View {
         $board = new Board($boardname, false);
         $board->create($title);
 
-        diverge('/manage');
+        return $this->diverge('/manage');
     }
 }
 

@@ -13,7 +13,7 @@ class Restart extends View {
     protected function get($app) {
         $app['session']->remove('install_config');
 
-        diverge('/');
+        return $this->diverge('/');
     }
 }
 

@@ -12,8 +12,7 @@ use Braskit\View;
 class Start extends View {
     protected function get($app) {
         if ($app['session']->has('install_config')) {
-            diverge('/config');
-            return;
+            return $this->diverge('/config');
         }
 
         return $this->render('install.html');
@@ -54,7 +53,7 @@ class Start extends View {
         $app['session']->set('installer_user', $vars['username']);
         $app['session']->set('installer_pass', $vars['password']);
 
-        diverge('/config');
+        return $this->diverge('/config');
     }
 }
 

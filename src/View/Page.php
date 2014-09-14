@@ -25,17 +25,16 @@ class Page extends View {
 
         if ($page && !count($threads)) {
             // no threads on this page, redirect to page 0
-            redirect($board->path('', true));
-            return;
+            return $this->redirect($board->path('', true));
         }
 
-        return $board->render('page.html', array(
+        return $this->response->setContent($board->render('page.html', array(
             'admin' => true,
             'board' => $board,
             'maxpage' => $maxpage,
             'pagenum' => $page,
             'threads' => $threads,
-        ));
+        )));
     }
 }
 

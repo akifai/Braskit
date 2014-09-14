@@ -20,16 +20,15 @@ class Thread extends View {
 
         if (!$posts) {
             // thread doesn't exist
-            diverge("/{$board}/index.html");
-            return;
+            return $this->diverge("/{$board}/index.html");
         }
 
-        return $board->render('thread.html', array(
+        return $this->response->setContent($board->render('thread.html', array(
             'admin' => true,
             'board' => $board,
             'posts' => $posts,
             'thread' => $id,
-        ));
+        )));
     }
 }
 

@@ -20,7 +20,7 @@ class Rebuild extends View {
 
         $board->rebuildAll();
 
-        redirect($board->path('index.html'));
+        return $this->redirect($board->path('index.html'));
     }
 }
 

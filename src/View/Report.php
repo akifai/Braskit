@@ -23,9 +23,7 @@ class Report extends View {
         $posts = get_ids($board);
 
         if (!$posts) {
-            redirect($board->path(''));
-
-            return;
+            return $this->redirect($board->path(''));
         }
 
         return $this->render('report.html', array(
@@ -63,7 +61,7 @@ class Report extends View {
         $board->report($posts, $ip, $reason);
 
         // TODO: Confirmation message
-        redirect($board->path(''));
+        return $this->redirect($board->path(''));
     }
 }
 

@@ -17,12 +17,10 @@ class Finish extends View {
         // we don't belong here yet
         if (!file_exists($app['path.root'].'/config.php')) {
             if (!$app['session']->has('installer_secret')) {
-                diverge('/');
-            } else {
-                diverge('/config');
+                return $this->diverge('/');
             }
 
-            return;
+            return $this->diverge('/config');
         }
 
         // load config
@@ -63,7 +61,7 @@ class Finish extends View {
         // and we're done! clear our session and redirect
         $app['session']->clear();
 
-        redirect('board.php?/login');
+        return $this->redirect('board.php?/login');
     }
 }
 

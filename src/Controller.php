@@ -20,13 +20,16 @@ abstract class Controller {
         };
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     abstract public function run();
 
     /**
      * Exception handler.
      *
      * @param Exception $e
-     * @return void
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     abstract public function exceptionHandler(\Exception $e);
 

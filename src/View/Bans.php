@@ -58,7 +58,7 @@ class Bans extends View {
             Ban::delete($id);
         }
 
-        diverge('/bans');
+        return $this->diverge('/bans');
     }
 }
 

@@ -36,8 +36,7 @@ class Delete extends View {
         // the deletion form is also used for reporting
         if (trim(strtolower($task)) === 'report') {
             // redirect to the report form
-            redirect($board->path('report', array('id' => $ids)));
-            return;
+            return $this->redirect($board->path('report', ['id' => $ids]));
         }
 
         if ($is_admin) {
@@ -64,11 +63,9 @@ class Delete extends View {
 
         // Nothing to do
         if (!$ids && $nexttask) {
-            diverge($nexttask);
-            return;
+            return $this->diverge($nexttask);
         } elseif (!$ids) {
-            redirect($board->path('index.html'));
-            return;
+            return $this->redirect($board->path('index.html'));
         }
 
         $deleted_posts = array();
@@ -120,11 +117,10 @@ class Delete extends View {
         }
 
         if ($nexttask) {
-            diverge($nexttask);
-            return;
+            return $this->diverge($nexttask);
         }
 
-        redirect($board->path('index.html', (bool)$user));
+        return $this->redirect($board->path('index.html', (bool)$user));
     }
 }
 

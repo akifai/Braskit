@@ -48,7 +48,7 @@ class BoardEdit extends View {
             $board->rebuildAll();
 
         // the board might have changes names
-        redirect($board->path('edit', true));
+        return $this->redirect($board->path('edit', true));
     }
 }
 

@@ -13,7 +13,7 @@ class Logout extends View {
     protected function get($app) {
         $app['session']->remove('login');
 
-        diverge('/login');
+        return $this->diverge('/login');
     }
 }
 

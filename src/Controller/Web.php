@@ -12,6 +12,7 @@ use Braskit\Error;
 use Braskit\Error\CSRF as CSRFError;
 use Braskit\Parser;
 use Braskit\Router\Main as Router;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller for board.php
@@ -21,24 +22,19 @@ class Web extends Controller {
     const INSERT_STR = '<!--footer_insert-->';
 
     public function run() {
-        ob_start(array($this, 'obHandler'));
-
         $this->globalSetup();
 
         $hasConfig = $this->app->loadConfig();
 
         if (!$hasConfig) {
-            // redirect to installer
-            redirect('install.php');
-
-            return;
+            return new Response(
+                '<html><body><a href="install.php">Click me</a></body></html>',
+                303,
+                ['Location' => 'install.php']
+            );
         }
 
-        header(self::CONTENT_TYPE);
-
-        echo $this->app['view']->responseBody;
-
-        ob_end_flush();
+        return $this->app['view']->response;
     }
 
     public function getRouter() {
@@ -46,6 +42,8 @@ class Web extends Controller {
     }
 
     public function exceptionHandler(\Exception $e) {
+        $response = new Response();
+
         $template = 'error.html';
 
         // used for return link
@@ -76,22 +74,28 @@ class Web extends Controller {
 
         try {
             // Error messages using Twig
-            echo $this->app['template']->render($template, array(
+            $response->setContent($this->app['template']->render($template, [
                 'exception' => $e,
                 'message' => $message,
                 'referrer' => $referrer,
-            ));
+            ]));
         } catch (\Exception $e) {
             // Twig failed, rip
-            header('Content-Type: text/plain; charset=UTF-8');
+            $response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
 
-            echo "[Braskit] Fatal exception/template error.\n\n";
-            echo $e->getMessage();
+            $response->setContent(
+                "[Braskit] Fatal exception/template error.\n\n".
+                $e->getMessage()
+            );
         }
+
+        return $response;
     }
 
     /**
      * Output buffer handler that inserts the page generation time.
+     *
+     * @todo Turn into middleware.
      *
      * @return string
      */

@@ -13,8 +13,7 @@ class Config extends View {
     protected function get($app) {
         if (!$app['session']->has('install_config')) {
             // we haven't even begun
-            diverge('/');
-            exit;
+            return $this->diverge('/');
         }
 
         $session_name = $app['session']->getName();

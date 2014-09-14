@@ -71,7 +71,7 @@ class Config extends View {
         if ($values || $reset)
             $instance->save();
 
-        diverge($app);
+        return $this->diverge($app);
     }
 }
 

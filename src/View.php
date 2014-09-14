@@ -7,6 +7,8 @@
 
 namespace Braskit;
 
+use Symfony\Component\HttpFoundation\Response;
+
 abstract class View {
     /**
      * App instance
@@ -16,10 +18,9 @@ abstract class View {
     /**
      * The response body.
      *
-     * @var string
-     * @todo
+     * @var Response 
      */
-    public $responseBody = '';
+    public $response;
 
     /**
      * Template vars
@@ -32,6 +33,7 @@ abstract class View {
         $this->app = $app;
 
         $request = $app['request'];
+        $this->response = new Response();
 
         $verb = $request->getRealMethod() === 'POST' ? 'post' : 'get';
         $method = array($this, $verb);
@@ -45,7 +47,7 @@ abstract class View {
         // set the first argument to $app
         array_unshift($args, $app);
 
-        $this->responseBody = call_user_func_array($method, $args);
+        $this->response = call_user_func_array($method, $args);
     }
 
     protected function csrfScreen() {
@@ -71,20 +73,54 @@ abstract class View {
     }
 
     /**
+     * Redirect to any URL.
+     */
+    protected function redirect($url) {
+        $this->response->setStatusCode(303);
+        $this->response->headers->set('Location', $url);
+
+        $htmlURL = htmlspecialchars($url, ENT_QUOTES);
+
+        $this->response->setContent(
+            '<html><body>'.
+                "<a href=\"$htmlURL\">$htmlURL</a>".
+            '</body></html>'
+        );
+
+        return $this->response;
+    }
+
+    /**
+     * Redirect to another route.
+     */
+    protected function diverge($dest, array $args = []) {
+        if (substr($dest, 0, 1) !== '/') {
+            // missing slash
+            $dest = "/$dest";
+        }
+
+        $url = $this->app['url']->create($dest, $args);
+
+        return $this->redirect($url);
+    }
+
+    /**
      * Renders a template. Any similarly named variables passed to the
      * template in this method will override those set with $this->setVar().
      *
      * @param string $template Template filename.
      * @param array $args Template variables.
      *
-     * @return string Rendered template.
+     * @return Response
      */
-    protected function render($tpl, $args = array()) {
+    protected function render($tpl, $args = []) {
         $template = $this->app['template'];
 
         $params = array_merge($this->templateVars, $args);
 
-        return $template->render($tpl, $params);
+        $this->response->setContent($template->render($tpl, $params));
+
+        return $this->response;
     }
 }
 
