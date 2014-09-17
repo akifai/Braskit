@@ -1,0 +1,42 @@
+{% extends _base %}
+{% set title = "Board management" %}
+
+{% block content %}
+  <div class="group-container">
+    {% include "includes/board_form.html" with {
+      "path": path("boards", true),
+      "title": "Create board",
+      "submit_button": "Create Board"
+    } %}
+  </div>
+
+  <hr>
+
+  <div class="block-form">
+    {% if boards %}
+        <table class="list-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Level</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for board in boards %}
+              <tr>
+                <td><strong><a href="{{ board.path("", true) }}">/{{ board }}/</a></strong></td>
+                <td>{{ board.title }}</td>
+                <td>{{ board.level ?: "–" }}</td>
+                <td><a href="{{ board.path("edit", true) }}">Edit</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+      <p>No boards have been created. That makes me a sad panda.</p>
+    {% endif %}
+  </div>
+{% endblock %}

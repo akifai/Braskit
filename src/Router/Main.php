@@ -41,13 +41,12 @@ class Main extends Router {
 
             // Mod global actions
             '/bans' => 'Bans',
+            '/boards' => 'BoardsView',
             '/config' => 'Config',
             '/login' => 'Login',
             '/logout' => 'Logout',
             '/manage' => 'Manage',
             '/reports' => 'Reports',
-
-            '/create_board' => 'BoardCreate',
             '/users(?:/(\w+))?' => 'Users',
         );
     }
