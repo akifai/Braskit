@@ -22,8 +22,6 @@ class Web extends Controller {
     const INSERT_STR = '<!--footer_insert-->';
 
     public function run() {
-        $this->globalSetup();
-
         $hasConfig = $this->app->loadConfig();
 
         if (!$hasConfig) {

@@ -39,16 +39,6 @@ abstract class Controller {
      * @return Router
      */
     abstract protected function getRouter();
-
-    /**
-     * Do stuff that messes with PHP's global state.
-     */
-    protected function globalSetup() {
-        // bad things could happen without this
-        ignore_user_abort(true);
-
-        date_default_timezone_set($this->app['timezone']);
-    }
 }
 
 /* vim: set ts=4 sw=4 sts=4 et: */

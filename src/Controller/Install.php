@@ -23,8 +23,6 @@ class Install extends Controller {
 
         $app = $this->app;
 
-        $this->globalSetup();
-
         $config = $this->app['path.root'].'/config.php';
 
         if (file_exists($config) && !$app['session']->has('installer')) {

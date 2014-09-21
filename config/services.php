@@ -62,8 +62,6 @@ $app['thumb.quality'] = 75;
 
 $app['thumb.convert_path'] = 'convert';
 
-$app['timezone'] = 'UTC';
-
 $app['unique'] = 'bs';
 
 
