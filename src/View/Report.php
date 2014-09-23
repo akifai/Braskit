@@ -44,7 +44,7 @@ class Report extends View {
         $ip = $app['request']->getClientIp();
 
         // We don't want banned users reporting.
-        Ban::check($ip, time());
+        $app['ban']->check($ip);
 
         // prevent flooding the reports
         if ($config->seconds_between_reports) {

@@ -8,7 +8,6 @@
 namespace Braskit\View;
 
 use Braskit\Ban;
-use Braskit\BanCreate;
 use Braskit\View;
 
 class Bans extends View {
@@ -16,7 +15,7 @@ class Bans extends View {
         $user = do_login($app);
 
         // TODO: Pagination
-        $bans = $app['db']->allBans();
+        $bans = $app['ban']->getAll();
 
         $ip = $app['param']->get('ip');
 
@@ -40,11 +39,11 @@ class Bans extends View {
         $ip = $param->get('ip');
 
         if ($ip) {
-            $ban = new BanCreate($ip);
+            $ban = Ban::create($ip);
             $ban->setReason($reason);
             $ban->setExpire($expire);
 
-            $ban->add();
+            $app['ban']->add($ban);
         }
 
         // lifting bans
@@ -55,7 +54,7 @@ class Bans extends View {
         }
 
         foreach ($lifts as $id) {
-            Ban::delete($id);
+            $app['ban']->delete($id);
         }
 
         return $this->diverge('/bans');

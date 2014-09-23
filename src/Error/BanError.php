@@ -7,9 +7,10 @@
 
 namespace Braskit\Error;
 
+use Braskit\Ban;
 use Braskit\Error;
 
-class Ban extends Error implements \Iterator {
+class BanError extends Error implements \Iterator {
     public $ip = null;
     protected $bans = array();
     protected $pos = 0;

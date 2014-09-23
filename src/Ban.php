@@ -7,8 +7,6 @@
 
 namespace Braskit;
 
-use Braskit\Error\Ban as BanError;
-
 class Ban {
     public $id = null;
     public $ip = null;
@@ -20,49 +18,62 @@ class Ban {
     public $expire = null;
     public $reason = '';
 
-    public $board;
-    public $post;
-
-    public static function getByID($id) {
-        global $app;
-
-        return $app['db']->banByID($id);
-    }
-
     /**
-     * Check if an IP is banned.
-     *
-     * @throws BanException if the IP is banned
+     * Shortcut method for quickly creating a new ban object.
      */
-    public static function check($ip, $time = false) {
-        global $app;
+    public static function create($ip, $time = null) {
+        $ban = new static();
 
-        if ($time === false)
-            $time = time();
+        $ban->timestamp = is_int($time) ? $time : time();
+        $ban->ip = $ip;
 
-        $bans = $app['db']->activeBansByIP($ip, $time);
-
-        if (!$bans) {
-            // not banned
-            return;
+        if ($ban->ip === '') {
+            throw new Error('No IP entered.');
         }
 
-        $e = new BanError("Host is banned ($ip)");
-        $e->setBans($bans);
-        $e->ip = $ip;
-
-        throw $e;
+        return $ban;
     }
 
-    /**
-     * Deletes a ban by its ID.
-     *
-     * @returns boolean Whether or not a ban was removed.
-     */
-    public static function delete($id) {
-        global $app;
+    /// @todo Unused
+    public function setBoard(Board $board) {
+        $this->board = $board;
+    }
 
-        return $app['db']->deleteBanByID($id);
+    /// @todo Unused
+    public function setPost(Post $post) {
+        $this->post = $post;
+
+        if ($post->board instanceof Board) {
+            // we already have a board object
+            $this->setBoard($post->board);
+        } elseif (strlen($post->board)) {
+            try {
+                // create a new board object
+                $board = new Board($post->board, false, false);
+
+                $this->setBoard($board);
+            } catch (\PDOException $e) {
+                // database error
+                throw $e;
+            } catch (\LogicException $e) {
+                // programmatic error
+                throw $e;
+            }
+            // ignore any other kinds of error
+        }
+    }
+
+    public function setReason($reason) {
+        $this->reason = trim($reason);
+    }
+
+    public function setExpire($expire) {
+        if ($expire && ctype_digit($expire)) {
+            // expiry time + request time = when the ban expires
+            $expire += time();
+
+            $this->expire = $expire;
+        }
     }
 }
 

@@ -70,7 +70,7 @@ class Post extends View {
 
         if (!$user) {
             // check for bans
-            Ban::check($ip);
+            $app['ban']->check($ip);
 
             // check spam - disabled for now
             #if ($board->config->check_spam) {

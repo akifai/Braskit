@@ -143,6 +143,10 @@ $app['path.tmp'] = function () {
 // Default services
 //
 
+$app['ban'] = function () use ($app) {
+    return new Braskit\BanService($app['db']);
+};
+
 $app['cache'] = function () use ($app) {
     if ($app['cache.debug']) {
         return new Braskit\Cache\Debug();
