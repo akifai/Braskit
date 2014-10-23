@@ -563,13 +563,13 @@ class Database {
     }
 
     public function modifyUser(User $user) {
-        $sth = $this->dbh->prepare("UPDATE {$this->prefix}users SET username = :newusername, password = :password, level = :level, email = :email, capcode = :capcode WHERE username = :username");
-        $sth->bindParam(':newusername', $user->newUsername, PDO::PARAM_STR);
-        $sth->bindParam(':password', $user->password, PDO::PARAM_STR);
-        $sth->bindParam(':level', $user->level, PDO::PARAM_INT);
-        $sth->bindParam(':email', $user->email, PDO::PARAM_STR);
-        $sth->bindParam(':capcode', $user->capcode, PDO::PARAM_STR);
-        $sth->bindParam(':username', $user->username, PDO::PARAM_STR);
+        $sth = $this->dbh->prepare("UPDATE {$this->prefix}users SET username = :username, password = :password, level = :level, email = :email, capcode = :capcode WHERE username = :id");
+        $sth->bindValue(':username', $user->username, PDO::PARAM_STR);
+        $sth->bindValue(':password', $user->password, PDO::PARAM_STR);
+        $sth->bindValue(':level', $user->level, PDO::PARAM_INT);
+        $sth->bindValue(':email', $user->email, PDO::PARAM_STR);
+        $sth->bindValue(':capcode', $user->capcode, PDO::PARAM_STR);
+        $sth->bindValue(':id', $user->getID(), PDO::PARAM_STR);
 
         $sth->execute();
     }

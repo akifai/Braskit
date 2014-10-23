@@ -12,7 +12,7 @@ use Braskit\View;
 
 class BoardEdit extends View {
     protected function get($app, $boardname) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);
 
@@ -23,7 +23,7 @@ class BoardEdit extends View {
     }
 
     protected function post($app, $boardname) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
 
@@ -51,5 +51,3 @@ class BoardEdit extends View {
         return $this->redirect($board->path('edit', true));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

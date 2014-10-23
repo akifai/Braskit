@@ -41,7 +41,7 @@ class Delete extends View {
 
         if ($is_admin) {
             $app['csrf']->check();
-            $user = do_login();
+            $user = $app['auth']->authenticate(); // TODO: redirect
 
             $password = null;
         } elseif ($password === '' || $password !== $cookie_pw) {
@@ -123,5 +123,3 @@ class Delete extends View {
         return $this->redirect($board->path('index.html', (bool)$user));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

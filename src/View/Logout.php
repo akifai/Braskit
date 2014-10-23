@@ -11,10 +11,8 @@ use Braskit\View;
 
 class Logout extends View {
     protected function get($app) {
-        $app['session']->remove('login');
+        $app['auth']->logout();
 
         return $this->diverge('/login');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

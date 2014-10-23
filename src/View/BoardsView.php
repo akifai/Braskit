@@ -12,7 +12,7 @@ use Braskit\View;
 
 class BoardsView extends View {
     protected function get($app) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $boards = [];
 
@@ -26,7 +26,7 @@ class BoardsView extends View {
     }
 
     protected function post($app) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
         $param = $app['param'];
@@ -40,5 +40,3 @@ class BoardsView extends View {
         return $this->diverge('/boards');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Rebuild extends View {
     protected function get($app, $boardname) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);
 
@@ -23,5 +23,3 @@ class Rebuild extends View {
         return $this->redirect($board->path('index.html'));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

@@ -7,65 +7,88 @@
 
 namespace Braskit;
 
-/*
- * Usage:
- *
- *   // Check login
- *   $user = new Braskit\User\Login($username, $password);
- *
- *   // Create user
- *   $newUser = $user->create("username");
- *   $newUser->setPassword("password");
- *   $newUser->setLevel(9999);
- *   $newUser->commit();
- *
- *   // Edit user
- *   $target = $user->edit("username");
- *   $target->setUsername("new_username");
- *   $target->setPassword("password");
- *   $target->setLevel(9999);
- *   $target->commit();
- *
- *   // Delete user
- *   $user->delete("username");
- *
- * TODO:
- *   - Check permissions for actions
- *   - Test everything properly
+use Braskit\User\UserCommitActionInterface;
+
+/**
+ * Representation of a user.
  */
-
 class User {
-    protected $changes = array();
+    /**
+     * @var string
+     */
+    public $username;
 
-    public $username = false;
-    public $password = false;
-    public $lastlogin = 0;
+    /**
+     * @var string
+     */
+    public $password;
+
+    /**
+     * @var null|int
+     */
+    public $lastlogin = null;
+
+    /**
+     * @var int
+     */
     public $level = 0;
+
+    /**
+     * @var string
+     */
     public $email = '';
+
+    /**
+     * @var string
+     */
     public $capcode = '';
 
+    /**
+     * Represents the current username in the database. This property is
+     * modified by setUsername() if the username changes.
+     *
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * An associative array where the array keys indicate which of the user's
+     * properties have changed.
+     *
+     * @var array
+     */
+    protected $changes = [];
+
+    /**
+     * @var UserCommitActionInterface
+     */
+    protected $commitAction;
+
+    /**
+     * @var User|null
+     */
+    protected $committer = null;
+
+    /**
+     * @deprecated
+     */
     public function __toString() {
         return $this->username;
     }
 
-    public function create($username) {
-        return new User\Create($username, $this->level);
-    }
 
-    public function edit($id) {
-        return new User\Edit($id, $this->level);
-    }
+    //
+    // Getters
+    //
 
-    public function delete($username) {
-        global $app;
-
-        if ($this->username === $username)
-            throw new Error('You cannot delete yourself.');
-
-        // TODO: Check if we have higher permissions than the user
-        // we're deleting.
-
-        $app['db']->deleteUser($username);
+    /**
+     * Retrieves the current database key for this user. Must be used in the
+     * WHERE clause when changing a username.
+     *
+     * @return string
+     */
+    public function getID() {
+        return is_null($this->id) ? $this->username : $this->id;
     }
 
 
@@ -73,143 +96,212 @@ class User {
     // Modifiers
     //
 
-    public function setEmail($email) {
-        if (!strlen($email) || $email === $this->email)
+    /**
+     * Sets a new username.
+     *
+     * @param string $username
+     *
+     * @return self
+     */
+    public function setUsername($username) {
+        if (!strlen($username) || $username === $this->username) {
             return;
+        }
 
-        if ($email && filter_var($email, FILTER_VALIDATE_EMAIL) === false)
-            throw new Error('Invalid email address.');
+        if (!preg_match('/^\w+$/', $username)) {
+            throw new Error('Invalid username.');
+        }
+
+        if ($this->id === null) {
+            // set the id to the old username
+            $this->id = $this->username;
+        }
+
+        $this->username = $username;
+
+        $this->changes['username'] = null;
+
+        return $this;
+    }
+
+    /*
+     * Sets a new email address.
+     *
+     * @param string $email
+     *
+     * @return self
+     */
+    public function setEmail($email) {
+        if ($email === $this->email) {
+            return;
+        }
+
+        if ($email && filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new Error('Invalid email address');
+        }
 
         $this->email = $email;
-        $this->changes[] = 'email';
+        $this->changes['email'] = null;
+
+        return $this;
     }
 
+    /**
+     * Sets a new capcode.
+     *
+     * @param string $capcode
+     *
+     * @return self
+     *
+     * @todo Restrict to a subset of HTML.
+     */
     public function setCapcode($capcode) {
-        if (!strlen($capcode) || $capcode === $this->capcode)
+        if ($capcode === $this->capcode) {
             return;
-
-        // TODO: Restrict to a subset of HTML
+        }
 
         $this->capcode = $capcode;
-        $this->changes[] = 'capcode';
+        $this->changes['capcode'] = null;
+
+        return $this;
     }
 
+    /**
+     * Sets a new user level.
+     *
+     * @param int $level
+     *
+     * @return self
+     */
     public function setLevel($level) {
-        if ($level == $this->level)
+        if ($level == $this->level) {
             return;
+        }
+
+        if ($level < 0 || $level > 9999) {
+            throw new Error('Level must be between 0 and 9999');
+        }
 
         $this->level = (int)$level;
-        $this->changes[] = 'level';
+        $this->changes['level'] = null;
+
+        return $this;
     }
 
+    /**
+     * Sets a new password.
+     *
+     * @param string $password New password in plain text.
+     *
+     * @return self
+     *
+     * @todo Check password strength
+     */
     public function setPassword($password) {
         if (!strlen($password)) {
             return;
         }
 
         $this->password = password_hash($password, PASSWORD_DEFAULT);
-        $this->changes[] = 'password';
+        $this->changes['password'] = null;
+
+        return $this;
     }
 
+
+    //
+    // Committing stuff
+    //
+
+    /**
+     * Execute the commit action.
+     *
+     * @throws Error if no username has been set
+     *
+     * @return mixed The output of the commit action object's commit() method.
+     */
     public function commit() {
-        global $app;
-
-        if (!$this->changes) {
-            return; // nothing to do
+        if ($this->committer) {
+            // the committer must have permission
+            $this->committer->checkLevel($this);
         }
 
-        try {
-            $app['db']->modifyUser($this);
-        } catch (\PDOException $e) {
-            $err = $e->getCode();
-
-            switch ($err) {
-            case PgError::UNIQUE_VIOLATION:
-                // Username collision
-                throw new Error("A user with that name already exists.");
-                break;
-            default:
-                // Unknown error
-                throw $e;
-            }
+        if (!isset($this->username)) {
+            throw new Error('No username has been set');
         }
+
+        if ($this->commitAction instanceof UserCommitActionInterface) {
+            return $this->commitAction->commit($this, $this->committer);
+        }
+
+        throw new \RuntimeException('No commit action has been specified');
     }
 
+    /**
+     * Set the user committing an action.
+     */
+    public function setCommitter(User $committer) {
+        $this->committer = $committer;
+    }
 
-    //
-    // Internals
-    //
+    /**
+     * Set a commit action object.
+     *
+     * @param UserCommitActionInterface $action
+     */
+    public function setCommitAction(UserCommitActionInterface $action) {
+        $this->commitAction = $action;
+    }
 
-    protected function requireLevel($level) {
-        if ($this->level >= $level)
+    /**
+     * @return boolean Whether or not changes have been made.
+     */
+    public function hasChanges() {
+        return (bool)$this->changes;
+    }
+
+    /**
+     * Compares this user's level against another user's.
+     *
+     * @param User $user Other user.
+     *
+     * @throws Error if the other user has a lower level.
+     */
+    public function checkLevel(User $user) {
+        if ($this->level >= $user->level) {
             return;
+        }
 
-        throw new Error("You don't have sufficient permissions.");
+        throw new Error("You don't have sufficient permissions");
     }
 
-    protected function checkSuspension() {
+    /**
+     * Check if the user account is suspended.
+     *
+     * @throws Error if the user account is suspended.
+     */
+    public function checkSuspension() {
         if ($this->level < 1) {
-            throw new Error('User account is suspended.');
+            throw new Error('User account is suspended');
         }
     }
 
     /**
-     * Loads a user account by its username.
+     * Checks the password.
      *
-     * @param string Username
+     * @param string $password Plain text password.
+     *
+     * @throws Error if the password didn't match
      */
-    protected function load($username) {
-        global $app;
-
-        $row = $app['db']->getUser($username);
-
-        if ($row === false)
-            throw new Error("No such user exists.");
-
-        $this->username = $row->username;
-        $this->password = $row->password;
-        $this->lastlogin = $row->lastlogin;
-        $this->level = $row->level;
-        $this->email = $row->email;
-        $this->capcode = $row->capcode;
-    }
-
-
-    //
-    // Cryptography
-    //
-
-    protected function checkPassword($password) {
+    public function checkPassword($password) {
         $hash = $this->password;
 
         if (!password_verify($password, $hash)) {
-            return false;
+            throw new Error('Incorrect password');
         }
 
         if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
             $this->setPassword($password);
-            $this->commit();
         }
-
-        return true;
-    }
-
-
-    //
-    // Static API
-    //
-
-    public static function get($username) {
-        global $app;
-
-        return $app['db']->getUser($username);
-    }
-
-    public static function getAll() {
-        global $app;
-
-        return $app['db']->getUserList();
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

@@ -8,66 +8,57 @@
 namespace Braskit\View;
 
 use Braskit\Error;
-use Braskit\User\Login as UserLogin;
 use Braskit\View;
 
 class Login extends View {
     protected function get($app) {
-        $error = false;
+        $auth = $app['auth'];
 
-        try {
-            $user = do_login();
-        } catch (Error $e) {
-            $user = false;
-            $error = $e->getMessage();
-        }
-
-        if ($user) {
-            return $this->diverge('/manage');
+        if ($auth->isLoggedIn()) {
+            return $this->redirectAfterLogin();
         }
 
         // get login errors, if any
         $error = $app['session']->getFlashBag()->get('login-error');
 
+        // get destination after login
         $goto = $app['param']->get('goto');
 
-        return $this->render('login.html', array(
+        return $this->render('login.html', [
             'error' => $error,
             'goto' => $goto,
-        ));
+        ]);
     }
 
     protected function post($app) {
+        $auth = $app['auth'];
+        $param = $app['param']->flags('post');
         $session = $app['session'];
 
-        $param = $app['param']->flags('post');
+        if ($auth->isLoggedIn()) {
+            // nothing to do, redirect
+            return $this->redirectAfterLogin();
+        }
 
         $username = $param->get('login_user');
         $password = $param->get('login_pass');
 
         try {
-            // validate user/pw
-            $user = new UserLogin($username, $password);
+            $auth->login($username, $password);
 
-            // this keeps us logged in
-            $session->set('login', serialize($user));
-
-            $loggedin = true;
+            // login successful, redirect
+            return $this->redirectAfterLogin();
         } catch (Error $e) {
-            $loggedin = false;
-
-            // store the error message we display after the redirect
+            // login failed, store the error
             $session->getFlashBag()->set('login-error', $e->getMessage());
+
+            return $this->diverge('/login');
         }
+    }
 
-        if ($loggedin) {
-            $goto = urldecode($param->get('goto', 'default')) ?: '/manage';
+    private function redirectAfterLogin() {
+        $goto = $this->app['param']->get('goto') ?: '/manage';
 
-            return $this->diverge($goto);
-        }
-
-        return $this->diverge('/login');
+        return $this->diverge($goto);
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

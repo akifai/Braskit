@@ -15,7 +15,7 @@ class Reports extends View {
     }
 
     protected function post($app) {
-        $user = do_login();
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
 
@@ -34,5 +34,3 @@ class Reports extends View {
         return $this->diverge('/reports');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Thread extends View {
     protected function get($app, $boardname, $id) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);
 
@@ -31,5 +31,3 @@ class Thread extends View {
         )));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

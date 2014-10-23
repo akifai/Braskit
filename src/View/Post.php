@@ -66,7 +66,7 @@ class Post extends View {
             throw new Error('The specified thread does not exist.');
 
         // check if we're logged in
-        $user = do_login();
+        $user = $app['auth']->authenticate(); // TODO: redirect
 
         if (!$user) {
             // check for bans
@@ -236,5 +236,3 @@ class Post extends View {
         return $this->redirect($board->path(""));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

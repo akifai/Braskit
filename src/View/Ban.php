@@ -16,7 +16,7 @@ use Braskit\View;
  */
 class Ban extends View {
     protected function get($app, $boardname) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
         $board = new Board($boardname);
 
         $id = $app['param']->get('id');
@@ -35,5 +35,3 @@ class Ban extends View {
         ));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

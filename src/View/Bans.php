@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Bans extends View {
     protected function get($app) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         // TODO: Pagination
         $bans = $app['ban']->getAll();
@@ -27,7 +27,7 @@ class Bans extends View {
     }
 
     protected function post($app) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
 
@@ -60,5 +60,3 @@ class Bans extends View {
         return $this->diverge('/bans');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

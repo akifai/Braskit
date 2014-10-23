@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Config extends View {
     protected function get($app, $boardname = false) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $template_vars = array('admin' => true);
 
@@ -29,7 +29,7 @@ class Config extends View {
     }
 
     protected function post($app, $boardname = false) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
 
@@ -74,5 +74,3 @@ class Config extends View {
         return $this->diverge($app);
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

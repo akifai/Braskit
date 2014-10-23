@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Users extends View {
     protected function get($app, $username = false) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $vars = array(
             'admin' => true,
@@ -21,17 +21,17 @@ class Users extends View {
         );
 
         if ($username === false) {
-            $vars['users'] = $app['db']->getUserList();
+            $vars['users'] = $app['user']->getAll();
         } else {
             $vars['editing'] = true;
-            $vars['target'] = $user->edit($username);
+            $vars['target'] = $app['user']->get($username);
         }
 
         return $this->render('users.html', $vars);
     }
 
     protected function post($app, $username = false) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $app['csrf']->check();
 
@@ -46,33 +46,24 @@ class Users extends View {
 
         if ($username !== false) {
             // Edit user
-            $target = $user->edit($username);
-
-            $target->setUsername($new_username);
-
-            // Set new password if it's not blank in the form
-            if ($password !== '')
-                $target->setPassword($password);
-
-            $target->setEmail($email);
-            $target->setLevel($level);
+            $target = $app['user']->edit($username, $user);
         } else {
             // Add user
-            $target = $user->create($new_username);
+            $target = $app['user']->create($user);
 
             // Check password
-            if ($password === '' || $password !== $password2)
+            if ($password === '' || $password !== $password2) {
                 throw new Error('Invalid password');
-
-            $target->setEmail($email);
-            $target->setPassword($password);
-            $target->setLevel($level);
+            }
         }
+
+        $target->setUsername($new_username);
+        $target->setPassword($password);
+        $target->setEmail($email);
+        $target->setLevel($level);
 
         $target->commit();
 
         return $this->diverge('/users');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

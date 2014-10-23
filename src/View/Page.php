@@ -12,7 +12,7 @@ use Braskit\View;
 
 class Page extends View {
     protected function get($app, $boardname, $page = 0) {
-        $user = do_login($app);
+        $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);
 
@@ -37,5 +37,3 @@ class Page extends View {
         )));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

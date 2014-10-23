@@ -89,9 +89,9 @@ CREATE TABLE /*_*/users (
     username text PRIMARY KEY CHECK (username ~ '^\w+$'),
     password text NOT NULL,
     lastlogin timestamp,
-    level integer NOT NULL,
-    email text NOT NULL,
-    capcode text NOT NULL
+    level integer NOT NULL CHECK (level BETWEEN 0 AND 9999) DEFAULT 0,
+    email text NOT NULL DEFAULT '',
+    capcode text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE /*_*/spam (

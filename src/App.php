@@ -23,13 +23,6 @@ class App extends Pimple implements HttpKernelInterface {
     }
 
     /**
-     * @deprecated
-     */
-    public function __toString() {
-        return $this['url']->get();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true) {

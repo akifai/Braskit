@@ -7,23 +7,21 @@
 
 namespace Braskit\User;
 
+use Braskit\Database;
 use Braskit\Error;
 use Braskit\PgError;
 use Braskit\User;
 
-class Create extends User {
-    protected $self_level = 0;
+class UserCreateCommitAction implements UserCommitActionInterface {
+    protected $db;
 
-    public function __construct($username, $self_level = false) {
-        $this->username = $username;
-        $this->self_level = $self_level === false ? 9999 : $self_level;
+    public function __construct(Database $db) {
+        $this->db = $db;
     }
 
-    public function commit() {
-        global $app;
-
+    public function commit(User $user, User $committer = null) {
         try {
-            $app['db']->insertUser($this);
+            $this->db->insertUser($user);
         } catch (\PDOException $e) {
             $err = $e->getCode();
 
@@ -39,5 +37,3 @@ class Create extends User {
         }
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

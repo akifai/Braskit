@@ -143,6 +143,10 @@ $app['path.tmp'] = function () {
 // Default services
 //
 
+$app['auth'] = function () use ($app) {
+    return new Braskit\AuthService($app['session'], $app['user']);
+};
+
 $app['ban'] = function () use ($app) {
     return new Braskit\BanService($app['db']);
 };
@@ -245,6 +249,10 @@ $app['url'] = function () use ($app) {
     return new Braskit\UrlHandler\QueryString($app['request']);
 };
 
+$app['user'] = function () use ($app) {
+    return new Braskit\UserService($app['db']);
+};
+
 $app['view'] = function () use ($app) {
     return new $app['router']->view($app);
 };
@@ -269,5 +277,3 @@ $app['template.creator'] = $app->protect(function ($loader) use ($app) {
 
     return $twig;
 });
-
-/* vim: set ts=4 sw=4 sts=4 et: */
