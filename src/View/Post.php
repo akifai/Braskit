@@ -66,7 +66,7 @@ class Post extends View {
             throw new Error('The specified thread does not exist.');
 
         // check if we're logged in
-        $user = $app['auth']->authenticate(); // TODO: redirect
+        $user = $app['auth']->authenticate(false); // TODO: redirect
 
         if (!$user) {
             // check for bans
