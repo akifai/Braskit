@@ -1,5 +1,6 @@
 {
     "name": "braskit/braskit",
+    "description": "Highly customisable imageboard engine",
     "license": "GPL-3.0",
     "authors": [
         {
@@ -8,13 +9,13 @@
         }
     ],
     "require": {
-        "php": ">=5.3.7",
-        "twig/twig": "v1.15.1",
-        "pimple/pimple": "v2.0.0",
-        "leafo/lessphp": "v0.4.0",
-        "ircmaxell/password-compat": "dev-master",
-        "symfony/http-foundation": "2.5.*@dev",
-        "symfony/http-kernel": "2.5.*@dev"
+        "php": "~5.4",
+        "twig/twig": "~1.15",
+        "pimple/pimple": "~2.0",
+        "leafo/lessphp": "~0.4",
+        "ircmaxell/password-compat": "~1.0",
+        "symfony/http-foundation": "~2.5",
+        "symfony/http-kernel": "~2.5"
     },
     "autoload": {
         "psr-4": {
