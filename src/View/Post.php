@@ -10,6 +10,7 @@ namespace Braskit\View;
 use Braskit\Ban;
 use Braskit\Board;
 use Braskit\Error;
+use Braskit\Event\PostEvent;
 use Braskit\Parser;
 use Braskit\Parser\WakabaMark;
 use Braskit\Post as PostModel;
@@ -190,6 +191,10 @@ class Post extends View {
         $post->timestamp = $time;
         $post->ip = $ip;
 
+        $event = new PostEvent($post, $file);
+
+        $app['event']->dispatch(PostEvent::POST_BEFORE_INSERT, $event);
+
         // Don't commit anything to the database until we say so.
         $app['dbh']->beginTransaction();
 
@@ -205,6 +210,8 @@ class Post extends View {
         // at this point, we know that the post has been saved to the database,
         // so the files won't be orphaned when we move them.
         $file->move();
+
+        $app['event']->dispatch(PostEvent::POST_AFTER_INSERT, $event);
 
         if ($parent) {
             // rebuild thread cache

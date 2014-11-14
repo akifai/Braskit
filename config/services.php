@@ -192,6 +192,10 @@ $app['dbh'] = function () use ($app) {
     );
 };
 
+$app['event'] = function () {
+    return new Symfony\Component\EventDispatcher\EventDispatcher();
+};
+
 $app['param'] = $app->factory(function () use ($app) {
     return new Braskit\Param($app['request']);
 });
