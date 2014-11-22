@@ -124,11 +124,6 @@ $app['path.entry.board'] = function () use ($app) {
     return "$root/board.php";
 };
 
-$app['path.entry.install'] = function () use ($app) {
-    $root = $app['path.root'];
-    return "$root/install.php";
-};
-
 $app['path.tpldir'] = function () use ($app) {
     $root = $app['path.root'];
     return "$root/templates";
