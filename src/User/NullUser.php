@@ -17,8 +17,8 @@ class NullUser extends User {
         $this->level = 9999;
     }
 
-    public function checkLevel() {}
-    public function checkPassword() {}
+    public function checkLevel(User $user) {}
+    public function checkPassword($password) {}
     public function checkSuspension() {}
     public function commit() {}
 }

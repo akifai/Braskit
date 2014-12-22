@@ -166,7 +166,10 @@ $app['config'] = function () {
 };
 
 $app['counter'] = function () use ($app) {
-    return new StdClass();
+    return (object)[
+        'dbTime' => null,
+        'dbQueries' => null,
+    ];
 };
 
 $app['csrf'] = function () use ($app) {

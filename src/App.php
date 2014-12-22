@@ -7,12 +7,12 @@
 
 namespace Braskit;
 
-use Pimple;
+use Pimple\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class App extends Pimple implements HttpKernelInterface {
+class App extends Container implements HttpKernelInterface {
     public function __construct() {
         parent::__construct();
 
