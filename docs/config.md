@@ -2,7 +2,7 @@
 
 I'm too lazy to write the documentation for the configuration subsystem (i.e.
 the classes in the `Braskit\Config` namespace) now. However, I'd just like to
-give a demonstration of "namespacing" within the configuration pools:
+give a demonstration of how config pools work:
 
     $pool = $app['config']->getPool('board.%', ['kittens']);
     $pool->get('forced_anon'); // returns true
@@ -18,7 +18,7 @@ give a demonstration of "namespacing" within the configuration pools:
 
 ## TL;DR
 
-* The pool identifier (e.g. "board.%") is associated with a dictionary which
+* The pool identifier (e.g. `board.%`) is associated with a dictionary which
   defines all the valid keys for that identifier.
 * The second argument is an array which takes the same number of elements ("pool
   args") as the number of percent signs in the pool identifier.
@@ -29,5 +29,5 @@ give a demonstration of "namespacing" within the configuration pools:
   but the idea is that the percent signs get substituted for pool args when the
   identifiers are "pretty printed".
 
-BTW, don't think of giving each thread its own configuration. It was just an
-example. Doing so would kill performance.
+BTW, don't even think about giving each thread its own configuration. It is just
+an example. Doing so will kill performance.
