@@ -67,13 +67,21 @@ CREATE INDEX ON /*_*/bans (ip);
 CREATE INDEX ON /*_*/bans (expire);
 
 CREATE TABLE /*_*/config (
-    name text NOT NULL,
-    value text NOT NULL,
-    board text REFERENCES /*_*/boards(name) ON DELETE CASCADE ON UPDATE CASCADE,
-    UNIQUE (board, name)
+    pool text NOT NULL,
+    args text[] NOT NULL,
+    key text NOT NULL,
+    value jsonb NOT NULL,
+    -- Make sure the number of percent signs in the pool name is the same as the
+    -- number of arguments. If anyone knows of a better way of counting
+    -- substrings, let me know.
+    CHECK (
+        array_length(regexp_split_to_array(pool, '%'), 1) - 1 =
+        COALESCE(array_length(args, 1), 0)
+    ),
+    UNIQUE (pool, args, key)
 );
 
-CREATE INDEX ON /*_*/config (board);
+CREATE INDEX ON /*_*/config (pool, args, key);
 
 CREATE TABLE /*_*/reports (
     id serial PRIMARY KEY,
@@ -106,20 +114,14 @@ CREATE TABLE /*_*/spam (
 -- Post views
 --
 
--- Adds columns with the boards' configured date formats.
 CREATE VIEW /*_*/posts_view AS
     SELECT p.*,
-            to_char(
-                p.timestamp,
-                COALESCE(c.value, 'YY/MM/DD(Dy)HH24:MI')
-            ) AS date,
+            to_char(p.timestamp, 'YY/MM/DD(Dy)HH24:MI') AS date,
             EXTRACT(EPOCH FROM p.timestamp) AS unixtime,
             f.id AS fileid, f.file, f.md5, f.origname, f.shortname, f.filesize,
             f.prettysize, f.width, f.height, f.thumb, f.t_width, f.t_height,
             f.filedata
         FROM /*_*/posts AS p
-        LEFT OUTER JOIN /*_*/config AS c
-            ON (p.board = c.board AND c.name = 'date_format')
         LEFT OUTER JOIN /*_*/files AS f
             ON (p.board = f.board AND p.id = f.postid);
 
@@ -128,10 +130,7 @@ CREATE VIEW /*_*/posts_view AS
 -- don't use them.
 CREATE VIEW /*_*/posts_admin AS
     SELECT p.*,
-            to_char(
-                p.timestamp,
-                COALESCE(c.value, 'YY/MM/DD(Dy)HH24:MI')
-            ) AS date,
+            to_char(p.timestamp, 'YY/MM/DD(Dy)HH24:MI') AS date,
             EXTRACT(EPOCH FROM p.timestamp) AS unixtime,
             COUNT(b.*) <> 0 AS banned,
             (
@@ -144,13 +143,11 @@ CREATE VIEW /*_*/posts_admin AS
             f.prettysize, f.width, f.height, f.thumb, f.t_width, f.t_height,
             f.filedata
         FROM /*_*/posts AS p
-        LEFT OUTER JOIN /*_*/config AS c
-            ON (p.board = c.board AND c.name = 'date_format')
         LEFT OUTER JOIN /*_*/bans AS b
             ON (b.ip >>= p.ip)
         LEFT OUTER JOIN /*_*/files AS f
             ON (p.board = f.board AND p.id = f.postid)
-        GROUP BY p.globalid, c.value, f.id;
+        GROUP BY p.globalid, f.id;
 
 -- Posts joined with the files table, simple as that!
 CREATE VIEW /*_*/posts_simple_view AS
@@ -282,35 +279,3 @@ CREATE VIEW /*_*/bans_view AS
             END AS range,
             timestamp, expire, reason
         FROM /*_*/bans;
-
-
---
--- Upsert for config table
--- http://stackoverflow.com/questions/1109061/
---
-
-CREATE FUNCTION /*_*/upsert_config(n TEXT, v TEXT, b TEXT) RETURNS VOID AS $$
-BEGIN
-    LOOP
-        IF b IS NULL THEN
-            UPDATE /*_*/config SET value = v WHERE name = n AND board IS NULL;
-        ELSE
-            UPDATE /*_*/config SET value = v WHERE name = n AND board = b;
-        END IF;
-
-        IF found THEN
-            RETURN;
-        END IF;
-
-        -- not there, so try to insert the key
-        -- if someone else inserts the same key concurrently,
-        -- we could get a unique-key failure
-        BEGIN
-            INSERT INTO /*_*/config (name, value, board) VALUES (n, v, b);
-            RETURN;
-        EXCEPTION WHEN unique_violation THEN
-            -- do nothing, and loop to try the UPDATE again
-        END;
-    END LOOP;
-END;
-$$ LANGUAGE plpgsql;

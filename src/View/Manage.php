@@ -21,7 +21,8 @@ class Manage extends View {
         }
 
         // gets the latest posts from all boards
-        $posts = $app['db']->getLatestPosts($app['config']->latest_posts_count, true);
+        $count = $app['config']->getPool('global')->get('latest_posts_count');
+        $posts = $app['db']->getLatestPosts($count, true);
 
         // give each post a board object
         foreach ($posts as &$post) {

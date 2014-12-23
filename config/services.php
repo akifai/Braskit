@@ -161,10 +161,6 @@ $app['cache'] = function () use ($app) {
     }
 };
 
-$app['config'] = function () {
-    return new Braskit\Config\Site();
-};
-
 $app['counter'] = function () use ($app) {
     return (object)[
         'dbTime' => null,
@@ -257,6 +253,44 @@ $app['user'] = function () use ($app) {
 
 $app['view'] = function () use ($app) {
     return new $app['router']->view($app);
+};
+
+
+//
+// Config service
+//
+
+$app['config'] = function () use ($app) {
+    $service = $app['config.service_object'];
+
+    // default pools
+    $service->addPool('board.%', 'board');
+    $service->addPool('global', 'global');
+
+    $service->addDictionaryLoader($app['config.dict_loader']);
+
+    return $service;
+};
+
+$app['config.dict_loader'] = function () use ($app) {
+    $loader = new Braskit\Config\PimpleAwareDictionaryLoader($app);
+
+    $loader->addDictionary('board', 'config.dict.board');
+    $loader->addDictionary('global', 'config.dict.global');
+
+    return $loader;
+};
+
+$app['config.dict.board'] = function () {
+    return require __DIR__.'/board_config.php';
+};
+
+$app['config.dict.global'] = function () {
+    return require __DIR__.'/site_config.php';
+};
+
+$app['config.service_object'] = function () use ($app) {
+    return new Braskit\Config\ConfigService($app['cache'], $app['db']);
 };
 
 

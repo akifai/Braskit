@@ -53,11 +53,13 @@ class Board {
         $this->board = (string)$board;
 
         if ($must_exist) {
-            if (!$this->exists())
+            if (!$this->exists()) {
                 throw new Error("The board doesn't exist.");
+            }
 
-            if ($load_config)
-                $this->config = new Config($this);
+            if ($load_config) {
+                $this->config = $app['config']->getPool('board.%', [$this->board]);
+            }
         }
     }
 
@@ -264,7 +266,7 @@ class Board {
             $all_threads = $app['db']->getThreads(
                 $this->board,
                 $offset,
-                $this->config->threads_per_page,
+                $this->config->get('threads_per_page'),
                 $admin
             );
         } else {
@@ -275,7 +277,7 @@ class Board {
 
         // to avoid having to write $this->config... every time (plus
         // there's a slight overhead when fetching dynamic properties)
-        $replies_shown = $this->config->replies_shown;
+        $replies_shown = $this->config->get('replies_shown');
 
         foreach ($all_threads as $thread) {
             // every thread is an array where the first element
@@ -327,7 +329,7 @@ class Board {
      */
     public function getMaxPage($arg) {
         $count = is_array($arg) ? count($arg) : (int)$arg;
-        $total = $this->config->threads_per_page;
+        $total = $this->config->get('threads_per_page');
 
         if (!$count || !$total)
             return 0;
@@ -344,7 +346,7 @@ class Board {
         // remove posts
         $posts = $app['db']->trimPostsByThreadCount(
             $this->board,
-            $this->config->max_threads
+            $this->config->get('max_threads')
         );
 
         // delete the files associated with every post
@@ -369,7 +371,7 @@ class Board {
     public function rebuildIndexes() {
         $threads = $this->getIndexThreads();
         $maxpage = $this->getMaxPage($threads);
-        $threads_per_page = $this->config->threads_per_page;
+        $threads_per_page = $this->config->get('threads_per_page');
 
         $num = 0;
 
@@ -448,8 +450,8 @@ class Board {
         global $app;
 
         // check if images are being posted too fast
-        if ($has_file && $this->config->seconds_between_images > 0) {
-            $max = $time - $this->config->seconds_between_images;
+        if ($has_file && $this->config->get('seconds_between_images') > 0) {
+            $max = $time - $this->config->get('seconds_between_images');
 
             if ($app['db']->checkImageFlood($ip, $max)) {
                 throw new Error('Flood detected.');
@@ -460,8 +462,8 @@ class Board {
         }
 
         // check if text posts are being posted too fast
-        if ($this->config->seconds_between_posts > 0) {
-            $max = $time - $this->config->seconds_between_posts;
+        if ($this->config->get('seconds_between_posts') > 0) {
+            $max = $time - $this->config->get('seconds_between_posts');
 
             if ($app['db']->checkFlood($ip, $max)) {
                 throw new Error('Flood detected.');
@@ -469,8 +471,8 @@ class Board {
         }
 
         // check for duplicate text
-        if ($comment && !$this->config->allow_duplicate_text) {
-            $max = $time - $this->config->seconds_between_duplicate_text;
+        if ($comment && !$this->config->get('allow_duplicate_text')) {
+            $max = $time - $this->config->get('seconds_between_duplicate_text');
 
             if ($app['db']->checkDuplicateText($comment, $max)) {
                 throw new Error('Duplicate comment detected.');
@@ -507,7 +509,7 @@ class Board {
 
         // because the whole thing is too long to type, and because
         // dynamic properties have a lot of overhead...
-        $max_kb = $this->config->max_kb;
+        $max_kb = $this->config->get('max_kb');
 
         // Check file size
         if ($max_kb > 0 && $file->size > $max_kb * 1024) {
@@ -519,8 +521,8 @@ class Board {
 
         // create thumbnail
         $file->thumb("$root/thumb",
-            $this->config->max_thumb_w,
-            $this->config->max_thumb_h
+            $this->config->get('max_thumb_w'),
+            $this->config->get('max_thumb_h')
         );
 
         return $file;
@@ -644,5 +646,3 @@ class Board {
         );
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

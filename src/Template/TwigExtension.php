@@ -37,6 +37,7 @@ class TwigExtension extends Twig_Extension {
         $globals = array(
             'app' => $app,
             '_base' => 'base/main.html',
+            'global_config' => $app['config']->getPool('global'),
             'self' => $app['request']->getScriptName(),
             'style' => Style::getObject(),
         );
@@ -52,5 +53,3 @@ class TwigExtension extends Twig_Extension {
         return 'braskit';
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

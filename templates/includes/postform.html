@@ -3,13 +3,13 @@
 
   <table class="form-table">
     <tbody>
-      {% if not board.config.forced_anon %}
+      {% if not board.config.get("forced_anon") %}
         <tr>
           <th>Name</th>
           <td><input type="text" name="field1" size="28"></td>
         </tr>
 
-        {% if board.config.allow_email %}
+        {% if board.config.get("allow_email") %}
         <tr>
           <th>Email</th>
           <td><input type="text" name="field2" size="28"></td>
@@ -25,7 +25,7 @@
             <input type="submit" value="Submit">
           {% endspaceless %}
 
-          {% if thread and not board.config.allow_email %}
+          {% if thread and not board.config.get("allow_email") %}
             <label>[<input type="checkbox" name="sage" value="on"> No Bump]</label>
           {% endif %}
         </td>
@@ -36,13 +36,13 @@
         <td><textarea name="field4" rows="4" cols="48"></textarea></td>
       </tr>
 
-      {% if thread and board.config.allow_reply_images or board.config.allow_thread_images %}
+      {% if thread and board.config.get("allow_reply_images") or board.config.get("allow_thread_images") %}
         <tr>
           <th>File</th>
           <td>
             <input type="file" name="file">
 
-            {% if not thread and board.config.allow_thread_textonly %}
+            {% if not thread and board.config.get("allow_thread_textonly") %}
               {# Safeguard to prevent accidental thread creation (it's more
                # annoying than accidental replies). #}
               <label>[<input type="checkbox" name="nofile" value="on"> No File]</label>

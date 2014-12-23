@@ -14,7 +14,7 @@
         {%- if not title -%}/{{ board }}/ - {% endif -%}
         {{- board.title -}}
       {%- else -%}
-        {{ app.config.site_name -}}
+        {{ global_config.get("site_name") -}}
       {%- endif -%}
     </title>
 

@@ -400,59 +400,19 @@ class Database {
     // Config
     //
 
-    public function loadConfig($board) {
-        if ($board === null) {
-            $part = 'IS NULL';
-            $args = array();
-        } else {
-            $part = '= ?';
-            $args = array($board);
-        }
+    public function getPoolOptions($pool, array $args) {
+        // convert args to json array string
+        $args = json_encode($args);
 
-        try {
-            $sth = $this->dbh->prepare("SELECT * FROM {$this->prefix}config WHERE board $part");
-            $sth->execute($args);
-        } catch (PDOException $e) {
-            // nothing to load
-            return false;
-        }
+        $sth = $this->dbh->prepare("SELECT * FROM {$this->prefix}config WHERE pool = :pool AND to_json(args)::jsonb = :args::jsonb ORDER BY key");
 
-        $config = array();
-        while ($row = $sth->fetch()) 
-            $config[$row['name']] = $row['value'];
+        $sth->bindValue(':pool', $pool, PDO::PARAM_STR);
+        $sth->bindValue(':args', $args, PDO::PARAM_STR);
 
-        return $config;
+        $sth->execute();
+
+        return $sth->fetchAll(PDO::FETCH_CLASS, 'Braskit\\Config');
     }
-
-    public function saveConfig($board, $values) {
-        $sth = $this->dbh->prepare("SELECT upsert_config(?, ?, ?)");
-
-        foreach ($values as $key => $value) {
-            $sth->execute(array($key, $value, $board));
-        }
-    }
-
-    public function deleteConfigKeys($board, $keys) {
-        if (!$keys)
-            return;
-
-        if ($board === null) {
-            $part = 'IS NULL';
-        } else {
-            $part = '= ?';
-        }
-
-        $sth = $this->dbh->prepare("DELETE FROM {$this->prefix}config WHERE board $part AND name = ?");
-
-        if ($board === null) {
-            foreach ($keys as $key)
-                $sth->execute(array($key));
-        } else {
-            foreach ($keys as $key)
-                $sth->execute(array($board, $key));
-        }
-    }
-
 
     //
     // Reporting
@@ -579,5 +539,3 @@ class Database {
         $sth->execute(array($username));
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

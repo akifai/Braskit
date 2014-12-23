@@ -16,7 +16,7 @@ class Page extends View {
 
         $board = new Board($boardname);
 
-        $offset = $page * $board->config->threads_per_page;
+        $offset = $page * $board->config->get('threads_per_page');
 
         $threads = $board->getIndexThreads($offset, true);
 

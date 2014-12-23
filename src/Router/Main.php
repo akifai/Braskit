@@ -35,14 +35,12 @@ class Main extends Router {
 
             // Mod board actions
             "/$board_re/ban" => 'Ban',
-            "/$board_re/config" => 'Config',
             "/$board_re/edit" => 'BoardEdit',
             "/$board_re/rebuild" => 'Rebuild',
 
             // Mod global actions
             '/bans' => 'Bans',
             '/boards' => 'BoardsView',
-            '/config' => 'Config',
             '/login' => 'Login',
             '/logout' => 'Logout',
             '/manage' => 'Manage',
@@ -51,5 +49,3 @@ class Main extends Router {
         );
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

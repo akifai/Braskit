@@ -23,7 +23,7 @@
 		{% include "includes/delfile.html" %}
 	</form>
 
-  {% if board.config.threads_per_page %}
+  {% if board.config.get("threads_per_page") %}
     <nav class="board-paginator">
       {{ m.make_previous_page_button(_context) }}
 

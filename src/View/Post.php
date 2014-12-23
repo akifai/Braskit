@@ -74,7 +74,7 @@ class Post extends View {
             $app['ban']->check($ip);
 
             // check spam - disabled for now
-            #if ($board->config->check_spam) {
+            #if ($board->config->get('check_spam')) {
             if (0) {
                 $values = array(&$name, &$email, &$subject, &$comment);
                 $board->checkSpam($ip, $values);
@@ -95,17 +95,17 @@ class Post extends View {
         }
 
         if (!strlen($formatted_comment)) {
-            $comment = $board->config->default_comment;
-            $formatted_comment = $board->config->default_comment;
+            $comment = $board->config->get('default_comment');
+            $formatted_comment = $board->config->get('default_comment');
         }
 
-        if (!$user && $board->config->forced_anon) {
+        if (!$user && $board->config->get('forced_anon')) {
             // nothing to do here
-            $name = $board->config->default_name;
+            $name = $board->config->get('default_name');
             $email = '';
             $tripcode = '';
 
-            if (!$board->config->allow_sage)
+            if (!$board->config->get('allow_sage'))
                 $sage = false;
             elseif ($sage)
                 $email = 'mailto:sage';
@@ -114,26 +114,26 @@ class Post extends View {
             list($name, $tripcode) = make_name_tripcode($name);
 
             if ($name === false)
-                $name = $board->config->default_name;
+                $name = $board->config->get('default_name');
             else
                 $name = Parser::escape($name);
 
             // remove tripcodes unless they're allowed
-            if (!$user && !$board->config->allow_tripcodes)
+            if (!$user && !$board->config->get('allow_tripcodes'))
                 $tripcode = '';
 
             // add capcode if applicable
             if ($capcode && $user && strlen($user->capcode))
                 $tripcode .= ' '.$user->capcode;
 
-            if ($board->config->allow_email && length($email)) {
+            if ($board->config->get('allow_email') && length($email)) {
                 // set email address
                 $email = 'mailto:'.Parser::escape($email);
 
                 // check for sage
-                if ($board->config->allow_sage)
+                if ($board->config->get('allow_sage'))
                     $sage = stripos($email, 'sage') !== false;
-            } elseif (!$board->config->allow_sage) {
+            } elseif (!$board->config->get('allow_sage')) {
                 $sage = false;
             } elseif ($sage) {
                 $email = 'mailto:sage';
@@ -142,7 +142,7 @@ class Post extends View {
 
         // default subject
         if (!length($subject))
-            $subject = $board->config->default_subject;
+            $subject = $board->config->get('default_subject');
         else
             $subject = Parser::escape($subject);
 
@@ -161,7 +161,7 @@ class Post extends View {
         $file = $board->handleUpload($upload);
 
         if (!$parent) {
-            if ($board->config->allow_thread_textonly) {
+            if ($board->config->get('allow_thread_textonly')) {
                 // the nofile box must be checked to post without a file
                 if (!$file->exists && !$nofile)
                     throw new Error('No file selected.');
@@ -234,7 +234,7 @@ class Post extends View {
 
         $board->rebuildIndexes();
 
-        if ($board->config->auto_noko) {
+        if ($board->config->get('auto_noko')) {
             // redirect to thread
             return $this->redirect($board->path($dest));
         }

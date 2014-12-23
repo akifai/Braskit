@@ -17,6 +17,7 @@ composer.phar
 # ignore all top-level directories, except those we choose
 /*/
 !/config/
+!/docs/
 !/lib/
 !/src/
 !/static/

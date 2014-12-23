@@ -10,7 +10,7 @@ on live, public sites yet.**
 
 * Some web server
 * PHP 5.4 or higher
-* PostgreSQL 9.2 or higher
+* PostgreSQL 9.4 or higher
 * [PHP GD][php-gd] or [Imagemagick][imagemagick]'s `convert` utility for
   thumbnailing
 

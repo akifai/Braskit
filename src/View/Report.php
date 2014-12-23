@@ -17,7 +17,7 @@ class Report extends View {
         $board = new Board($boardname);
         $config = $board->config;
 
-        if (!$config->enable_reports)
+        if (!$config->get('enable_reports'))
             throw new Error('You cannot report posts on this board.');
 
         $posts = get_ids($board);
@@ -38,7 +38,7 @@ class Report extends View {
         $board = new Board($boardname);
         $config = $board->config;
 
-        if (!$config->enable_reports)
+        if (!$config->get('enable_reports'))
             throw new Error('You cannot report posts on this board.');
 
         $ip = $app['request']->getClientIp();
@@ -47,8 +47,8 @@ class Report extends View {
         $app['ban']->check($ip);
 
         // prevent flooding the reports
-        if ($config->seconds_between_reports) {
-            $threshold = time() - $config->seconds_between_reports;
+        if ($config->get('seconds_between_reports')) {
+            $threshold = time() - $config->get('seconds_between_reports');
 
             if ($app['db']->checkReportFlood($ip, $threshold)) {
                 throw new Error('You are reporting too fast!');
