@@ -7,36 +7,43 @@
 
 namespace Braskit\UrlHandler;
 
-use Braskit\UrlHandler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * URL subclass for query string-based routing and URLs. Will work in any setup,
- * but creates ugly URLs.
+ * URL handler that uses query strings.
+ *
+ * Example: http://example.com/board.php?/some-path&arg1=foo&arg2=bar
  */
-class QueryString extends UrlHandler {
+class QueryStringHandler implements UrlHandlerInterface {
     protected $request;
 
     public function __construct(Request $request) {
         $this->request = $request;
     }
 
-    public function create($task, $params) {
-        $query = '?'.$task;
+    /**
+     * {@inheritdoc}
+     */
+    public function createURL($path, array $params = [], Request $request = null) {
+        $query = '?'.$path;
 
-        if (is_array($params)) {
-            $args = http_build_query($params);
 
-            if ($args) {
-                $query .= "&$args";
-            }
+        $args = http_build_query($params);
+
+        if (strlen($args)) {
+            $query .= "&$args";
         }
 
-        return $query;
+        $request = $request ?: $this->request;
+
+        return $request->getScriptName().$query;
     }
 
-    protected function findUrl() {
-        $query = $this->request->server->get('QUERY_STRING');
+    /**
+     * {@inheritdoc}
+     */
+    public function getPath($request) {
+        $query = $request->server->get('QUERY_STRING');
 
         if (!strlen($query) || $query[0] !== '/') {
             // the query string is either invalid or not defined
@@ -56,5 +63,3 @@ class QueryString extends UrlHandler {
         return $url;
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

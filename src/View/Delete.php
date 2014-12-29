@@ -13,11 +13,11 @@ use Braskit\PgError;
 use Braskit\View;
 
 class Delete extends View {
-    protected function get($app) {
+    public function get($app) {
         return $this->csrfScreen();
     }
 
-    protected function post($app, $boardname) {
+    public function post($app, $boardname) {
         $param = $app['param'];
 
         $task = $param->get('task');

@@ -10,7 +10,7 @@ namespace Braskit\View;
 use Braskit\View;
 
 class Logout extends View {
-    protected function get($app) {
+    public function get($app) {
         $app['auth']->logout();
 
         return $this->diverge('/login');

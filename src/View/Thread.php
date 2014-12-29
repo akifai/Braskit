@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class Thread extends View {
-    protected function get($app, $boardname, $id) {
+    public function get($app, $boardname, $id) {
         $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);

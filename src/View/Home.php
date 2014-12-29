@@ -10,9 +10,7 @@ namespace Braskit\View;
 use Braskit\View;
 
 class Home extends View {
-    protected function get() {
+    public function get() {
         return $this->diverge('/login');
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

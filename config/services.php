@@ -201,6 +201,10 @@ $app['request'] = function () use ($app) {
     return $request;
 };
 
+$app['router_class'] = function () {
+    return 'Braskit\Router\Main';
+};
+
 $app['session'] = function () use ($app) {
     $session = new Symfony\Component\HttpFoundation\Session\Session();
     $session->start();
@@ -244,15 +248,11 @@ $app['thumb'] = function () use ($app) {
 };
 
 $app['url'] = function () use ($app) {
-    return new Braskit\UrlHandler\QueryString($app['request']);
+    return new Braskit\UrlHandler\QueryStringHandler($app['request']);
 };
 
 $app['user'] = function () use ($app) {
     return new Braskit\UserService($app['db']);
-};
-
-$app['view'] = function () use ($app) {
-    return new $app['router']->view($app);
 };
 
 

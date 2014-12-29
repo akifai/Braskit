@@ -11,7 +11,7 @@ use Braskit\Error;
 use Braskit\View;
 
 class Users extends View {
-    protected function get($app, $username = false) {
+    public function get($app, $username = false) {
         $user = $app['auth']->authenticate();
 
         $vars = array(
@@ -30,7 +30,7 @@ class Users extends View {
         return $this->render('users.html', $vars);
     }
 
-    protected function post($app, $username = false) {
+    public function post($app, $username = false) {
         $user = $app['auth']->authenticate();
 
         $app['csrf']->check();

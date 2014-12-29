@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class Manage extends View {
-    protected function get($app) {
+    public function get($app) {
         $user = $app['auth']->authenticate();
 
         $boards = array();

@@ -10,7 +10,12 @@ namespace Braskit;
 use Pimple\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
 
 class App extends Container implements HttpKernelInterface {
     public function __construct() {
@@ -26,11 +31,21 @@ class App extends Container implements HttpKernelInterface {
      * {@inheritdoc}
      */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true) {
-        try {
-            $response = $this['controller']->run();
-        } catch (\Exception $e) {
-            $response = $this['controller']->exceptionHandler($e);
-        }
+        $dispatcher = $this['event'];
+
+        // our request matcher
+        $matcher = new RequestMatcher($this);
+
+        $context = new RequestContext();
+        $context = $context->fromRequest($request);
+
+        // should this be here?
+        $dispatcher->addSubscriber(new RouterListener($matcher, $context));
+
+        $resolver = new ControllerResolver();
+        $kernel = new HttpKernel($dispatcher, $resolver);
+
+        $response = $kernel->handle($request);
 
         return $response;
     }
@@ -51,5 +66,3 @@ class App extends Container implements HttpKernelInterface {
         return (@include $this['path.root'].'/config.php') !== false;
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

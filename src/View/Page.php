@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class Page extends View {
-    protected function get($app, $boardname, $page = 0) {
+    public function get($app, $boardname, $page = 0) {
         $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);

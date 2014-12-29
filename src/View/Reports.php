@@ -10,11 +10,11 @@ namespace Braskit\View;
 use Braskit\View;
 
 class Reports extends View {
-    protected function get($app) {
+    public function get($app) {
         return $this->csrfScreen();
     }
 
-    protected function post($app) {
+    public function post($app) {
         $user = $app['auth']->authenticate();
 
         $app['csrf']->check();

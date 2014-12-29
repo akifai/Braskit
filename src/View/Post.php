@@ -17,7 +17,7 @@ use Braskit\Post as PostModel;
 use Braskit\View;
 
 class Post extends View {
-    protected function post($app, $boardname) {
+    public function post($app, $boardname) {
         // get the ip
         $ip = $app['request']->getClientIp();
 

@@ -13,7 +13,7 @@ use Braskit\Error;
 use Braskit\View;
 
 class Report extends View {
-    protected function get($app, $boardname) {
+    public function get($app, $boardname) {
         $board = new Board($boardname);
         $config = $board->config;
 
@@ -32,7 +32,7 @@ class Report extends View {
         ));
     }
 
-    protected function post($app, $boardname) {
+    public function post($app, $boardname) {
         $app['csrf']->check();
 
         $board = new Board($boardname);

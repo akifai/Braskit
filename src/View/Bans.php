@@ -11,7 +11,7 @@ use Braskit\Ban;
 use Braskit\View;
 
 class Bans extends View {
-    protected function get($app) {
+    public function get($app) {
         $user = $app['auth']->authenticate();
 
         // TODO: Pagination
@@ -26,7 +26,7 @@ class Bans extends View {
         ));
     }
 
-    protected function post($app) {
+    public function post($app) {
         $user = $app['auth']->authenticate();
 
         $app['csrf']->check();

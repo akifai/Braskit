@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class BoardsView extends View {
-    protected function get($app) {
+    public function get($app) {
         $user = $app['auth']->authenticate();
 
         $boards = [];
@@ -25,7 +25,7 @@ class BoardsView extends View {
         return $this->render('boards.html');
     }
 
-    protected function post($app) {
+    public function post($app) {
         $user = $app['auth']->authenticate();
 
         $app['csrf']->check();

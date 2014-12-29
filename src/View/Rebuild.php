@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class Rebuild extends View {
-    protected function get($app, $boardname) {
+    public function get($app, $boardname) {
         $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);

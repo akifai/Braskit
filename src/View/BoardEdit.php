@@ -11,7 +11,7 @@ use Braskit\Board;
 use Braskit\View;
 
 class BoardEdit extends View {
-    protected function get($app, $boardname) {
+    public function get($app, $boardname) {
         $user = $app['auth']->authenticate();
 
         $board = new Board($boardname);
@@ -22,7 +22,7 @@ class BoardEdit extends View {
         ));
     }
 
-    protected function post($app, $boardname) {
+    public function post($app, $boardname) {
         $user = $app['auth']->authenticate();
 
         $app['csrf']->check();

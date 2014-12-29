@@ -31,35 +31,11 @@ abstract class View {
 
     public function __construct(App $app) {
         $this->app = $app;
-
-        $request = $app['request'];
         $this->response = new Response();
-
-        $verb = $request->getRealMethod() === 'POST' ? 'post' : 'get';
-        $method = array($this, $verb);
-
-        if (!is_callable($method)) {
-            $this->methodNotAllowed();
-        }
-
-        $args = $app['router']->matches;
-
-        // set the first argument to $app
-        array_unshift($args, $app);
-
-        $this->response = call_user_func_array($method, $args);
     }
 
     protected function csrfScreen() {
         return $this->render('csrf.html');
-    }
-
-    /**
-     * @todo
-     */
-    private function methodNotAllowed() {
-        header('HTTP/1.0 405 Method Not Allowed');
-        throw new Error('Method not allowed.');
     }
 
     /**
@@ -99,7 +75,7 @@ abstract class View {
             $dest = "/$dest";
         }
 
-        $url = $this->app['url']->create($dest, $args);
+        $url = $this->app['url']->createURL($dest, $args);
 
         return $this->redirect($url);
     }
@@ -123,5 +99,3 @@ abstract class View {
         return $this->response;
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */

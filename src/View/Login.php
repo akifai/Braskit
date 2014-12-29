@@ -11,7 +11,7 @@ use Braskit\Error;
 use Braskit\View;
 
 class Login extends View {
-    protected function get($app) {
+    public function get($app) {
         $auth = $app['auth'];
 
         if ($auth->isLoggedIn()) {
@@ -30,7 +30,7 @@ class Login extends View {
         ]);
     }
 
-    protected function post($app) {
+    public function post($app) {
         $auth = $app['auth'];
         $param = $app['param']->flags('post');
         $session = $app['session'];

@@ -15,7 +15,7 @@ use Braskit\View;
  * @todo Find domains and list them.
  */
 class Ban extends View {
-    protected function get($app, $boardname) {
+    public function get($app, $boardname) {
         $user = $app['auth']->authenticate();
         $board = new Board($boardname);
 
