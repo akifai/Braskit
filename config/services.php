@@ -194,9 +194,11 @@ $app['dispatcher'] = function () use ($app) {
 
     $dispatcher->addSubscriber(new Symfony\Component\HttpKernel\EventListener\RouterListener($matcher, $context));
 
+    // ensure UTF-8 responses
+    $dispatcher->addSubscriber(new Symfony\Component\HttpKernel\EventListener\ResponseListener('UTF-8'));
+
     return $dispatcher;
 };
-
 
 $app['param'] = $app->factory(function () use ($app) {
     return new Braskit\Param($app['request']);
