@@ -43,7 +43,17 @@ class QueryStringHandler implements UrlHandlerInterface {
      * {@inheritdoc}
      */
     public function getPath($request) {
-        $query = $request->server->get('QUERY_STRING');
+        if ($request instanceof Request) {
+            $query = $request->server->get('QUERY_STRING');
+        } elseif (is_string($request)) {
+            $bits = parse_url($request);
+
+            $query = isset($bits['query']) ? $bits['query'] : '';
+        } else {
+            throw new \InvalidArgumentException(
+                'Argument must be Request or string'
+            );
+        }
 
         if (!strlen($query) || $query[0] !== '/') {
             // the query string is either invalid or not defined

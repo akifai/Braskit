@@ -5,7 +5,7 @@
     <form action="{{ app.request.server.REQUEST_URI }}" method="post">
       <input type="hidden" name="{{ app.csrf.getParamName() }}" value="{{ app.csrf.getToken() }}">
 
-      <p>You are being taken to: <kbd>{{ app.url.get() }}</kbd>.</p>
+      <p>You are being taken to: <kbd>{{ app.url.getPath(app.request) }}</kbd>.</p>
       <p><input type="submit" value="Continue"></p>
 
       <noscript>
