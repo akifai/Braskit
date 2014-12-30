@@ -9,13 +9,9 @@ namespace Braskit;
 
 use Pimple\Container;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
-use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
-use Symfony\Component\Routing\RequestContext;
 
 class App extends Container implements HttpKernelInterface {
     public function __construct() {
@@ -31,16 +27,7 @@ class App extends Container implements HttpKernelInterface {
      * {@inheritdoc}
      */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true) {
-        $dispatcher = $this['event'];
-
-        // our request matcher
-        $matcher = new RequestMatcher($this);
-
-        $context = new RequestContext();
-        $context = $context->fromRequest($request);
-
-        // should this be here?
-        $dispatcher->addSubscriber(new RouterListener($matcher, $context));
+        $dispatcher = $this['dispatcher'];
 
         $resolver = new ControllerResolver();
         $kernel = new HttpKernel($dispatcher, $resolver);

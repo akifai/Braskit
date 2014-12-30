@@ -193,7 +193,7 @@ class Post extends View {
 
         $event = new PostEvent($post, $file);
 
-        $app['event']->dispatch(PostEvent::POST_BEFORE_INSERT, $event);
+        $app['dispatcher']->dispatch(PostEvent::POST_BEFORE_INSERT, $event);
 
         // Don't commit anything to the database until we say so.
         $app['dbh']->beginTransaction();
@@ -211,7 +211,7 @@ class Post extends View {
         // so the files won't be orphaned when we move them.
         $file->move();
 
-        $app['event']->dispatch(PostEvent::POST_AFTER_INSERT, $event);
+        $app['dispatcher']->dispatch(PostEvent::POST_AFTER_INSERT, $event);
 
         if ($parent) {
             // rebuild thread cache

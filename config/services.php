@@ -186,19 +186,34 @@ $app['dbh'] = function () use ($app) {
     );
 };
 
-$app['event'] = function () {
-    return new Symfony\Component\EventDispatcher\EventDispatcher();
+$app['dispatcher'] = function () use ($app) {
+    $dispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+
+    $matcher = $app['request_matcher'];
+    $context = $app['request_context'];
+
+    $dispatcher->addSubscriber(new Symfony\Component\HttpKernel\EventListener\RouterListener($matcher, $context));
+
+    return $dispatcher;
 };
+
 
 $app['param'] = $app->factory(function () use ($app) {
     return new Braskit\Param($app['request']);
 });
 
 $app['request'] = function () use ($app) {
-    // this will be removed from the service container eventually
     $request = Symfony\Component\HttpFoundation\Request::createFromGlobals();
 
     return $request;
+};
+
+$app['request_context'] = function () use ($app) {
+    return (new Symfony\Component\Routing\RequestContext())->fromRequest($app['request']);
+};
+
+$app['request_matcher'] = function () use ($app) {
+    return new Braskit\RequestMatcher($app);
 };
 
 $app['router_class'] = function () {
