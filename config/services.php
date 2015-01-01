@@ -25,7 +25,7 @@ $app['cache.type'] = function () {
         return 'apc';
     }
 
-    return 'php';
+    return 'file';
 };
 
 $app['js.debug'] = false;
@@ -147,17 +147,19 @@ $app['ban'] = function () use ($app) {
 };
 
 $app['cache'] = function () use ($app) {
-    if ($app['cache.debug']) {
-        return new Braskit\Cache\Debug();
-    }
+    $type = $app['cache.debug'] ? 'debug' : $app['cache.type'];
 
-    switch ($app['cache.type']) {
+    switch ($type) {
     case 'apc':
-        return new Braskit\Cache\APC();
+        return new Braskit\Cache\APCCache();
+    case 'debug':
+    case 'null':
+        return new Braskit\Cache\NullCache();
+    case 'file':
     case 'php':
-        return new Braskit\Cache\PHP($app['path.cache']);
+        return new Braskit\Cache\FileCache($app['path.cache']);
     default:
-        return new Braskit\Cache\Debug();
+        throw new LogicException("Unknown cache type: $type");
     }
 };
 

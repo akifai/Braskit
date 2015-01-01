@@ -7,12 +7,12 @@
 
 namespace Braskit\Config;
 
-use Braskit\Cache;
+use Braskit\Cache\CacheInterface;
 use Braskit\Database;
 
 class ConfigService implements ConfigServiceInterface {
     /**
-     * @var Cache
+     * @var CacheInterface
      */
     public $cache;
 
@@ -31,10 +31,10 @@ class ConfigService implements ConfigServiceInterface {
     /**
      * Constructor.
      *
-     * @var Cache $cache 
+     * @var CacheInterface $cache
      * @var Database $db
      */
-    public function __construct(Cache $cache, Database $db) {
+    public function __construct(CacheInterface $cache, Database $db) {
         $this->cache = $cache;
         $this->db = $db;
     }

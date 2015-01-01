@@ -7,12 +7,10 @@
 
 namespace Braskit\Cache;
 
-use Braskit\Cache;
-
 /**
  * Cache stored in PHP files.
  */
-class PHP implements Cache {
+class FileCache implements CacheInterface {
     /**
      * Cache directory.
      *
@@ -36,22 +34,43 @@ class PHP implements Cache {
         $this->cacheDir = $cacheDir;
     }
 
+    /**
+     * Unreliably checks if an object is stored in cache. Does not account for
+     * race conditions, does not check expiry.
+     */
+    public function has($key) {
+        $filename = $this->getFileName($key);
+
+        return file_exists($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function get($key) {
         $filename = $this->getFileName($key);
 
         $cache = @include($filename);
 
-        // We couldn't load the cache, or it expired. Delete it.
+        // We couldn't load the cache, or it expired
         if (!is_array($cache) || $cache['expired']) {
+            // delete the file, if it exists
             @unlink($filename);
 
-            return false;
+            return null;
         }
 
         return $cache['content'];
     }
 
-    public function set($key, $value, $ttl = false) {
+    /**
+     * {@inheritdoc}
+     */
+    public function set($key, $value, $ttl = null) {
+        if ($value === null) {
+            throw new \InvalidArgumentException('Cached value cannot be NULL');
+        }
+
         $this->createDirectory();
 
         // Content of the cache file
@@ -75,20 +94,28 @@ class PHP implements Cache {
     }
 
     public function delete($key) {
-        unlink($this->getFileName($key));
+        $deleted = @unlink($this->getFileName($key));
+
+        if (!$deleted) {
+            $error = error_get_last()['message'];
+            throw new \RuntimeException("Couldn't delete file: $error");
+        }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function purge() {
         // get list of cache files
         $files = glob("$this->cacheDir/cache-*.php");
 
         // that didn't work for some reason
         if (!is_array($files)) {
-            return false;
+            return;
         }
 
         foreach ($files as $file) {
-            unlink($file);
+            @unlink($file);
         }
     }
 
@@ -116,11 +143,9 @@ class PHP implements Cache {
         $created = @mkdir($this->cacheDir, 0777 & ~umask(), true);
 
         if (!$created) {
-            throw new \RuntimeException("Couldn't create cache directory.");
+            throw new \RuntimeException("Couldn't create cache directory");
         }
 
         $this->dirExists = true;
     }
 }
-
-/* vim: set ts=4 sw=4 sts=4 et: */
