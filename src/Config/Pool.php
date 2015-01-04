@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2013, 2014 Frank Usrs
+ * Copyright (C) 2013-2015 Frank Usrs
  *
  * See LICENSE for terms and conditions of use.
  */
@@ -154,7 +154,7 @@ class Pool implements PoolInterface {
      * {@inheritdoc}
      */
     public function getIterator() {
-        throw new \LogicException('Not implemented');
+        return new PoolIterator($this->getDict(), $this);
     }
 
     /**
@@ -170,8 +170,7 @@ class Pool implements PoolInterface {
             // no cache - we need to build it
             $this->cache = [];
 
-            // get the keys in the dictionary
-            $dict = $this->getDict()->getKeys();
+            $dict = $this->getDict();
 
             // get the options in the db
             $db = $this->service->db->getPoolOptions($this->name, $this->args);
@@ -188,10 +187,10 @@ class Pool implements PoolInterface {
             }
 
             // add remaining options using the dictionary
-            foreach ($dict as $key) {
+            foreach ($dict->getKeys() as $key) {
                 if (!isset($this->cache[$key])) {
                     // set to default value
-                    $this->cache[$key]['value'] = $this->dict->getDefault($key);
+                    $this->cache[$key]['value'] = $dict->getDefault($key);
 
                     // if it's from the dictionary, it's unmodified
                     $this->cache[$key]['modified'] = false;

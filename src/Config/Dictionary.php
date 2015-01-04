@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2013, 2014 Frank Usrs
+ * Copyright (C) 2013-2015 Frank Usrs
  *
  * See LICENSE for terms and conditions of use.
  */
@@ -42,6 +42,10 @@ class Dictionary implements DictionaryInterface {
      */
     public function getDefault($key) {
         return $this->keys[$key]['default'];
+    }
+
+    public function getType($key) {
+        return $this->keys[$key]['type'];
     }
 
     /**

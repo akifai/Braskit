@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2013, 2014 Frank Usrs
+ * Copyright (C) 2013-2015 Frank Usrs
  *
  * See LICENSE for terms and conditions of use.
  */
@@ -27,6 +27,11 @@ interface DictionaryInterface {
      * @return mixed The value.
      */
     public function getDefault($key);
+
+    /**
+     * Retrieves the type for an option.
+     */
+    public function getType($key);
 
     /**
      * @return array
